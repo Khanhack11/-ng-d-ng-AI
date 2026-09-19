@@ -330,7 +330,7 @@ const Header: React.FC<HeaderProps> = ({
                   handleSearchSubmit();
                 }
               }}
-              placeholder="Tìm kiếm thông minh: Gõ 'áo', 'giày', 'túi', 'khoác'..." 
+              placeholder="Tìm kiếm: 'iPhone 16', 'Sạc GaN 65W', 'AirPods', 'MagSafe', 'S24 Ultra'..." 
               className="w-full px-3 py-1.5 text-surface-base text-sm focus-visible:outline-text-secondary"
             />
             {searchTerm && (
@@ -352,7 +352,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="flex text-xs text-white/90 mt-1 space-x-3 overflow-hidden whitespace-nowrap">
-            {['Áo', 'Áo Khoác', 'Áo Polo', 'Giày Sneaker', 'Váy Đầm', 'Túi Xách'].map((tag) => (
+            {['iPhone 16 Pro', 'Samsung S24 Ultra', 'Củ Sạc GaN 65W', 'Tai Nghe Chống Ồn', 'Sạc Dự Phòng MagSafe', 'Ốp Lưng UAG', 'Kính Cường Lực'].map((tag) => (
               <button
                 key={tag}
                 type="button"

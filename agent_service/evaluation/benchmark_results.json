@@ -1,6 +1,6 @@
 {
   "status": "COMPLETED",
-  "benchmark_timestamp": "2026-09-19 08:18:37",
+  "benchmark_timestamp": "2026-09-19 10:02:13",
   "scenarios_count": 5,
   "metrics_comparison": {
     "anti_hallucination_rate": {
@@ -19,8 +19,8 @@
       "winner": "Multi-Agent"
     },
     "average_latency": {
-      "single_agent": "40.3 ms",
-      "multi_agent": "495.1 ms",
+      "single_agent": "40.5 ms",
+      "multi_agent": "400.1 ms",
       "note": "Multi-Agent có độ trễ cao hơn do kiểm định chéo và tra cứu Vector DB nhưng đảm bảo độ tin cậy tuyệt đối"
     }
   },
@@ -32,17 +32,17 @@
         "response_sample": "Dạ em gợi ý bạn Áo Polo Nam Gucci Maxi GG giá 12.000.000đ và Áo Thun DIOR giá 1....",
         "hallucination": true,
         "budget_adherence": false,
-        "latency_ms": 40.5
+        "latency_ms": 40.1
       },
       "multi_agent": {
-        "response_sample": "ZShop đã tìm thấy 3 sản phẩm liên quan đến 'áo thun, áo' phù hợp nhất với yêu cầ...",
+        "response_sample": "ZShop đã tìm thấy 6 sản phẩm phù hợp nhất với yêu cầu của bạn. Tất cả đều cam kế...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 485.8,
-        "products_count": 3
+        "latency_ms": 417.7,
+        "products_count": 6
       }
     },
     {
@@ -52,16 +52,16 @@
         "response_sample": "ZShop hỗ trợ đổi trả trong 30 ngày đối với mọi đơn hàng trên 500k....",
         "hallucination": true,
         "budget_adherence": true,
-        "latency_ms": 40.4
+        "latency_ms": 40.7
       },
       "multi_agent": {
-        "response_sample": "Dạ ZShop xin thông tin đến bạn:\n\n[Chính sách] Chính sách giao hàng và vận chuyển...",
+        "response_sample": "Dạ ZShop xin thông tin đến bạn:\n\n[Chính sách] Giao hàng hỏa tốc 2 giờ và freeshi...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 468.5,
+        "latency_ms": 399.7,
         "products_count": 6
       }
     },
@@ -72,16 +72,16 @@
         "response_sample": "Bạn có thể mặc Quần Jeans rách gối cùng áo thun đi họp nhé!...",
         "hallucination": false,
         "budget_adherence": true,
-        "latency_ms": 40.4
+        "latency_ms": 40.5
       },
       "multi_agent": {
-        "response_sample": "👗 **Stylist Emma** đã thiết kế riêng cho bạn **Set Đồ Smart Casual & Công Sở Tha...",
+        "response_sample": "💼 **Alex TechPro** thiết kế riêng cho bạn **Combo Doanh Nhân & Công Sở Đa Năng M...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 470.1,
+        "latency_ms": 395.6,
         "products_count": 3
       }
     },
@@ -92,16 +92,16 @@
         "response_sample": "Dạ iPhone 17 Pro Max mạ vàng hiện đang có sẵn tại ZShop giá 45 triệu, bạn đặt ng...",
         "hallucination": true,
         "budget_adherence": true,
-        "latency_ms": 40.1
+        "latency_ms": 40.4
       },
       "multi_agent": {
-        "response_sample": "ZShop đã tìm thấy 6 sản phẩm phù hợp nhất với yêu cầu của bạn. Tất cả đều cam kế...",
+        "response_sample": "ZShop đã tìm thấy 6 sản phẩm liên quan đến 'iphone' phù hợp nhất với yêu cầu của...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 512.5,
+        "latency_ms": 392.5,
         "products_count": 6
       }
     },
@@ -112,17 +112,17 @@
         "response_sample": "ZShop có các thiết bị điện tử, bạn tham khảo website nhé....",
         "hallucination": false,
         "budget_adherence": true,
-        "latency_ms": 40.2
+        "latency_ms": 40.6
       },
       "multi_agent": {
-        "response_sample": "ZShop đã tìm thấy 5 sản phẩm phù hợp nhất với yêu cầu của bạn. Tất cả đều cam kế...",
+        "response_sample": "ZShop đã tìm thấy 6 sản phẩm phù hợp nhất với yêu cầu của bạn. Tất cả đều cam kế...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 538.5,
-        "products_count": 5
+        "latency_ms": 394.9,
+        "products_count": 6
       }
     }
   ]

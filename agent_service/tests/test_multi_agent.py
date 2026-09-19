@@ -38,10 +38,10 @@ def test_analyst_agent_intent_and_price():
     bus = StructuredMessageBus()
     analyst = AnalystAgent(bus)
 
-    res = analyst.process("Tìm cho tôi áo polo nam dưới 500k", correlation_id="test-1")
+    res = analyst.process("Tìm cho tôi củ sạc nhanh GaN dưới 500k", correlation_id="test-1")
     assert res["intent"] == "PRODUCT_SEARCH"
     assert res["entities"]["max_price"] == 500000
-    assert "áo polo" in res["entities"]["keywords"] or "áo" in res["entities"]["keywords"]
+    assert "củ sạc" in res["entities"]["keywords"] or "sạc" in res["entities"]["keywords"] or "gan" in res["entities"]["keywords"]
 
 def test_database_agent():
     bus = StructuredMessageBus()
@@ -50,7 +50,7 @@ def test_database_agent():
     analysis_mock = {
         "intent": "PRODUCT_SEARCH",
         "entities": {
-            "keywords": ["áo polo"],
+            "keywords": ["củ sạc"],
             "max_price": 15000000
         }
     }
@@ -62,18 +62,18 @@ def test_rag_agent_chroma():
     bus = StructuredMessageBus()
     rag_agent = RagAgent(bus)
 
-    output = rag_agent.process("Chính sách đổi trả hàng như thế nào?", correlation_id="test-3")
+    output = rag_agent.process("Chính sách đổi trả và bảo hành như thế nào?", correlation_id="test-3")
     assert "hits" in output
     assert len(output["hits"]) > 0
-    assert "đổi trả" in output["context_text"].lower()
+    assert "bảo hành" in output["context_text"].lower() or "đổi trả" in output["context_text"].lower()
 
 def test_critic_agent_accept():
     bus = StructuredMessageBus()
     critic = CriticAgent(bus)
 
     reasoning_mock = {
-        "draft_message": "Dưới đây là các mẫu áo phù hợp với bạn.",
-        "candidate_products": [{"id": "1", "name": "Áo thun", "price": 400000}],
+        "draft_message": "Dưới đây là các củ sạc GaN phù hợp với bạn.",
+        "candidate_products": [{"id": "CHARGER-001", "name": "Củ Sạc GaN 65W Ba Cổng", "price": 400000}],
         "entities": {"max_price": 500000},
         "intent": "PRODUCT_SEARCH"
     }
@@ -85,7 +85,7 @@ def test_critic_agent_accept():
 
 def test_orchestrator_end_to_end():
     orchestrator = OrchestratorAgent()
-    result = orchestrator.handle_request("Tôi muốn mua áo hoodie giá dưới 500k")
+    result = orchestrator.handle_request("Tôi muốn mua củ sạc nhanh 65W giá dưới 500k")
 
     assert "text" in result
     assert "skillResult" in result
@@ -109,22 +109,20 @@ def test_flask_api():
     assert "freeship" in data["text"].lower() or "vận chuyển" in data["text"].lower()
     assert "skillResult" in data
 
-def test_fashion_outfit_office_stylist():
+def test_tech_combo_office_expert():
     client = app.test_client()
     resp = client.post('/api/chat', json={
-        "text": "Set đồ công sở thanh lịch nam/nữ",
+        "text": "Combo sạc nhanh văn phòng đa thiết bị",
         "persona": "STYLIST"
     })
     assert resp.status_code == 200
     data = resp.json
-    assert data["skillResult"]["skill"] == "AI_FASHION_STYLIST"
+    assert data["skillResult"]["skill"] == "AI_TECH_COMBO_EXPERT"
     assert "outfitCombo" in data["skillResult"]
-    assert "công sở" in data["skillResult"]["outfitCombo"]["title"].lower()
+    assert "công sở" in data["skillResult"]["outfitCombo"]["title"].lower() or "magsafe" in data["skillResult"]["outfitCombo"]["title"].lower()
     items = data["skillResult"]["outfitCombo"]["items"]
     item_names = [it["name"] for it in items]
-    # Phải có Áo sơ mi lụa công sở hoặc Quần tây âu, không được chứa áo thun / quần rách
-    assert any("Sơ Mi" in name or "Tây Âu" in name for name in item_names)
-    assert not any("Rách Gối" in name for name in item_names)
+    assert any("GaN" in name or "Sạc" in name or "Cáp" in name or "MagSafe" in name for name in item_names)
 
 def test_chroma_vector_db_indexing():
     from agent_service.vector_db.chroma_store import get_vector_store
@@ -149,9 +147,9 @@ def test_chroma_semantic_product_search():
     assert tech_hits[0]["similarity_score"] > 0.5
 
     # Truy vấn ngữ nghĩa 2: Lọc giá trần max_price
-    cheap_shirts = store.search_products("áo sơ mi", top_k=3, max_price=500000)
-    assert len(cheap_shirts) > 0
-    for p in cheap_shirts:
+    cheap_chargers = store.search_products("củ sạc", top_k=3, max_price=500000)
+    assert len(cheap_chargers) > 0
+    for p in cheap_chargers:
         assert p["price"] <= 500000
 
 def test_vector_db_api_endpoints():
@@ -165,7 +163,7 @@ def test_vector_db_api_endpoints():
 
     # Test POST /api/vector-db/search
     search_resp = client.post('/api/vector-db/search', json={
-        "query": "áo sơ mi lụa công sở",
+        "query": "củ sạc nhanh GaN 65W",
         "type": "products",
         "top_k": 3
     })
@@ -179,28 +177,28 @@ def test_recommendation_agent_cross_sell():
     bus = StructuredMessageBus()
     rec_agent = RecommendationAgent(bus)
 
-    # Test Cross-sell: Mua áo sơ mi -> gợi ý quần/giày
-    primary = {"id": "NAM-004", "name": "Áo Sơ Mi Lụa Dài Tay Công Sở", "category": "Thời trang nam"}
+    # Test Cross-sell: Mua Smartphone -> gợi ý củ sạc GaN / Cáp / Ốp
+    primary = {"id": "PHONE-001", "name": "iPhone 16 Pro Max 256GB Titan Tự Nhiên", "category": "Điện Thoại"}
     cross_sell = rec_agent.recommend_cross_sell(primary, top_k=2)
     assert len(cross_sell) > 0
-    # Không gợi ý lại đúng chiếc áo sơ mi đó
+    # Không gợi ý lại đúng chiếc điện thoại đó
     assert all(it["id"] != primary["id"] for it in cross_sell)
 
-    # Test Outfit recommendation
-    outfit = rec_agent.recommend_outfit(occasion="office", max_price=2000000)
-    assert "items" in outfit
-    assert len(outfit["items"]) >= 2
-    assert outfit["totalPrice"] > 0
+    # Test Combo recommendation
+    combo = rec_agent.recommend_outfit(occasion="office", max_price=2000000)
+    assert "items" in combo
+    assert len(combo["items"]) >= 2
+    assert combo["totalPrice"] > 0
 
 def test_critic_agent_revise_decision():
     from agent_service.agents.critic_agent import CriticAgent
     bus = StructuredMessageBus()
     critic = CriticAgent(bus)
 
-    # Giả lập sản phẩm vi phạm ngân sách khách yêu cầu (ngân sách 200k, sản phẩm 12tr)
+    # Giả lập sản phẩm vi phạm ngân sách khách yêu cầu (ngân sách 200k, sản phẩm 30tr)
     reasoning_mock = {
-        "draft_message": "Gợi ý áo polo sang trọng",
-        "candidate_products": [{"id": "NAM-001", "name": "Áo Polo Gucci", "price": 12000000}],
+        "draft_message": "Gợi ý smartphone cao cấp",
+        "candidate_products": [{"id": "PHONE-001", "name": "iPhone 16 Pro Max", "price": 34990000}],
         "entities": {"max_price": 200000},
         "intent": "PRODUCT_SEARCH"
     }
@@ -227,14 +225,14 @@ def test_critic_rejects_unverified_product_shape():
 def test_retry_reflection_loop_orchestrator():
     orchestrator = OrchestratorAgent()
     # Query có ràng buộc giá: Orchestrator qua vòng lặp Reflection Loop phải trả về sản phẩm đạt chuẩn
-    result = orchestrator.handle_request("Tìm áo thun giá dưới 200k")
+    result = orchestrator.handle_request("Tìm cáp sạc giá dưới 100k")
     assert "skillResult" in result
     trace = result["skillResult"]["multiAgentTrace"]
     assert trace["status"] == "APPROVED_BY_CRITIC"
     products = result["skillResult"]["products"]
     if products:
         for p in products:
-            assert p["price"] <= 200000
+            assert p["price"] <= 100000
 
 def test_logging_and_audit_endpoints():
     client = app.test_client()
@@ -277,12 +275,9 @@ def test_cheapest_single_product_no_hallucination_outfit():
 
     # 1. Phải trả về đúng 1 sản phẩm
     assert len(products) == 1
-    # 2. Sản phẩm phải là món rẻ nhất trong cửa hàng (Túi tote 85k hoặc dép 99k)
-    assert products[0]["price"] <= 99000
-    # 3. Tuyệt đối không có outfitCombo (không ảo giác bộ đồ đắt tiền)
+    # 2. Sản phẩm phải là món rẻ nhất trong cửa hàng (Miếng Dán Màn Hình Trong Suốt 25k)
+    assert products[0]["price"] <= 35000
+    # 3. Tuyệt đối không có outfitCombo (không ảo giác combo phụ kiện đắt tiền)
     assert skill_result.get("outfitCombo") is None
     # 4. Câu trả lời định dạng đúng trọng tâm
     assert "rẻ nhất" in data.get("text", "").lower()
-
-
-

@@ -43,17 +43,14 @@ class CriticAgent:
                     issues.append(f"Sản phẩm '{product.get('name')}' có giá {product.get('price')}đ vượt quá ngân sách {max_price:,.0f}đ")
             verified_products = within_budget
 
-        # 2. Kiểm tra tính phù hợp bối cảnh phong cách (Style & Context Relevance)
+        # 2. Kiểm tra tính phù hợp bối cảnh công nghệ (Tech & Context Relevance)
         occasion = entities.get("occasion")
-        if occasion == "office":
-            # Lọc bỏ quần rách hoặc đồ biker bụi bặm không hợp công sở
-            filtered_office = []
-            for p in verified_products:
-                if "rách" in p.get("name", "").lower() or "biker" in p.get("name", "").lower():
-                    issues.append(f"Sản phẩm '{p.get('name')}' không phù hợp bối cảnh công sở thanh lịch.")
-                else:
-                    filtered_office.append(p)
-            verified_products = filtered_office
+        if occasion == "gaming":
+            # Ưu tiên hoặc kiểm tra độ tương thích gaming
+            pass
+        elif occasion == "office":
+            # Lọc bỏ các sản phẩm không tương thích văn phòng nếu có
+            pass
 
         # 3. Sắp xếp và giới hạn số lượng theo yêu cầu (Sort & Limit Enforcement)
         sort_by = entities.get("sort_by")

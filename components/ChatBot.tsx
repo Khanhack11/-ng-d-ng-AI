@@ -547,75 +547,39 @@ export default function ChatBot({
             })}
           </div>
 
-          {/* Form Nhập Số Đo Nhanh trong Persona Fitting */}
+          {/* Form Kiểm Tra Tương Thích Nhanh trong Persona Fitting (Ken TechSpec) */}
           {selectedPersona === 'FITTING' && showMeasureForm && (
             <div className="bg-emerald-50 border-b border-emerald-200 p-3 text-xs space-y-2.5 animate-fadeIn">
               <div className="flex items-center justify-between font-bold text-emerald-900">
-                <span className="flex items-center gap-1">
-                  <Sliders size={13} /> Nhập số đo vóc dáng chuẩn ZShop
+                <span className="flex items-center gap-1.5">
+                  <Cpu size={14} className="text-emerald-700" /> Chọn thiết bị cần kiểm tra tương thích kỹ thuật
                 </span>
                 <button 
                   onClick={() => setShowMeasureForm(false)}
-                  className="text-emerald-700 hover:text-emerald-900"
+                  className="text-emerald-700 hover:text-emerald-900 p-1"
                 >
                   <X size={14} />
                 </button>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="text-[10px] text-emerald-800 font-semibold block mb-0.5">
-                    Chiều cao: <strong className="text-emerald-950">{tempHeight} cm</strong>
-                  </label>
-                  <input 
-                    type="range" 
-                    min={145} 
-                    max={200} 
-                    value={tempHeight} 
-                    onChange={(e) => setTempHeight(Number(e.target.value))}
-                    className="w-full accent-emerald-600"
-                  />
-                </div>
-                <div>
-                  <label className="text-[10px] text-emerald-800 font-semibold block mb-0.5">
-                    Cân nặng: <strong className="text-emerald-950">{tempWeight} kg</strong>
-                  </label>
-                  <input 
-                    type="range" 
-                    min={40} 
-                    max={120} 
-                    value={tempWeight} 
-                    onChange={(e) => setTempWeight(Number(e.target.value))}
-                    className="w-full accent-emerald-600"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center justify-between gap-2 pt-1">
-                <div className="flex gap-1 text-[11px]">
-                  <button 
-                    onClick={() => setTempFit('tight')}
-                    className={`px-2 py-1 rounded-lg border font-medium ${tempFit === 'tight' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700'}`}
+              <div className="grid grid-cols-2 gap-1.5">
+                {[
+                  { label: 'iPhone 16 Series', query: 'Củ sạc và cáp sạc nào tương thích tối ưu cho iPhone 16 Series?' },
+                  { label: 'Samsung S24 Ultra', query: 'Củ sạc nào kích hoạt được sạc siêu nhanh 45W cho Samsung Galaxy S24 Ultra?' },
+                  { label: 'MacBook & Laptop', query: 'Củ sạc GaN nào sạc được cho MacBook và Laptop Type-C?' },
+                  { label: 'Sạc Dự Phòng MagSafe', query: 'Pin sạc dự phòng MagSafe có dùng được cho iPhone 13/14/15/16 không?' }
+                ].map((item, i) => (
+                  <button
+                    key={i}
+                    onClick={() => {
+                      setShowMeasureForm(false);
+                      handleSendMessage(item.query);
+                    }}
+                    className="p-2 bg-white hover:bg-emerald-100/70 text-slate-800 rounded-xl border border-emerald-200/80 text-[11px] font-semibold text-left transition-all flex items-center justify-between shadow-2xs"
                   >
-                    Ôm sát
+                    <span>{item.label}</span>
+                    <ChevronRight size={12} className="text-emerald-600 shrink-0" />
                   </button>
-                  <button 
-                    onClick={() => setTempFit('regular')}
-                    className={`px-2 py-1 rounded-lg border font-medium ${tempFit === 'regular' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700'}`}
-                  >
-                    Vừa vặn
-                  </button>
-                  <button 
-                    onClick={() => setTempFit('loose')}
-                    className={`px-2 py-1 rounded-lg border font-medium ${tempFit === 'loose' ? 'bg-emerald-600 text-white border-emerald-600' : 'bg-white text-slate-700'}`}
-                  >
-                    Rộng (Oversize)
-                  </button>
-                </div>
-                <button
-                  onClick={() => handleApplyMeasurements(tempHeight, tempWeight, tempFit)}
-                  className="px-3 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold shadow-sm"
-                >
-                  Xác nhận & Tính Size
-                </button>
+                ))}
               </div>
             </div>
           )}
@@ -713,45 +677,45 @@ export default function ChatBot({
                     </div>
                   )}
 
-                  {/* THẺ GENERATIVE UI: OUTFIT LOOKBOOK (Stylist Emma) */}
+                  {/* THẺ GENERATIVE UI: TECH COMBO (Alex TechPro) */}
                   {msg.skillResult?.outfitCombo && (
-                    <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 p-3 rounded-2xl border border-pink-200 shadow-sm space-y-2.5">
-                      <div className="flex items-center justify-between border-b border-pink-200 pb-2">
+                    <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-cyan-50 p-3 rounded-2xl border border-blue-200 shadow-sm space-y-2.5">
+                      <div className="flex items-center justify-between border-b border-blue-200 pb-2">
                         <div>
-                          <span className="text-xs font-black text-rose-900 block">
+                          <span className="text-xs font-black text-blue-900 block">
                             {msg.skillResult.outfitCombo.title}
                           </span>
-                          <span className="text-[10px] text-rose-600 font-medium">
-                            Phong cách: {msg.skillResult.outfitCombo.style}
+                          <span className="text-[10px] text-blue-600 font-medium">
+                            Chuẩn kết nối & Công suất: {msg.skillResult.outfitCombo.style}
                           </span>
                         </div>
-                        <span className="text-[10px] bg-rose-500 text-white font-bold px-2 py-0.5 rounded-full shadow-sm shrink-0">
+                        <span className="text-[10px] bg-blue-600 text-white font-bold px-2 py-0.5 rounded-full shadow-sm shrink-0">
                           -8% Combo
                         </span>
                       </div>
 
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {msg.skillResult.outfitCombo.items.map((it) => (
-                          <div key={it.id} className="bg-white p-2 rounded-xl border border-pink-100 shadow-sm text-center">
+                          <div key={it.id} className="bg-white p-2 rounded-xl border border-blue-100 shadow-sm text-center">
                             <img 
                               src={it.images?.[0] || (it as any).image_url || (it as any).image || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500'} 
                               alt={it.name}
                               className="w-full h-16 object-cover rounded-lg mb-1 bg-slate-50"
                             />
                             <div className="text-[10px] font-bold text-slate-800 line-clamp-1">{it.name}</div>
-                            <div className="text-[10px] font-extrabold text-rose-600">
+                            <div className="text-[10px] font-extrabold text-blue-600">
                               {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(it.price)}
                             </div>
                           </div>
                         ))}
                       </div>
 
-                      <div className="bg-white/80 p-2 rounded-xl flex items-center justify-between text-xs border border-pink-100">
+                      <div className="bg-white/80 p-2 rounded-xl flex items-center justify-between text-xs border border-blue-100">
                         <div>
                           <span className="text-slate-500 line-through text-[10px] mr-1">
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(msg.skillResult.outfitCombo.totalPrice)}
                           </span>
-                          <strong className="text-rose-700 text-sm font-black">
+                          <strong className="text-blue-700 text-sm font-black">
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(msg.skillResult.outfitCombo.discountPrice || msg.skillResult.outfitCombo.totalPrice)}
                           </strong>
                         </div>
@@ -760,7 +724,7 @@ export default function ChatBot({
                           className={`px-3 py-1.5 rounded-xl font-bold text-xs text-white shadow-sm transition-all flex items-center gap-1 ${
                             addedComboId === msg.skillResult.outfitCombo.id
                               ? 'bg-emerald-600'
-                              : 'bg-rose-600 hover:bg-rose-700'
+                              : 'bg-blue-600 hover:bg-blue-700'
                           }`}
                         >
                           {addedComboId === msg.skillResult.outfitCombo.id ? (
@@ -777,7 +741,7 @@ export default function ChatBot({
                     </div>
                   )}
 
-                  {/* THẺ GENERATIVE UI: VIP LOYALTY CARD (VIP Concierge Mia) */}
+                  {/* THẺ GENERATIVE UI: VIP LOYALTY CARD (Bella VIP) */}
                   {msg.skillResult?.customerLoyalty && (
                     <div className="bg-gradient-to-br from-amber-500 via-yellow-500 to-amber-600 text-white p-3.5 rounded-2xl shadow-md space-y-3">
                       <div className="flex items-center justify-between border-b border-white/20 pb-2">

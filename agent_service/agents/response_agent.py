@@ -59,10 +59,11 @@ class ResponseAgent:
 
         # Xác định tên kỹ năng hiển thị trên UI
         skill_name_map = {
-            "FASHION_OUTFIT": "AI_FASHION_STYLIST",
+            "FASHION_OUTFIT": "AI_TECH_COMBO_EXPERT",
+            "SPECS_COMPATIBILITY": "AI_SPECS_COMPATIBILITY",
             "ORDER_TRACKING": "TRACK_ORDER",
             "POLICY_INQUIRY": "POLICY_CONSULT",
-            "FITTING_ADVICE": "AI_SMART_FITTING",
+            "FITTING_ADVICE": "AI_SPECS_COMPATIBILITY",
             "PRODUCT_SEARCH": "PRODUCT_SEARCH_RECOMMEND",
             "GENERAL_GREETING": "GENERAL_CONSULT"
         }
@@ -72,12 +73,12 @@ class ResponseAgent:
         if outfit_combo and "items" in outfit_combo:
             formatted_combo_items = []
             for item in outfit_combo["items"]:
-                c_img = item.get("image_url") or item.get("image") or "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600"
+                c_img = item.get("image_url") or item.get("image") or "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=600"
                 combo_item = {
                     "id": str(item.get("id")),
                     "name": item.get("name", "Sản phẩm ZShop"),
                     "price": int(item.get("price", 0)),
-                    "category": item.get("category", "Thời trang"),
+                    "category": item.get("category", "Thiết bị & Phụ kiện"),
                     "image": c_img,
                     "image_url": c_img,
                     "images": [c_img],
@@ -90,9 +91,9 @@ class ResponseAgent:
             outfit_combo["items"] = formatted_combo_items
 
         suggested_actions = [
-            "Xem cách phối đồ khác",
-            "Tư vấn size cho tôi",
-            "Chính sách đổi trả hàng"
+            "Kiểm tra tương thích sạc nhanh",
+            "Chính sách bảo hành 1 đổi 1",
+            "Tư vấn thu cũ đổi mới (Trade-in)"
         ]
         if outfit_combo:
             suggested_actions.insert(0, "Thêm cả combo vào giỏ hàng")

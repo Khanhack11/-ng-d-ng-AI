@@ -124,76 +124,88 @@ class ReasoningAgent:
 
         elif intent == "FASHION_OUTFIT":
             occasion = entities.get("occasion", "office")
-            total_price = sum(p.get("price", 0) for p in products)
+            rec_combo = recommendation_data.get("outfit_combo") if recommendation_data else None
+            combo_items = rec_combo.get("items", []) if (rec_combo and rec_combo.get("items")) else products
+            total_price = sum(p.get("price", 0) for p in combo_items)
             discount_price = int(total_price * 0.9)
 
-            if occasion == "office":
-                outfit_title = "Set Đồ Smart Casual & Công Sở Thanh Lịch"
-                outfit_style = "Smart Casual / Minimalist Office"
-                outfit_occasion = "Đi làm hàng ngày, gặp đối tác, hội thảo chuyên nghiệp"
-                outfit_desc = "Sự kết hợp giữa phom dáng đứng đắn của Áo Sơ Mi Lụa và Quần Tây Âu co giãn giúp bạn giữ vẻ ngoài chỉn chu suốt 8 tiếng mà không hề gò bó."
+            if occasion == "gaming":
+                outfit_title = "Combo Smartphone Gaming & Phụ Kiện Hiệu Năng Cao"
+                outfit_style = "High Performance Gaming"
+                outfit_occasion = "Chơi game đồ họa nặng, leo rank mượt mà không nóng máy"
+                outfit_desc = "Sự kết hợp giữa Smartphone hiệu năng cao cùng Cáp sạc chữ L chống cấn tay và Tai nghe gaming độ trễ cực thấp 60ms."
                 draft_message = (
-                    f"👗 **Stylist Emma** đã thiết kế riêng cho bạn **{outfit_title}** cực kỳ lịch lãm và chuẩn mực:\n"
-                    f"- **Phong cách chủ đạo**: {outfit_style}\n"
-                    f"- **Hoàn cảnh khuyên dùng**: {outfit_occasion}\n"
-                    f"- **Lời khuyên phối đồ**: Áo sơ mi lụa chống nhăn đóng thùng cùng quần tây âu dáng Hàn Quốc, đi cùng giày sneaker trắng tạo điểm nhấn trẻ trung hoặc giày da lịch sự."
+                    f"🎮 **Alex TechPro** đề xuất cho bạn **{outfit_title}** tối ưu trải nghiệm chiến game:\n"
+                    f"- **Phong cách thiết bị**: {outfit_style}\n"
+                    f"- **Nhu cầu khuyên dùng**: {outfit_occasion}\n"
+                    f"- **Chi tiết trang bị**: Smartphone chip mạnh + Cáp sạc gập chữ L 100W chơi game ngang tay không cấn + Tai nghe chống ồn độ trễ siêu thấp."
                 )
-            elif occasion == "streetwear":
-                outfit_title = "Set Đồ Streetwear Năng Động Dạo Phố"
-                outfit_style = "Urban Streetwear"
-                outfit_occasion = "Đi chơi dạo phố cafe, dã ngoại cuối tuần"
-                outfit_desc = "Phom dáng thoải mái phóng khoáng, mang lại năng lượng trẻ trung bứt phá."
+            elif occasion == "creator":
+                outfit_title = "Combo Sáng Tạo Nội Dung & Vlogger Chuyên Nghiệp"
+                outfit_style = "Pro Content Creator"
+                outfit_occasion = "Quay video 4K, livestream TikTok, chụp ảnh sáng tạo nội dung"
+                outfit_desc = "Flagship camera đỉnh cao kết hợp Gimbal chống rung 3 trục AI và Sạc dự phòng siêu tốc 65W cho cả ngày quay ngoài trời."
                 draft_message = (
-                    f"👗 **Stylist Emma** gợi ý cho bạn **{outfit_title}**:\n"
-                    f"- **Phong cách chủ đạo**: {outfit_style}\n"
-                    f"- **Lời khuyên phối đồ**: Áo thun cotton mix cùng quần jeans slimfit và khoác ngoài áo hoodie unisex cá tính."
+                    f"🎬 **Alex TechPro** gợi ý cho bạn **{outfit_title}** cho nhà sáng tạo:\n"
+                    f"- **Đặc điểm nổi bật**: {outfit_style}\n"
+                    f"- **Trang bị chủ lực**: Điện thoại camera chuyên nghiệp chống rung OIS + Gimbal tracking khuôn mặt tự động + Pin dự phòng dung lượng lớn."
                 )
-            else:
-                outfit_title = "Set Trang Phục Dạ Tiệc & Hẹn Hò Sang Trọng"
-                outfit_style = "Luxury Chic"
-                outfit_occasion = "Dự tiệc tối, sự kiện đặc biệt, hẹn hò lãng mạn"
-                outfit_desc = "Tông màu thời thượng và chất liệu cao cấp tạo ấn tượng cuốn hút."
+            elif occasion == "budget":
+                outfit_title = "Combo Phụ Kiện Cơ Bản Tiết Kiệm (Starter Pack)"
+                outfit_style = "Essential Daily Pack"
+                outfit_occasion = "Trang bị đầy đủ phụ kiện cần thiết cho điện thoại mới với chi phí tiết kiệm nhất"
+                outfit_desc = "Củ sạc nhanh GaN 30W nhỏ gọn cùng Cáp bọc dù siêu bền 100W và Kính cường lực KingKong chống va đập."
                 draft_message = (
-                    f"👗 **Stylist Emma** gợi ý cho bạn **{outfit_title}**:\n"
-                    f"- **Phong cách chủ đạo**: {outfit_style}\n"
-                    f"- **Lời khuyên phối đồ**: Áo polo lụa sang trọng phối cùng quần tây âu may đo và áo măng tô dạ dáng dài thanh lịch."
+                    f"⚡ **Alex TechPro** gợi ý **{outfit_title}** bảo vệ và sạc tối ưu cho máy:\n"
+                    f"- **Ưu điểm**: Chi phí kinh tế, phụ kiện chính hãng 100%, bảo hành 12 tháng 1 đổi 1."
+                )
+            else: # office / doanh nhân
+                outfit_title = "Combo Doanh Nhân & Công Sở Đa Năng MagSafe"
+                outfit_style = "Smart Executive Tech"
+                outfit_occasion = "Làm việc văn phòng, họp hành công tác, sạc đa thiết bị tiện lợi"
+                outfit_desc = "Củ sạc GaN 65W 3 cổng sạc Laptop & Phone cùng lúc, kết hợp Ốp lưng MagSafe chống ố vàng và Pin dự phòng hít từ tính."
+                draft_message = (
+                    f"💼 **Alex TechPro** thiết kế riêng cho bạn **{outfit_title}** sang trọng và tiện lợi:\n"
+                    f"- **Phong cách công nghệ**: {outfit_style}\n"
+                    f"- **Tính năng nổi bật**: Củ sạc nhỏ gọn công suất lớn sạc được cả MacBook và iPhone, ốp lưng từ tính MagSafe cao cấp."
                 )
 
             outfit_combo = {
-                "id": f"combo-{occasion}-01",
-                "title": outfit_title,
-                "style": outfit_style,
+                "id": rec_combo.get("id", f"combo-{occasion}-01") if rec_combo else f"combo-{occasion}-01",
+                "title": rec_combo.get("title", outfit_title) if rec_combo else outfit_title,
+                "style": rec_combo.get("style", outfit_style) if rec_combo else outfit_style,
                 "occasion": outfit_occasion,
                 "description": outfit_desc,
-                "items": products,
-                "totalPrice": total_price,
-                "discountPrice": discount_price
+                "items": combo_items,
+                "totalPrice": rec_combo.get("totalPrice", total_price) if rec_combo else total_price,
+                "discountPrice": rec_combo.get("discountPrice", discount_price) if rec_combo else discount_price
             }
-            reasoning_logic.append(f"Tạo thành công Lookbook Outfit Combo theo phong cách {occasion} với {len(products)} món đồ ăn ý.")
+            products = combo_items
+            reasoning_logic.append(f"Tạo thành công Combo công nghệ {outfit_combo['title']} với {len(combo_items)} thiết bị/phụ kiện đồng bộ.")
+
+        elif intent == "SPECS_COMPATIBILITY":
+            draft_message = (
+                f"🔬 **Ken TechSpec** - Chuyên viên Tương thích & Thông số Kỹ thuật ZShop giải đáp:\n\n"
+            )
+            if rag_context:
+                draft_message += f"{rag_context}\n\n"
+            draft_message += (
+                f"💡 **Khuyến nghị kỹ thuật:**\n"
+                f"- iPhone 15/16 Series và Samsung S24 đều dùng cổng **USB Type-C**.\n"
+                f"- Với Samsung, bạn nên chọn củ sạc hỗ trợ chuẩn **PPS 45W** để kích hoạt 'Super Fast Charging 2.0'.\n"
+                f"- Với iPhone, củ sạc chuẩn **PD 20W - 35W** là tốc độ an toàn và bảo vệ pin tốt nhất.\n"
+                f"Nếu cần test thử độ tương thích thực tế, bạn có thể ghé Showroom ZShop 12 Lê Lợi hoặc yêu cầu giao hỏa tốc 2h có hỗ trợ đổi trả 7 ngày nhé!"
+            )
+            reasoning_logic.append("Giải đáp chi tiết tương thích chuẩn sạc và cổng kết nối kỹ thuật.")
 
         elif intent == "FITTING_ADVICE":
-            meas = entities.get("measurements", {})
-            h = meas.get("height")
-            w = meas.get("weight")
-            recommended_size = "M"
-            if w:
-                if w < 55:
-                    recommended_size = "S"
-                elif 55 <= w <= 65:
-                    recommended_size = "M"
-                elif 65 < w <= 75:
-                    recommended_size = "L"
-                else:
-                    recommended_size = "XL"
-            
-            detail_meas = f"Với chiều cao {h}cm và cân nặng {w}kg" if h and w else "Với số đo của bạn"
-            oversize_val = 'XXL' if recommended_size == 'XL' else ('XL' if recommended_size == 'L' else 'L')
             draft_message = (
-                f"📏 {detail_meas}, ZShop gợi ý bạn nên chọn **Size {recommended_size}** để mặc vừa vặn và tôn dáng nhất.\n"
-                f"- Form Slimfit / Ôm: Giữ nguyên size **{recommended_size}**\n"
-                f"- Form Oversize / Rộng rãi thoải mái: Bạn có thể chọn tăng 1 size thành **Size {oversize_val}** nhé!"
+                f"📏 **Ken TechSpec** tư vấn thông số kích thước & dung lượng:\n"
+                f"- Nếu dùng thông thường, chụp ảnh cơ bản: Dung lượng **128GB - 256GB** là thoải mái.\n"
+                f"- Nếu quay video 4K, chơi game nặng: Nên chọn **256GB - 512GB** trở lên.\n"
+                f"- Kích thước màn hình: 6.1 inch nhỏ gọn một tay hoặc 6.7 - 6.8 inch giải trí đỉnh cao."
             )
-            reasoning_logic.append(f"Áp dụng bảng quy đổi size thông minh: Gợi ý Size {recommended_size}.")
+            reasoning_logic.append("Tư vấn thông số dung lượng và kích thước thiết bị.")
 
         else: # PRODUCT_SEARCH or GENERAL
             kw_str = ", ".join(entities.get("keywords", []))

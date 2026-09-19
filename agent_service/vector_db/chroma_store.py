@@ -6,54 +6,54 @@ from ..config import config
 
 KNOWLEDGE_DOCS = [
     {
-        "id": "kb-return-policy",
-        "topic": "Chính sách đổi trả hàng",
-        "content": "Chính sách đổi trả: ZShop hỗ trợ đổi trả hàng MIỄN PHÍ trong vòng 7 ngày kể từ khi nhận hàng. Áp dụng cho trường hợp không vừa size, sản phẩm lỗi từ nhà sản xuất hoặc khách hàng muốn đổi mẫu khác. Shipper ZShop Express sẽ đến tận nhà thu hồi hàng, quý khách không cần mang ra bưu điện."
+        "id": "kb-warranty-tech",
+        "topic": "Chính sách bảo hành điện tử chính hãng và lỗi 1 đổi 1",
+        "content": "Chính sách bảo hành ZShop: 100% điện thoại và phụ kiện được bảo hành điện tử chính hãng từ 12 đến 24 tháng theo số IMEI hoặc Serial Number. Đặc biệt áp dụng chính sách 'LỖI 1 ĐỔI 1 TRONG 30 NGÀY ĐẦU' nếu thiết bị phát sinh lỗi phần cứng từ nhà sản xuất. Khách hàng chỉ cần đọc số điện thoại đặt hàng, không cần giữ lại hóa đơn giấy."
     },
     {
-        "id": "kb-shipping-policy",
-        "topic": "Chính sách giao hàng và vận chuyển",
-        "content": "Chính sách vận chuyển: Miễn phí vận chuyển (FREESHIP) toàn quốc cho mọi đơn hàng từ 300.000đ trở lên. Với đơn dưới 300.000đ, phí giao tiêu chuẩn là 30.000đ (nhận hàng sau 2-3 ngày) và giao hỏa tốc ZShop Fast là 50.000đ (nhận hàng trong 24 giờ)."
+        "id": "kb-compatibility-return",
+        "topic": "Chính sách đổi trả phụ kiện không tương thích trong 7 ngày",
+        "content": "Chính sách đổi trả: ZShop hỗ trợ đổi trả MIỄN PHÍ trong vòng 7 ngày nếu phụ kiện (củ sạc, cáp sạc, ốp lưng, kính cường lực) không tương thích với thiết bị của bạn hoặc không vừa kích thước. Khách hàng được hoàn tiền 100% hoặc đổi sang mã phụ kiện tương thích. Shipper ZShop Express sẽ hỗ trợ lấy hàng tận nơi."
+    },
+    {
+        "id": "kb-shipping-express",
+        "topic": "Giao hàng hỏa tốc 2 giờ và freeship toàn quốc",
+        "content": "Chính sách vận chuyển: Miễn phí vận chuyển (FREESHIP) toàn quốc cho mọi đơn hàng từ 300.000đ trở lên. Đối với khách hàng cần gấp củ sạc, cáp hoặc pin sạc dự phòng, ZShop cung cấp dịch vụ 'GIAO HỎA TỐC 2 GIỜ' trong khu vực nội thành với phí cố định chỉ 35.000đ."
+    },
+    {
+        "id": "kb-trade-in-policy",
+        "topic": "Chương trình Thu cũ Đổi mới (Trade-in) trợ giá lên đời máy",
+        "content": "Chương trình Thu cũ Đổi mới (Trade-in): ZShop hỗ trợ thu mua điện thoại cũ lên đời iPhone 16/15 hoặc Samsung S24 Series với mức trợ giá thêm lên tới 2.000.000đ. Đội ngũ kỹ thuật viên hỗ trợ sao lưu chuyển toàn bộ dữ liệu, danh bạ, ảnh sang máy mới hoàn toàn miễn phí tại chỗ."
+    },
+    {
+        "id": "kb-charging-standards",
+        "topic": "Hướng dẫn chuẩn sạc nhanh Power Delivery (PD), PPS và MagSafe",
+        "content": "Tư vấn chuẩn sạc nhanh: iPhone 15/16 hỗ trợ sạc nhanh chuẩn Power Delivery (PD) tối ưu ở mức 20W - 35W qua cổng Type-C. Dòng Samsung Galaxy S24/S23 Ultra yêu cầu củ sạc hỗ trợ chuẩn PPS (Super Fast Charging 2.0) đạt công suất tối đa 45W. Sạc không dây từ tính MagSafe và Qi2 hỗ trợ công suất chuẩn 15W hít chắc vào lưng máy."
+    },
+    {
+        "id": "kb-port-compatibility",
+        "topic": "Phân biệt cổng kết nối Type-C và Lightning trên các dòng máy",
+        "content": "Tương thích cổng kết nối: Toàn bộ iPhone 15 Series, iPhone 16 Series, các dòng điện thoại Samsung Galaxy, Xiaomi và iPad mới đều đã chuyển đổi đồng bộ sang cổng USB Type-C. Cổng Lightning chỉ sử dụng cho các dòng iPhone 14 Series trở về trước và một số dòng phụ kiện AirPods cũ."
+    },
+    {
+        "id": "kb-screen-protector-guide",
+        "topic": "Hướng dẫn chọn kính cường lực và dán bảo vệ màn hình",
+        "content": "Tư vấn miếng dán: Kính cường lực KingKong Chống Nhìn Trộm (Privacy) có góc nghiêng 28 độ chống soi thông tin nơi công cộng; Kính Hoda Sapphire đạt độ cứng 9H chống trầy xước chìa khóa; Miếng dán dẻo PPF tự phục hồi vết xước dăm khi gặp nhiệt độ ấm thích hợp dán viền và mặt lưng máy trần."
+    },
+    {
+        "id": "kb-case-protection",
+        "topic": "Hướng dẫn chọn ốp lưng chống sốc và ốp MagSafe",
+        "content": "Tư vấn ốp lưng: Ốp UAG Monarch chuẩn quân đội chống va đập rơi rớt ở độ cao 5 mét; Ốp trong suốt MagSafe phủ nano kháng tia UV chống ố vàng 6 tháng khoe trọn màu máy sang trọng; Ốp Liquid Silicone mềm mịn chống bám mồ hôi và dấu vân tay hiệu quả."
     },
     {
         "id": "kb-payment-methods",
-        "topic": "Phương thức thanh toán",
-        "content": "Phương thức thanh toán: ZShop hỗ trợ quét mã VietQR Napas 24/7 tự động xác nhận đơn trong 3 giây, thanh toán tiền mặt khi nhận hàng (COD - khách hàng được đồng kiểm, bóc kiện xem hàng trước khi trả tiền), Ví điện tử MoMo/ZaloPay và thẻ tín dụng/ghi nợ quốc tế Visa/Mastercard."
+        "topic": "Phương thức thanh toán và trả góp 0% lãi suất",
+        "content": "Phương thức thanh toán: Hỗ trợ trả góp 0% lãi suất qua thẻ tín dụng của 25 ngân hàng, thanh toán quét mã VietQR Napas 24/7 xác nhận đơn tức thì, ví MoMo, ZaloPay và thanh toán tiền mặt COD (được mở hộp đồng kiểm tra máy và phụ kiện trước khi thanh toán)."
     },
     {
-        "id": "kb-showroom-hotline",
-        "topic": "Địa chỉ showroom và hotline chăm sóc khách hàng",
-        "content": "Hệ thống showroom ZShop: Flagship Store tại 12 Lê Lợi, P. Bến Nghé, Quận 1, TP. Hồ Chí Minh. Mở cửa từ 08:30 đến 22:00 tất cả các ngày trong tuần (kể cả Thứ Bảy, Chủ Nhật và ngày lễ). Hotline/Zalo CSKH: 0901 234 567."
-    },
-    {
-        "id": "kb-warranty-quality",
-        "topic": "Cam kết chất lượng và bảo hành",
-        "content": "Cam kết chất lượng: 100% sản phẩm phân phối tại ZShop là hàng chính hãng, cam kết đền bù 200% giá trị nếu phát hiện hàng giả hàng nhái. Bảo hành 12 tháng đối với phụ kiện công nghệ và đồng hồ, hỗ trợ bảo hành đường may trọn đời cho các dòng thời trang cao cấp."
-    },
-    {
-        "id": "kb-size-guide",
-        "topic": "Hướng dẫn chọn size quần áo thời trang",
-        "content": "Bảng chọn size chuẩn ZShop: Size S (dưới 55kg, cao dưới 1m65), Size M (55-65kg, cao 1m65-1m72), Size L (65-75kg, cao 1m70-1m78), Size XL (75-85kg, cao 1m75-1m85). Nếu bạn thích mặc form rộng (Oversize), vui lòng chọn tăng 1 size."
-    },
-    {
-        "id": "kb-styling-office",
-        "topic": "Tư vấn phối set đồ công sở thanh lịch nam nữ",
-        "content": "Gợi ý phối đồ công sở thanh lịch chuẩn Stylist: Sự kết hợp hoàn hảo giữa Áo sơ mi lụa dài tay chống nhăn và Quần tây âu co giãn Hàn Quốc, phối cùng Giày sneaker basic trắng hoặc giày da. Bộ trang phục mang phong cách Smart Casual lịch thiệp, giữ nếp chỉn chu suốt 8 tiếng làm việc mà vẫn thông thoáng dễ chịu."
-    },
-    {
-        "id": "kb-styling-streetwear",
-        "topic": "Tư vấn phối đồ dạo phố cuối tuần năng động",
-        "content": "Gợi ý phối đồ dạo phố cuối tuần năng động: Kết hợp Áo thun cotton cao cấp cùng Quần Jeans Slimfit rách gối cá tính và Áo Hoodie streetwear nỉ bông. Đi cùng giày sneaker trắng tạo nên diện mạo trẻ trung, khỏe khoắn và phóng khoáng."
-    },
-    {
-        "id": "kb-styling-party",
-        "topic": "Tư vấn phối đồ đi tiệc hẹn hò sang trọng",
-        "content": "Gợi ý phối đồ đi tiệc và hẹn hò sang trọng: Kết hợp Áo Polo lụa thượng hạng hoặc Sơ mi lụa cùng Quần Tây Âu và Áo Khoác Dạ dáng dài Hàn Quốc. Gam màu trung tính sang trọng thu hút mọi ánh nhìn."
-    },
-    {
-        "id": "kb-tech-accessories",
-        "topic": "Phụ kiện công nghệ và đồng hồ thông minh",
-        "content": "Các sản phẩm thiết bị công nghệ và phụ kiện cao cấp tại ZShop bao gồm tai nghe Bluetooth chống ồn ANC, đồng hồ nam nữ mạ vàng Sapphire, sạc dự phòng không dây MagSafe và balo thời trang chống nước. Tất cả đều bảo hành 1 đổi 1 trong 12 tháng."
+        "id": "kb-store-hotline",
+        "topic": "Trung tâm trải nghiệm công nghệ ZShop và hotline hỗ trợ kỹ thuật",
+        "content": "Trung tâm công nghệ ZShop Flagship: 12 Lê Lợi, P. Bến Nghé, Quận 1, TP. Hồ Chí Minh. Khách hàng được trải nghiệm trực tiếp máy demo và phụ kiện sạc thử tại bàn. Hotline kỹ thuật & CSKH: 0901 234 567 (hỗ trợ 8h00 - 22h00 hàng ngày)."
     }
 ]
 

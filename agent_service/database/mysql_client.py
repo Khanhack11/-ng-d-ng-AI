@@ -2,158 +2,38 @@ import pymysql
 from typing import List, Dict, Any, Optional
 from ..config import config
 
-SAMPLE_PRODUCTS = [
-    {
-        "id": "NAM-001",
-        "name": "Áo Polo Nam Gucci Maxi GG Silk Cotton",
-        "category": "Thời trang nam",
-        "price": 12000000,
-        "stock": 15,
-        "rating": 4.9,
-        "image_url": "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600",
-        "sizes": ["M", "L", "XL"],
-        "description": "Áo Polo nam lụa tơ tằm cao cấp chuẩn phong cách Ý, thoáng mát và sang trọng."
-    },
-    {
-        "id": "NAM-002",
-        "name": "Áo Thun DIOR - Chính Hãng",
-        "category": "Thời trang nam",
-        "price": 1889000,
-        "stock": 58,
-        "rating": 4.9,
-        "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600",
-        "sizes": ["S", "M", "L"],
-        "description": "Áo thun cotton 100% thoáng mát, dập nổi họa tiết thương hiệu cao cấp."
-    },
-    {
-        "id": "NAM-003",
-        "name": "Quần Jeans Slimfit Rách Gối Nam",
-        "category": "Thời trang nam",
-        "price": 550000,
-        "stock": 120,
-        "rating": 4.7,
-        "image_url": "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600",
-        "sizes": ["29", "30", "31", "32"],
-        "description": "Quần Jeans co giãn nhẹ, form ôm dáng trẻ trung năng động."
-    },
-    {
-        "id": "NAM-004",
-        "name": "Áo Sơ Mi Lụa Dài Tay Công Sở",
-        "category": "Thời trang nam",
-        "price": 450000,
-        "stock": 85,
-        "rating": 4.8,
-        "image_url": "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600",
-        "sizes": ["M", "L", "XL", "XXL"],
-        "tags": ["công sở", "thanh lịch", "sơ mi", "lịch lãm", "đi làm", "nam"],
-        "description": "Áo sơ mi lụa chống nhăn cao cấp, bề mặt mềm mịn, mang lại vẻ lịch lãm chuẩn công sở."
-    },
-    {
-        "id": "NAM-005",
-        "name": "Quần Tây Âu Co Giãn Hàn Quốc",
-        "category": "Thời trang nam",
-        "price": 380000,
-        "stock": 95,
-        "rating": 4.6,
-        "image_url": "https://images.unsplash.com/photo-1479064555552-3ef4979f8908?w=600",
-        "sizes": ["29", "30", "31", "32", "33"],
-        "tags": ["công sở", "thanh lịch", "quần tây", "quần âu", "lịch lãm", "đi làm", "nam"],
-        "description": "Quần âu may đo phong cách Hàn Quốc, cạp chun thông minh co giãn nhẹ, giữ ly cả ngày."
-    },
-    {
-        "id": "GIAY-001",
-        "name": "Giày Sneaker Cổ Thấp Basic Trắng",
-        "category": "Giày dép",
-        "price": 890000,
-        "stock": 30,
-        "rating": 4.6,
-        "image_url": "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600",
-        "sizes": ["39", "40", "41", "42", "43"],
-        "tags": ["giày", "sneaker", "thanh lịch", "công sở", "dạo phố", "unisex"],
-        "description": "Giày thể thao da mềm êm chân, dễ phối đồ mọi hoàn cảnh từ công sở đến dạo phố."
-    },
-    {
-        "id": "KHOAC-004",
-        "name": "Áo Khoác Dạ Dáng Dài Hàn Quốc",
-        "category": "Áo khoác & Hoodie",
-        "price": 890000,
-        "stock": 35,
-        "rating": 4.8,
-        "image_url": "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600",
-        "sizes": ["M", "L", "XL"],
-        "tags": ["tiệc", "sang trọng", "áo khoác", "thanh lịch", "lịch lãm"],
-        "description": "Măng tô dạ dáng dài chuẩn phong cách Hàn Quốc, giữ ấm và tôn dáng cực tốt."
-    },
-    {
-        "id": "KHOAC-001",
-        "name": "Áo Hoodie Streetwear Unisex Nỉ Bông",
-        "category": "Áo khoác & Hoodie",
-        "price": 420000,
-        "stock": 45,
-        "rating": 4.8,
-        "image_url": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600",
-        "sizes": ["Freesize", "L", "XL"],
-        "tags": ["dạo phố", "streetwear", "năng động", "unisex", "hoodie"],
-        "description": "Áo khoác nỉ dày ấm, mũ 2 lớp phong cách thời thượng."
-    },
-    {
-        "id": "TECH-001",
-        "name": "Tai Nghe Bluetooth Chống Ồn Chủ Động ANC",
-        "category": "Thiết bị công nghệ & Phụ kiện",
-        "price": 1150000,
-        "stock": 40,
-        "rating": 4.9,
-        "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600",
-        "sizes": ["Tiêu chuẩn"],
-        "tags": ["công nghệ", "tai nghe", "phụ kiện"],
-        "description": "Chống ồn chủ động đỉnh cao, thời lượng pin 35 giờ liên tục."
-    },
-    {
-        "id": "NAM-006",
-        "name": "Áo Thun Trơn Cổ Tròn Cotton 100%",
-        "category": "Thời trang nam",
-        "price": 149000,
-        "stock": 220,
-        "rating": 4.9,
-        "image_url": "https://images.unsplash.com/photo-1527719327859-c6ce80353573?w=600",
-        "sizes": ["S", "M", "L", "XL"],
-        "tags": ["áo thun", "ao thun", "thun", "cotton", "basic", "dạo phố", "dưới 500k"],
-        "description": "Áo thun trơn basic cotton 220gsm định lượng dày dặn, thấm hút mồ hôi tối đa."
-    },
-    {
-        "id": "NAM-008",
-        "name": "Bộ Quần Áo Đũi Nam Mùa Hè Thoáng Mát",
-        "category": "Thời trang nam",
-        "price": 320000,
-        "stock": 65,
-        "rating": 4.7,
-        "image_url": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600",
-        "sizes": ["S", "M", "L", "XL"],
-        "tags": ["bộ đũi", "quần áo", "mùa hè", "dạo phố", "nam"],
-        "description": "Bộ đũi cộc tay tự nhiên, phong cách phóng khoáng cực mát mẻ cho mùa hè."
-    }
-]
+import json
+from pathlib import Path
+
+_DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "all_50_products.json"
+SAMPLE_PRODUCTS: List[Dict[str, Any]] = []
+if _DATA_FILE.exists():
+    try:
+        with open(_DATA_FILE, "r", encoding="utf-8") as f:
+            SAMPLE_PRODUCTS = json.load(f)
+    except Exception:
+        SAMPLE_PRODUCTS = []
 
 SAMPLE_ORDERS = [
     {
         "order_id": "ORD-2026-9812",
         "customer_name": "Nguyễn Văn A",
-        "status": "ĐANG GIAO HÀNG",
+        "status": "ĐANG GIAO HỎA TỐC 2H",
         "carrier": "ZShop Express Hỏa Tốc",
-        "tracking_code": "VNPOST889921",
-        "total_amount": 1889000,
-        "items": "Áo Thun DIOR - Chính Hãng (Size L)",
-        "expected_delivery": "Trong ngày hôm nay (trước 17:00)"
+        "tracking_code": "ZS-EXPRESS-9921",
+        "total_amount": 34990000,
+        "items": "iPhone 16 Pro Max 256GB Titan Tự Nhiên (Bảo hành chính hãng 24 tháng theo IMEI: 358921098231901)",
+        "expected_delivery": "Trong 2 giờ tới (trước 17:00 hôm nay)"
     },
     {
         "order_id": "ORD-2026-8831",
         "customer_name": "Lê Thị B",
         "status": "ĐÃ GIAO HÀNG THÀNH CÔNG",
-        "carrier": "Giao Hàng Tiết Kiệm",
-        "tracking_code": "GHTK11223344",
-        "total_amount": 420000,
-        "items": "Áo Hoodie Streetwear Unisex Nỉ Bông",
-        "expected_delivery": "Đã giao hôm qua"
+        "carrier": "Giao Hàng Nhanh (GHN)",
+        "tracking_code": "GHN11223344",
+        "total_amount": 1240000,
+        "items": "Củ Sạc Nhanh Anker Prime 67W GaN + Cáp Sạc C to C 100W Anker PowerLine III",
+        "expected_delivery": "Đã nhận hàng thành công (Bảo hành 1 đổi 1 trong 30 ngày)"
     }
 ]
 
@@ -287,27 +167,30 @@ class MySQLClient:
 
         return results[:limit]
 
-    def query_outfit(self, occasion: str) -> List[Dict[str, Any]]:
+    def query_outfit(self, occasion: Optional[str]) -> List[Dict[str, Any]]:
         """
-        Truy vấn chính xác các món tạo nên 1 set đồ phối hoàn hảo theo sự kiện/phong cách
+        Truy vấn chính xác các món tạo nên 1 combo công nghệ phối hoàn hảo theo nhu cầu
         """
-        occ = occasion.lower()
-        if any(w in occ for w in ["công sở", "cong so", "đi làm", "di lam", "lịch lãm", "lich lam", "thanh lịch", "thanh lich", "sơ mi", "so mi", "office"]):
-            # Set công sở: Sơ mi lụa (NAM-004) + Quần tây âu (NAM-005) + Giày sneaker trắng (GIAY-001)
-            target_ids = ["NAM-004", "NAM-005", "GIAY-001"]
+        occ = (occasion or "office").lower()
+        if any(w in occ for w in ["công sở", "cong so", "đi làm", "di lam", "doanh nhân", "doanh nhan", "magsafe", "office"]):
+            # Combo công sở: iPhone 16 Pro Max (PHONE-001) + Sạc GaN 67W (CHARGER-001) + Ốp UAG MagSafe (CASE-002)
+            target_ids = ["PHONE-001", "CHARGER-001", "CASE-002"]
             matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
             return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
-        elif any(w in occ for w in ["dạo phố", "dao pho", "streetwear", "cuối tuần", "cuoi tuan", "năng động", "nang dong"]):
-            # Set dạo phố: Áo thun Dior (NAM-002) + Quần Jeans Slimfit (NAM-003) + Áo Hoodie (KHOAC-001)
-            target_ids = ["NAM-002", "NAM-003", "KHOAC-001"]
+        elif any(w in occ for w in ["gaming", "chơi game", "choi game", "game thủ", "game thu"]):
+            # Combo gaming: Xiaomi 14 Ultra (PHONE-005) + Cáp sạc gập chữ L (CABLE-002) + Tai nghe Bluetooth (AUDIO-005)
+            target_ids = ["PHONE-005", "CABLE-002", "AUDIO-005"]
             matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
             return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
-        elif any(w in occ for w in ["tiệc", "tiec", "party", "sang trọng", "sang trong", "hẹn hò", "hen ho"]):
-            # Set dạ tiệc: Áo Polo Gucci (NAM-001) + Quần Tây Âu (NAM-005) + Áo Khoác Dạ Dài (KHOAC-004)
-            target_ids = ["NAM-001", "NAM-005", "KHOAC-004"]
+        elif any(w in occ for w in ["creator", "vlog", "livestream", "quay video"]):
+            # Combo creator: Samsung S24 Ultra (PHONE-002) + Gimbal chống rung (STAND-002) + Pin dự phòng (POWER-003)
+            target_ids = ["PHONE-002", "STAND-002", "POWER-003"]
             matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
             return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
-        return SAMPLE_PRODUCTS[:3]
+        # Combo cơ bản mặc định
+        target_ids = ["CHARGER-006", "CABLE-001", "SCREEN-001"]
+        matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
+        return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
 
     def query_order(self, order_id: str) -> Optional[Dict[str, Any]]:
         clean_id = order_id.upper().strip()

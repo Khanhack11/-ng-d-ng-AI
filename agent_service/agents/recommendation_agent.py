@@ -29,40 +29,35 @@ class RecommendationAgent:
 
     def recommend_cross_sell(self, primary_product: Dict[str, Any], top_k: int = 2) -> List[Dict[str, Any]]:
         """
-        Gợi ý sản phẩm mua kèm hoàn hảo (Cross-sell Complementary):
-        - Mua Áo -> gợi ý Quần + Giày
-        - Mua Bàn phím cơ -> gợi ý Chuột + Tai nghe
-        - Mua Đầm váy -> gợi ý Túi xách + Trang sức
+        Gợi ý sản phẩm mua kèm hoàn hảo (Tech Cross-sell Complementary):
+        - Mua Điện thoại -> Gợi ý Củ sạc nhanh GaN + Ốp lưng chống sốc / Cường lực
+        - Mua Củ sạc -> Gợi ý Cáp sạc bọc dù bền bỉ
+        - Mua Pin sạc dự phòng -> Gợi ý Cáp ngắn 0.25m + Củ sạc nạp
+        - Mua Tai nghe -> Gợi ý Trạm sạc không dây 3-in-1
         """
         cat = primary_product.get("category", "")
         name = primary_product.get("name", "").lower()
         p_id = primary_product.get("id")
 
         target_categories = []
-        if "thời trang nam" in cat.lower() or "áo khoác" in cat.lower():
-            if "áo" in name:
-                target_categories = ["Giày dép", "Thời trang nam", "Đồng hồ & Trang sức"]
-            elif "quần" in name:
-                target_categories = ["Giày dép", "Thời trang nam", "Áo khoác & Hoodie"]
-            else:
-                target_categories = ["Giày dép", "Phụ kiện"]
-        elif "thời trang nữ" in cat.lower():
-            target_categories = ["Túi xách & Balo", "Đồng hồ & Trang sức", "Giày dép"]
-        elif "thiết bị công nghệ" in cat.lower() or "phụ kiện" in cat.lower():
-            target_categories = ["Thiết bị công nghệ & Phụ kiện", "Đồng hồ & Trang sức"]
+        if "điện thoại" in cat.lower():
+            target_categories = ["Củ Sạc & Bộ Sạc Nhanh", "Ốp Lưng & Bao Da", "Kính Cường Lực & Dán Màn Hình"]
+        elif "củ sạc" in cat.lower():
+            target_categories = ["Cáp Sạc & Dây Cáp", "Pin Sạc Dự Phòng"]
+        elif "cáp sạc" in cat.lower():
+            target_categories = ["Củ Sạc & Bộ Sạc Nhanh", "Pin Sạc Dự Phòng"]
+        elif "pin sạc" in cat.lower():
+            target_categories = ["Cáp Sạc & Dây Cáp", "Củ Sạc & Bộ Sạc Nhanh"]
+        elif "tai nghe" in cat.lower():
+            target_categories = ["Giá Đỡ & Trạm Sạc", "Củ Sạc & Bộ Sạc Nhanh"]
         else:
-            target_categories = ["Thời trang nam", "Phụ kiện"]
+            target_categories = ["Cáp Sạc & Dây Cáp", "Củ Sạc & Bộ Sạc Nhanh"]
 
         recommendations = []
         for p in self.catalog:
             if p.get("id") == p_id:
                 continue
             if p.get("category") in target_categories:
-                # Không gợi ý lại cùng loại (vd áo đã mua thì không gợi ý thêm áo khác trong cross-sell)
-                if "áo" in name and "áo" in p.get("name", "").lower():
-                    continue
-                if "quần" in name and "quần" in p.get("name", "").lower():
-                    continue
                 recommendations.append(p)
                 if len(recommendations) >= top_k:
                     break
@@ -76,39 +71,44 @@ class RecommendationAgent:
         max_price: Optional[float] = None
     ) -> Dict[str, Any]:
         """
-        Xây dựng Combo trang phục 3 món chuẩn Stylist theo hoàn cảnh và ngân sách.
+        Xây dựng Combo thiết bị & phụ kiện công nghệ đồng bộ theo nhu cầu và ngân sách.
         """
-        occasion = occasion.lower()
+        occasion = (occasion or "office").lower()
         top_item = None
         bottom_item = None
         accessory_item = None
 
-        if "streetwear" in occasion or "dạo phố" in occasion:
-            title = "Set Đồ Streetwear Cá Tính Dạo Phố"
-            style = "Urban Streetwear"
-            desc = "Phối áo thun cotton unisex cùng quần jeans rách gối và áo hoodie nỉ năng động."
-            # Áo
-            top_item = self._find_by_id_or_keyword(["HOODIE-001", "NAM-002", "NAM-006"])
-            # Quần
-            bottom_item = self._find_by_id_or_keyword(["NAM-003", "NAM-005"])
-            # Giày / Phụ kiện
-            accessory_item = self._find_by_id_or_keyword(["GIAY-001", "TECH-001"])
+        if "gaming" in occasion:
+            title = "Combo Smartphone Gaming & Phụ Kiện Độ Trễ Thấp"
+            style = "High Performance Gaming"
+            desc = "Sự phối hợp giữa Smartphone cấu hình mạnh, cáp sạc chữ L chống cấn tay và tai nghe gaming độ trễ siêu thấp."
+            top_item = self._find_by_id_or_keyword(["PHONE-005", "PHONE-006", "PHONE-004"])
+            bottom_item = self._find_by_id_or_keyword(["CABLE-005", "CHARGER-005"])
+            accessory_item = self._find_by_id_or_keyword(["AUDIO-005", "POWER-003"])
 
-        elif "party" in occasion or "tiệc" in occasion or "hẹn hò" in occasion:
-            title = "Set Dạ Tiệc & Hẹn Hò Sang Trọng"
-            style = "Luxury Chic"
-            desc = "Sự kết hợp đẳng cấp giữa Áo Polo Gucci / Sơ Mi Lụa cùng Quần Tây Âu và Măng Tô Dạ dáng dài."
-            top_item = self._find_by_id_or_keyword(["NAM-001", "NAM-004"])
-            bottom_item = self._find_by_id_or_keyword(["NAM-005", "KHOAC-004"])
-            accessory_item = self._find_by_id_or_keyword(["WATCH-001", "GIAY-001"])
+        elif "creator" in occasion or "vlogger" in occasion:
+            title = "Combo Sáng Tạo Nội Dung & Vlogger Chuyên Nghiệp"
+            style = "Pro Content Creator"
+            desc = "Trang bị Flagship camera siêu nét kết hợp Gimbal chống rung 3 trục AI và pin sạc dự phòng dung lượng lớn."
+            top_item = self._find_by_id_or_keyword(["PHONE-001", "PHONE-003"])
+            bottom_item = self._find_by_id_or_keyword(["STAND-002", "STAND-001"])
+            accessory_item = self._find_by_id_or_keyword(["POWER-002", "AUDIO-001"])
 
-        else: # office / công sở
-            title = "Set Đồ Smart Casual Công Sở Thanh Lịch"
-            style = "Smart Casual Minimalist"
-            desc = "Áo sơ mi lụa chống nhăn phối cùng quần âu Hàn Quốc và giày sneaker trắng thanh lịch."
-            top_item = self._find_by_id_or_keyword(["NAM-004", "NAM-001"])
-            bottom_item = self._find_by_id_or_keyword(["NAM-005"])
-            accessory_item = self._find_by_id_or_keyword(["GIAY-001", "WATCH-001"])
+        elif "budget" in occasion or "tiết kiệm" in occasion:
+            title = "Combo Phụ Kiện Cơ Bản Tiết Kiệm (Starter Pack)"
+            style = "Essential Daily Pack"
+            desc = "Bộ ba phụ kiện không thể thiếu: Củ sạc nhanh 30W nhỏ gọn, Cáp sạc bọc dù chống đứt và Kính cường lực KingKong."
+            top_item = self._find_by_id_or_keyword(["CHARGER-006", "CHARGER-003"])
+            bottom_item = self._find_by_id_or_keyword(["CABLE-001", "CABLE-003"])
+            accessory_item = self._find_by_id_or_keyword(["SCREEN-001", "CASE-006"])
+
+        else: # office / doanh nhân / mặc định
+            title = "Combo Doanh Nhân & Công Sở Đa Năng MagSafe"
+            style = "Smart Executive Tech"
+            desc = "Điện thoại cao cấp kết hợp Củ sạc GaN 65W 3 cổng sạc đồng thời Laptop/Phone và Ốp lưng MagSafe kháng ố vàng."
+            top_item = self._find_by_id_or_keyword(["PHONE-002", "PHONE-003", "PHONE-001"])
+            bottom_item = self._find_by_id_or_keyword(["CHARGER-001", "CHARGER-004"])
+            accessory_item = self._find_by_id_or_keyword(["CASE-002", "POWER-001"])
 
         items = [item for item in [top_item, bottom_item, accessory_item] if item is not None]
 
@@ -122,7 +122,7 @@ class RecommendationAgent:
         discount_price = int(total_price * 0.9)
 
         return {
-            "id": f"combo-{occasion}-opt",
+            "id": f"combo-{occasion}-tech",
             "title": title,
             "style": style,
             "occasion": occasion,
@@ -130,7 +130,7 @@ class RecommendationAgent:
             "items": items,
             "totalPrice": total_price,
             "discountPrice": discount_price,
-            "stylistBadge": "Được tuyển chọn bởi Stylist Emma & Recommendation Agent"
+            "stylistBadge": "Được đề xuất bởi Chuyên Gia Công Nghệ Alex TechPro & Recommendation Agent"
         }
 
     def _find_by_id_or_keyword(self, candidate_ids: List[str]) -> Optional[Dict[str, Any]]:

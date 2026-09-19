@@ -139,32 +139,33 @@ export interface AIPersonaConfig {
 export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
   STYLIST: {
     id: 'STYLIST',
-    name: 'Stylist Emma',
-    roleTitle: 'Chuyên Gia Phối Đồ & Định Hình Gu',
-    avatar: '👗',
-    badge: 'Fashionista AI',
-    accentColor: 'pink',
-    themeGradient: 'from-pink-500 via-rose-500 to-purple-600',
-    description: 'Tư vấn mix & match trang phục theo phong cách, sự kiện, thời tiết và sản phẩm trong giỏ.',
+    name: 'Alex TechPro',
+    roleTitle: 'Chuyên Gia Tư Vấn Combo Thiết Bị & Phụ Kiện',
+    avatar: '📱',
+    badge: 'Tech Gear AI',
+    accentColor: 'blue',
+    themeGradient: 'from-blue-600 via-cyan-500 to-indigo-600',
+    description: 'Tư vấn phối combo thiết bị & phụ kiện hoàn hảo (Smartphone, Sạc GaN, Cáp bọc dù, Ốp MagSafe, Cường lực) theo nhu cầu và ngân sách.',
     getGreeting: (context) => {
       const name = context?.customerProfile?.name || context?.currentUser?.name;
       const cartCount = context?.cartItems?.length || 0;
-      let greeting = `✨ Xin chào${name ? ` **${name}**` : ''}! Mình là **Stylist Emma** - Chuyên gia định hình phong cách ZShop.\n\n`;
+      let greeting = `⚡ Xin chào${name ? ` **${name}**` : ''}! Mình là **Alex TechPro** - Chuyên gia tư vấn giải pháp thiết bị & phụ kiện công nghệ ZShop.\n\n`;
       if (cartCount > 0) {
-        greeting += `🛍️ Mình thấy bạn đang chọn **${cartCount} món đồ** trong giỏ. Bạn có muốn mình gợi ý thêm quần, áo khoác hoặc phụ kiện để tạo nên một **Outfit hoàn hảo** không?`;
+        greeting += `🛍️ Mình thấy bạn đang có **${cartCount} món đồ** trong giỏ hàng. Bạn có muốn mình tư vấn thêm củ sạc GaN, cáp sạc nhanh hay ốp lưng chống sốc để tạo thành một **Combo công nghệ hoàn chỉnh** không?`;
       } else {
-        greeting += `Bạn đang tìm phong cách nào hôm nay? Đi làm lịch lãm, dạo phố năng động hay dự tiệc sang trọng? Hãy chia sẻ với mình nhé!`;
+        greeting += `Bạn đang tìm kiếm thiết bị hay phụ kiện nào hôm nay? Smartphone mới, bộ sạc nhanh GaN, tai nghe chống ồn hay combo cho nhu cầu Gaming / Sáng tạo nội dung? Hãy chia sẻ với mình nhé!`;
       }
       return greeting;
     },
     quickPromptChips: (context) => {
       const chips = [
-        '✨ Gợi ý phối đồ dạo phố cuối tuần',
-        '👔 Set đồ công sở thanh lịch nam/nữ',
-        '🎉 Phối đồ đi tiệc sang trọng'
+        '⚡ Combo phụ kiện cần thiết cho iPhone 16',
+        '🎮 Combo Smartphone Gaming độ trễ thấp',
+        '💼 Combo Doanh nhân sạc nhanh đa thiết bị',
+        '🎬 Combo Vlogger & Livestream chuyên nghiệp'
       ];
       if (context?.cartItems && context.cartItems.length > 0) {
-        chips.unshift(`🛍️ Gợi ý đồ phối với "${context.cartItems[0].name.slice(0, 22)}..."`);
+        chips.unshift(`🛍️ Gợi ý phụ kiện cho "${context.cartItems[0].name.slice(0, 22)}..."`);
       }
       return chips;
     }
@@ -172,36 +173,25 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
 
   FITTING: {
     id: 'FITTING',
-    name: 'Master Fit Ken',
-    roleTitle: 'Chuyên Viên Tư Vấn Kích Cỡ & Vóc Dáng',
-    avatar: '📏',
-    badge: 'Smart Sizing AI',
+    name: 'Ken TechSpec',
+    roleTitle: 'Chuyên Viên Thông Số & Kiểm Tra Tương Thích',
+    avatar: '🔬',
+    badge: 'Compatibility AI',
     accentColor: 'emerald',
     themeGradient: 'from-emerald-500 via-teal-500 to-cyan-600',
-    description: 'Tính toán size chuẩn xác theo chiều cao, cân nặng và form người; giải quyết dứt điểm nỗi lo mua nhầm size.',
+    description: 'Kiểm tra tương thích chuẩn sạc nhanh (PD, PPS, MagSafe, Qi2), cổng kết nối (Type-C vs Lightning) và so sánh cấu hình máy.',
     getGreeting: (context) => {
       const name = context?.customerProfile?.name || context?.currentUser?.name;
-      const m = context?.measurements;
-      let greeting = `📏 Chào${name ? ` **${name}**` : ''}! Tôi là **Master Fit Ken** - Chuyên viên đo & chọn size thời trang chuẩn xác ZShop.\n\n`;
-      if (m && m.height && m.weight) {
-        greeting += `💡 Tôi đã lưu số đo của bạn: **${m.height}cm - ${m.weight}kg** (${m.preferredFit === 'loose' ? 'Form rộng thoải mái' : m.preferredFit === 'tight' ? 'Form ôm body' : 'Form vừa vặn'}).\nBạn đang quan tâm đến sản phẩm nào? Tôi sẽ kiểm tra size chuẩn ngay cho bạn!`;
-      } else {
-        greeting += `Để chọn size chuẩn xác 99% không lo đổi trả, bạn chỉ cần cho tôi biết **Chiều cao (cm)** và **Cân nặng (kg)** hoặc bấm nút nhập số đo bên dưới nhé!`;
-      }
+      let greeting = `🔬 Chào${name ? ` **${name}**` : ''}! Tôi là **Ken TechSpec** - Chuyên viên kiểm tra tương thích & tư vấn thông số kỹ thuật chuẩn xác tại ZShop.\n\n`;
+      greeting += `💡 Tôi có thể giúp bạn giải đáp mọi thắc mắc kỹ thuật: củ sạc có kích hoạt được sạc siêu nhanh 45W cho Samsung không, cáp sạc có dùng được cho iPhone 15/16 không, hoặc so sánh chi tiết chip/RAM/camera giữa các dòng máy. Bạn đang quan tâm sản phẩm nào?`;
       return greeting;
     },
-    quickPromptChips: (context) => {
-      if (context?.measurements?.height) {
-        return [
-          `📐 Dùng số đo đã lưu (${context.measurements.height}cm / ${context.measurements.weight}kg)`,
-          'Áo này form ôm hay rộng?',
-          'Cập nhật lại chiều cao & cân nặng'
-        ];
-      }
+    quickPromptChips: () => {
       return [
-        'Tôi cao 1m72 nặng 65kg nên mặc size gì?',
-        'Tôi cao 1m58 nặng 48kg chọn size nào?',
-        'Bảng quy đổi kích cỡ chuẩn ZShop'
+        'Củ sạc này có sạc nhanh 45W cho Samsung S24 không?',
+        'Cáp sạc Type-C này có dùng được cho iPhone 15/16?',
+        'So sánh iPhone 16 Pro Max vs Galaxy S24 Ultra',
+        'Nên chọn dung lượng 128GB hay 256GB?'
       ];
     }
   },
@@ -209,21 +199,21 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
   ORDERS: {
     id: 'ORDERS',
     name: 'Logistics Alex',
-    roleTitle: 'Chuyên Viên Đơn Hàng & Vận Chuyển',
+    roleTitle: 'Chuyên Viên Vận Chuyển & Bảo Hành IMEI',
     avatar: '📦',
-    badge: 'Tracking Express AI',
+    badge: 'Tracking & Warranty AI',
     accentColor: 'blue',
     themeGradient: 'from-blue-600 via-indigo-600 to-cyan-700',
-    description: 'Theo dõi hành trình vận đơn của riêng bạn, dự báo thời gian giao hàng và hỗ trợ đổi trả hoàn tiền.',
+    description: 'Theo dõi lộ trình giao hỏa tốc 2 giờ, tra cứu bảo hành điện tử chính hãng theo IMEI/Serial và chính sách 1 đổi 1.',
     getGreeting: (context) => {
       const name = context?.customerProfile?.name || context?.currentUser?.name;
       const orders = context?.customerOrders || [];
-      let greeting = `📦 Kính chào${name ? ` anh/chị **${name}**` : ''}! Tôi là **Logistics Alex** - Chuyên viên hỗ trợ Đơn hàng & Vận chuyển ZShop.\n\n`;
+      let greeting = `📦 Kính chào${name ? ` anh/chị **${name}**` : ''}! Tôi là **Logistics Alex** - Chuyên viên hỗ trợ Đơn hàng, Vận chuyển & Bảo hành ZShop.\n\n`;
       if (orders.length > 0) {
         const latest = orders[0];
-        greeting += `🔍 Tôi đã tìm thấy đơn hàng gần nhất của bạn: **[${latest.id}]** đặt ngày **${new Date(latest.createdAt).toLocaleDateString('vi-VN')}**.\nBạn có muốn kiểm tra lộ trình chi tiết của đơn này không?`;
+        greeting += `🔍 Tôi đã tìm thấy đơn hàng gần nhất của bạn: **[${latest.id}]** đặt ngày **${new Date(latest.createdAt).toLocaleDateString('vi-VN')}**.\nBạn có muốn kiểm tra lộ trình giao hàng hoặc thông tin kích hoạt bảo hành điện tử không?`;
       } else {
-        greeting += `Tôi có thể giúp bạn kiểm tra hành trình vận chuyển bất kỳ đơn hàng nào, giải đáp chính sách giao hàng hoặc hỗ trợ quy trình Đổi trả & Hoàn tiền (UC10).`;
+        greeting += `Tôi có thể giúp bạn tra cứu hành trình giao hàng hỏa tốc 2 giờ, kích hoạt bảo hành điện tử chính hãng theo IMEI hoặc hỗ trợ quy trình 1 đổi 1 trong 30 ngày (UC10).`;
       }
       return greeting;
     },
@@ -233,21 +223,21 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
         return [
           `🔍 Đơn hàng gần nhất [${orders[0].id}]`,
           'Bao giờ đơn của tôi giao tới nơi?',
-          'Chính sách đổi trả & hoàn tiền (UC10)'
+          'Chính sách lỗi 1 đổi 1 trong 30 ngày'
         ];
       }
       return [
         'Tra cứu đơn hàng gần nhất của tôi',
-        'Thời gian giao hàng tiêu chuẩn là bao lâu?',
-        'Chính sách kiểm hàng & đổi trả (UC10)'
+        'Kiểm tra bảo hành điện tử theo IMEI',
+        'Chính sách lỗi 1 đổi 1 trong 30 ngày'
       ];
     }
   },
 
   LOYALTY: {
     id: 'LOYALTY',
-    name: 'VIP Concierge Mia',
-    roleTitle: 'Chuyên Viên Quyền Lợi & Điểm Thưởng VIP',
+    name: 'Bella VIP',
+    roleTitle: 'Chuyên Viên Khách Hàng VIP & Thu Cũ Đổi Mới',
     avatar: '👑',
     badge: 'VIP Club Concierge',
     accentColor: 'amber',
@@ -461,7 +451,7 @@ export class AISkillEngine {
   }
 
   /**
-   * Tạo Lookbook Outfit gợi ý phối đồ thời trang
+   * Tạo Combo Phụ Kiện & Thiết Bị Công Nghệ (Alex TechPro)
    */
   static generateOutfitCombo(
     prompt: string, 
@@ -470,76 +460,110 @@ export class AISkillEngine {
   ): OutfitCombo {
     const query = prompt.toLowerCase();
 
-    // 1. Phối đồ theo giỏ hàng hiện tại nếu có
-    if (cartItems.length > 0 && (query.includes('giỏ hàng') || query.includes('món trong giỏ') || query.includes('đồ đã chọn'))) {
-      const mainItem = cartItems[0];
-      const matchedMain = catalog.find(p => p.id === mainItem.id || p.name === mainItem.name) || catalog[0];
-      const otherItems = catalog.filter(p => p.id !== matchedMain.id).slice(0, 2);
-      const outfitItems = [matchedMain, ...otherItems];
-      const totalPrice = outfitItems.reduce((acc, item) => acc + item.price, 0);
+    // 1. Phối combo phụ kiện theo giỏ hàng hiện tại nếu có
+    if (cartItems.length > 0 && (query.includes('giỏ hàng') || query.includes('món trong giỏ') || query.includes('phụ kiện cho') || query.includes('gợi ý phụ kiện'))) {
+      const cartItem = cartItems[0];
+      const matchedMain = catalog.find(p => p.id === cartItem.id || p.name === cartItem.name) || catalog[0];
+      const isPhone = (matchedMain.category && matchedMain.category.toLowerCase().includes('thoại')) || matchedMain.name.toLowerCase().includes('iphone') || matchedMain.name.toLowerCase().includes('galaxy');
+      
+      let accessories = catalog.filter(p => {
+        const cat = (p.category || '').toLowerCase();
+        return cat.includes('sạc') || cat.includes('cáp') || cat.includes('ốp') || cat.includes('cường lực');
+      }).slice(0, 2);
+
+      if (accessories.length < 2) {
+        accessories = catalog.filter(p => p.id !== matchedMain.id).slice(0, 2);
+      }
+
+      const comboItems: ProductDetail[] = [matchedMain, ...accessories];
+      const totalPrice = comboItems.reduce((acc, item) => acc + item.price, 0);
 
       return {
-        id: `outfit-cart-${Date.now()}`,
-        title: `Combo Phối Hoàn Hảo Cùng "${mainItem.name.slice(0, 28)}..."`,
-        style: 'Modern Dynamic Casual',
-        occasion: 'Đi làm, dạo phố, hẹn hò cuối tuần',
-        description: `Emma đã chọn thêm 2 món đồ phối cực ăn ý với sản phẩm trong giỏ của bạn để tạo nên diện mạo cuốn hút và hài hòa về màu sắc.`,
-        items: outfitItems,
+        id: `tech-combo-cart-${Date.now()}`,
+        title: `Combo Phụ Kiện Chuẩn Tương Thích Cùng "${matchedMain.name.slice(0, 25)}..."`,
+        style: isPhone ? 'Flagship Full Protection & Fast Charge' : 'High Performance Gear',
+        occasion: 'Sạc nhanh an toàn, chống va đập toàn diện',
+        description: `Alex TechPro đã ghép nối thêm củ sạc GaN và phụ kiện tương thích 100% công suất cho thiết bị của bạn, đạt chuẩn PD/PPS an toàn pin.`,
+        items: comboItems,
         totalPrice,
         discountPrice: Math.round(totalPrice * 0.92)
       };
     }
 
-    // 2. Set Công sở lịch lãm
-    if (query.includes('công sở') || query.includes('đi làm') || query.includes('lịch lãm') || query.includes('sơ mi')) {
+    // 2. Combo Gaming độ trễ thấp
+    if (query.includes('gaming') || query.includes('chơi game') || query.includes('game thủ') || query.includes('fps')) {
       const items = catalog.filter(p => 
-        p.name.includes('Polo') || p.name.includes('Sơ mi') || p.name.includes('Tây') || p.category.includes('Nam')
+        p.name.includes('Gaming') || p.name.includes('Tai Nghe') || p.name.includes('Sạc Nhanh 100W') || p.name.includes('ROG')
       ).slice(0, 3);
-      const outfitItems = items.length >= 2 ? items : catalog.slice(0, 3);
-      const totalPrice = outfitItems.reduce((acc, item) => acc + item.price, 0);
+      const comboItems = items.length >= 2 ? items : catalog.slice(0, 3);
+      const totalPrice = comboItems.reduce((acc, item) => acc + item.price, 0);
 
       return {
-        id: 'outfit-office-01',
-        title: 'Set Đồ Smart Casual & Công Sở Lịch Lãm',
-        style: 'Smart Casual / Minimalist',
-        occasion: 'Đi làm hàng ngày, gặp gỡ đối tác, hội thảo chuyên nghiệp',
-        description: 'Sự kết hợp giữa phom dáng đứng đắn và chất liệu co giãn nhẹ nhàng giúp bạn giữ vẻ ngoài chỉn chu suốt 8 tiếng mà không hề gò bó.',
-        items: outfitItems,
+        id: 'combo-gaming-pro',
+        title: 'Combo Chiến Game Đỉnh Cao (Độ Trễ Siêu Thấp & Tản Nhiệt Tốt)',
+        style: 'Gaming Ultra-Low Latency & Fast Charging',
+        occasion: 'Leo rank, chơi game đồ họa cao kéo dài mà không lo nóng máy hay tụt pin',
+        description: 'Tập hợp phụ kiện cáp sạc góc gập 90 độ chống cấn tay, củ sạc công suất cao và tai nghe hỗ trợ Gaming Mode độ trễ cực thấp.',
+        items: comboItems,
         totalPrice,
         discountPrice: Math.round(totalPrice * 0.9)
       };
     }
 
-    // 3. Set Đi tiệc / Hẹn hò
-    if (query.includes('tiệc') || query.includes('hẹn hò') || query.includes('sang trọng') || query.includes('party')) {
+    // 3. Combo Doanh nhân / Công sở MagSafe
+    if (query.includes('công sở') || query.includes('văn phòng') || query.includes('doanh nhân') || query.includes('magsafe') || query.includes('đa thiết bị')) {
       const items = catalog.filter(p => 
-        p.name.includes('DIOR') || p.name.includes('Lụa') || p.price > 400000
+        p.name.includes('GaN 65W') || p.name.includes('MagSafe') || p.name.includes('UAG') || p.name.includes('Cáp Sạc Nhanh Type-C')
       ).slice(0, 3);
-      const outfitItems = items.length >= 2 ? items : catalog.slice(0, 3);
-      const totalPrice = outfitItems.reduce((acc, item) => acc + item.price, 0);
+      const comboItems = items.length >= 2 ? items : catalog.slice(0, 3);
+      const totalPrice = comboItems.reduce((acc, item) => acc + item.price, 0);
 
       return {
-        id: 'outfit-party-02',
-        title: 'Set Trang Phục Dạ Tiệc & Hẹn Hò Sang Trọng',
-        style: 'Chic Luxury / High-End Evening',
-        occasion: 'Dự tiệc tối, sinh nhật, hẹn hò lãng mạn tại nhà hàng',
-        description: 'Tông màu thời thượng cùng điểm nhấn chi tiết tinh xảo tạo cảm giác đẳng cấp và thu hút mọi ánh nhìn.',
-        items: outfitItems,
+        id: 'combo-office-magsafe',
+        title: 'Combo Doanh Nhân Văn Phòng Sạc Nhanh Đa Thiết Bị',
+        style: 'Executive Multi-Device Fast Charge & Wireless',
+        occasion: 'Làm việc văn phòng, công tác, họp hành và di chuyển liên tục',
+        description: 'Bộ củ sạc GaN 3 cổng đa năng cấp nguồn đồng thời cho Laptop/iPad/Điện thoại cùng sạc dự phòng không dây MagSafe chuẩn Qi2.',
+        items: comboItems,
         totalPrice,
         discountPrice: Math.round(totalPrice * 0.9)
       };
     }
 
-    // 4. Set Mặc định: Dạo phố năng động
-    const defaultItems = catalog.slice(0, 3);
-    const totalPrice = defaultItems.reduce((acc, item) => acc + item.price, 0);
+    // 4. Combo Vlogger / Creator Livestream
+    if (query.includes('vlog') || query.includes('quay phim') || query.includes('livestream') || query.includes('creator') || query.includes('youtube')) {
+      const items = catalog.filter(p => 
+        p.name.includes('Gimbal') || p.name.includes('Giá Đỡ') || p.name.includes('100W') || p.name.includes('Tai Nghe')
+      ).slice(0, 3);
+      const comboItems = items.length >= 2 ? items : catalog.slice(0, 3);
+      const totalPrice = comboItems.reduce((acc, item) => acc + item.price, 0);
+
+      return {
+        id: 'combo-vlogger-creator',
+        title: 'Combo Sáng Tạo Nội Dung & Livestream Bắt Mọi Khung Hình',
+        style: 'Pro Creator & Streaming Kit',
+        occasion: 'Quay Tiktok, Youtube vlog, livestream bán hàng chống rung chuyên nghiệp',
+        description: 'Bao gồm gimbal chống rung thông minh kèm chân tripod, nguồn sạc liên tục và micro/tai nghe lọc tạp âm công nghệ AI.',
+        items: comboItems,
+        totalPrice,
+        discountPrice: Math.round(totalPrice * 0.9)
+      };
+    }
+
+    // 5. Combo Mặc định: Bộ trang bị cơ bản bảo vệ toàn diện (Budget Starter Kit)
+    const defaultItems = catalog.filter(p => 
+      p.name.includes('GaN') || p.name.includes('Cáp') || p.name.includes('Kính Cường Lực') || p.name.includes('Ốp Lưng')
+    ).slice(0, 3);
+    const finalItems = defaultItems.length >= 2 ? defaultItems : catalog.slice(0, 3);
+    const totalPrice = finalItems.reduce((acc, item) => acc + item.price, 0);
+
     return {
-      id: 'outfit-streetwear-03',
-      title: 'Set Đồ Streetwear Trẻ Trung & Năng Động',
-      style: 'Urban Streetwear',
-      occasion: 'Đi chơi, dạo phố, chụp ảnh cafe cuối tuần',
-      description: 'Phom dáng thoải mái phóng khoáng, dễ dàng mix & match cùng sneakers mang lại năng lượng trẻ trung bứt phá.',
-      items: defaultItems,
+      id: 'combo-essential-starter',
+      title: 'Combo Trang Bị Thiết Yếu (Sạc GaN Chuẩn PD + Kính Cường Lực)',
+      style: 'All-in-One Daily Protection & Fast Charging',
+      occasion: 'Sử dụng hằng ngày, bảo vệ chống va đập và rút ngắn 60% thời gian sạc',
+      description: 'Bộ phụ kiện phải có khi sắm máy mới: củ sạc GaN nhỏ gọn mát máy, cáp sạc bọc dù chống đứt gãy và kính cường lực chống trầy xước.',
+      items: finalItems,
       totalPrice,
       discountPrice: Math.round(totalPrice * 0.92)
     };
@@ -561,85 +585,93 @@ export class AISkillEngine {
     const customerName = customer?.name || context.currentUser?.name || '';
 
     // =========================================================================
-    // 1. PERSONA: STYLIST (Emma - Chuyên Gia Phối Đồ & Định Hình Gu)
+    // 1. PERSONA: STYLIST (Alex TechPro - Chuyên Gia Tư Vấn Combo Thiết Bị & Phụ Kiện)
     // =========================================================================
     if (persona === 'STYLIST') {
-      const outfit = this.generateOutfitCombo(prompt, context.cartItems, productCatalog);
+      const combo = this.generateOutfitCombo(prompt, context.cartItems, productCatalog);
       const personalizedGreeting = customerName ? `Chào **${customerName}**! ` : '';
 
       return {
         skill: 'AI_FASHION_STYLIST',
-        message: `👗 ${personalizedGreeting}**Stylist Emma** đã thiết kế riêng cho bạn **${outfit.title}** cực kỳ tôn dáng và hợp xu hướng:
-- **Phong cách chủ đạo**: ${outfit.style}
-- **Hoàn cảnh khuyên dùng**: ${outfit.occasion}
-- **Lời khuyên phối màu**: Kết hợp gam màu trung tính tạo cảm giác thanh thoát, đi cùng giày sneaker trắng hoặc giày lười da cao cấp.`,
-        outfitCombo: outfit,
-        products: outfit.items,
+        message: `⚡ ${personalizedGreeting}**Alex TechPro** đã tuyển chọn riêng cho bạn **${combo.title}** tối ưu công năng và bảo vệ toàn diện:
+- **Chuẩn kết nối & Công suất**: ${combo.style}
+- **Mục đích sử dụng**: ${combo.occasion}
+- **Đánh giá chuyên gia**: ${combo.description}`,
+        outfitCombo: combo,
+        products: combo.items,
         suggestedActions: [
-          `Thêm cả combo vào giỏ (Tiết kiệm ${(outfit.totalPrice - (outfit.discountPrice || outfit.totalPrice)).toLocaleString('vi-VN')}đ)`,
-          'Xem cách phối đồ công sở khác',
-          'Tư vấn chọn size cho set này'
+          `Thêm cả combo vào giỏ (Tiết kiệm ${(combo.totalPrice - (combo.discountPrice || combo.totalPrice)).toLocaleString('vi-VN')}đ)`,
+          'Xem combo sạc nhanh cho thiết bị khác',
+          'Kiểm tra tương thích công suất sạc'
         ]
       };
     }
 
     // =========================================================================
-    // 2. PERSONA: FITTING (Ken - Chuyên Viên Đo Size Chuẩn Xác)
+    // 2. PERSONA: FITTING (Ken TechSpec - Chuyên Viên Thông Số & Tương Thích Kỹ Thuật)
     // =========================================================================
     if (persona === 'FITTING') {
-      const extracted = this.extractMeasurements(prompt);
-      let height = extracted.height || context.measurements?.height;
-      let weight = extracted.weight || context.measurements?.weight;
-      let fit = extracted.fit || context.measurements?.preferredFit || 'regular';
+      const q = prompt.toLowerCase();
+      let deviceMatched = 'Thiết bị của bạn';
+      let protocol = 'Chuẩn PD 3.0 & PPS';
+      let compatibilityStatus = 'Hoàn toàn tương thích 100%';
+      let detailMsg = '';
 
-      if (height && weight) {
-        const sizing = this.calculateSmartSize(height, weight, fit);
-        const personalizedName = customerName ? `cho **${customerName}** ` : '';
-
-        return {
-          skill: 'AI_SMART_FITTING',
-          message: `📏 **Master Fit Ken** đã phân tích tỷ lệ vóc dáng ${personalizedName}(${height}cm - ${weight}kg):
-- 🎯 **Kích cỡ đề xuất chuẩn xác nhất**: **SIZE ${sizing.recommendedSize}** (Độ chuẩn xác: **${sizing.confidence}%**)
-- 👕 **Đánh giá form dáng**: ${sizing.fitDescription}
-- 💡 **Mẹo mặc đẹp**: Nếu bạn thích mặc rộng phong cách Oversize cá tính, bạn có thể tăng lên 1 size; còn nếu muốn khoe form cơ thể thì size ${sizing.recommendedSize} là hoàn hảo!`,
-          sizeFitting: sizing,
-          suggestedActions: [
-            `Chọn Size ${sizing.recommendedSize} ngay`,
-            'Lưu số đo này vào hồ sơ của tôi',
-            'Thử tính lại với số đo khác'
-          ]
-        };
+      if (q.includes('iphone 16') || q.includes('iphone 15')) {
+        deviceMatched = 'iPhone 15 / 16 Series';
+        protocol = 'Power Delivery 3.0 & MagSafe / Qi2 15W (Cổng USB-C)';
+        compatibilityStatus = 'Tương thích tuyệt đối với cáp Type-C to Type-C và củ sạc từ 20W - 45W';
+        detailMsg = 'Apple iPhone 15/16 đã chuyển sang cổng Type-C tiêu chuẩn. Bạn nên dùng củ sạc GaN 30W trở lên để sạc 50% pin chỉ trong 25 phút.';
+      } else if (q.includes('samsung') || q.includes('s24') || q.includes('s23')) {
+        deviceMatched = 'Samsung Galaxy S23 / S24 Series';
+        protocol = 'Super Fast Charging 2.0 (PPS 45W 4.05A)';
+        compatibilityStatus = 'Tương thích sạc siêu nhanh 45W khi dùng củ sạc chuẩn PPS và cáp 5A E-Marker';
+        detailMsg = 'Samsung yêu cầu chuẩn PPS (Programmable Power Supply). Củ sạc ZShop GaN 45W/65W đều tích hợp chip GaN III hỗ trợ chuẩn này.';
+      } else if (q.includes('macbook') || q.includes('laptop') || q.includes('ipad')) {
+        deviceMatched = 'MacBook / iPad / Laptop Type-C';
+        protocol = 'Power Delivery 65W - 100W (E-Marker Chip)';
+        compatibilityStatus = 'Tương thích hoàn hảo với củ sạc GaN 65W - 100W';
+        detailMsg = 'Bạn có thể sạc đồng thời cả laptop và điện thoại trên cùng một củ sạc GaN 3 cổng, dòng điện được phân phối tự động thông minh.';
+      } else {
+        deviceMatched = 'Smartphone & Phụ kiện công nghệ';
+        protocol = 'Universal USB-C / PD / QC 4.0+';
+        compatibilityStatus = 'Tương thích 100% với các thiết bị di động phổ biến hiện nay';
+        detailMsg = 'Hệ thống tự động nhận diện thiết bị và điều chỉnh dòng sạc an toàn, bảo vệ chống quá dòng, quá nhiệt và chai pin.';
       }
 
       return {
         skill: 'AI_SMART_FITTING',
-        message: `📐 Để tư vấn size chuẩn xác 100% không lo bị chật hay rộng, bạn vui lòng cho tôi biết **Chiều cao (cm)** và **Cân nặng (kg)** của bạn nhé!\n\nVí dụ bạn có thể gõ nhanh: *"1m72 65kg"* hoặc *"Cao 165 nặng 52kg form rộng"*!`,
+        message: `🔬 **Ken TechSpec** đã kiểm định thông số kỹ thuật cho **${deviceMatched}**:
+- ⚡ **Chuẩn sạc tương thích**: **${protocol}**
+- 🛡️ **Độ tương thích**: **${compatibilityStatus}**
+- 💡 **Khuyến nghị kỹ thuật**: ${detailMsg}`,
         suggestedActions: [
-          'Tôi cao 1m70 nặng 65kg',
-          'Tôi cao 1m60 nặng 50kg',
-          'Tôi cao 1m75 nặng 78kg (Bụng bia)'
+          'Kiểm tra củ sạc GaN 65W 3 cổng',
+          'Cáp sạc Type-C bọc dù 100W 5A',
+          'Xem kính cường lực KingKong chống va đập'
         ]
       };
     }
 
     // =========================================================================
-    // 3. PERSONA: ORDERS (Alex - Chuyên Viên Đơn Hàng & Vận Chuyển)
+    // 3. PERSONA: ORDERS (Logistics Alex - Chuyên Viên Đơn Hàng & Vận Chuyển)
     // =========================================================================
     if (persona === 'ORDERS') {
       const orders = context.customerOrders || [];
       const personalizedSalute = customerName ? `anh/chị **${customerName}**` : 'quý khách';
 
-      if (query.includes('đổi') || query.includes('trả') || query.includes('hoàn tiền') || query.includes('khiếu nại')) {
+      if (query.includes('đổi') || query.includes('trả') || query.includes('bảo hành') || query.includes('lỗi') || query.includes('hoàn tiền')) {
         return {
           skill: 'TRACK_ORDER',
-          message: `🔄 **Chính sách Đổi trả & Hoàn hàng ZShop (UC10)**:
-- **Thời hạn áp dụng**: Trong vòng **07 ngày** kể từ khi nhận hàng.
-- **Điều kiện**: Sản phẩm còn nguyên tem mác, chưa qua giặt ủi hoặc có lỗi do nhà sản xuất.
+          message: `🔄 **Chính sách Bảo hành & Đổi trả ZShop (Bảo hành điện tử theo IMEI/Serial)**:
+- 📱 **Lỗi 1 đổi 1 trong 30 ngày**: Áp dụng cho mọi lỗi phần cứng từ nhà sản xuất đối với Điện thoại & Phụ kiện.
+- 🔌 **Bảo hành 12 - 24 tháng chính hãng**: Kích hoạt tự động qua số điện thoại và IMEI/Serial điện tử, không cần giữ phiếu giấy.
+- ⚡ **Đổi phụ kiện không tương thích trong 7 ngày**: Hoàn tiền hoặc đổi sản phẩm khác miễn phí 100% nếu không tương thích với thiết bị của bạn.
 - **Quy trình 3 bước**:
-  1. Vào mục *"Quản lý Đơn hàng"* hoặc bấm nút bên dưới.
-  2. Bấm *"Yêu cầu Đổi trả"* và đính kèm ảnh/video mở hộp.
-  3. Shipper ZShop sẽ đến tận nhà lấy hàng đổi hoàn toàn miễn phí.`,
-          suggestedActions: ['Gửi yêu cầu đổi trả ngay', 'Tra cứu mã vận đơn', 'Kết nối tổng đài viên']
+  1. Vào mục *"Quản lý Đơn hàng"* hoặc nhập mã đơn hàng [DH-xxxx].
+  2. Bấm *"Yêu cầu Bảo hành / Đổi trả"* và mô tả lỗi thiết bị.
+  3. Shipper ZShop tiếp nhận và giao sản phẩm mới tận nhà trong 24 giờ.`,
+          suggestedActions: ['Tra cứu bảo hành IMEI', 'Gửi yêu cầu đổi trả', 'Kết nối kỹ thuật viên ZShop']
         };
       }
 
@@ -804,21 +836,21 @@ Hiện tài khoản của bạn chưa có đơn hàng nào đang chờ giao. N�
       return {
         skill: 'STOCK_INQUIRY',
         message: `📦 **Tra cứu kho tự động (UC07)**:
-- Sản phẩm: **${matched.name}** (${matched.category || 'Thời trang'})
+- Sản phẩm: **${matched.name}** (${matched.category || 'Điện tử & Phụ kiện'})
 - Tình trạng kho: **${statusText}**
-- Vị trí lưu kho: Kệ A1-08 (Kho Tổng TP.HCM)
+- Vị trí lưu kho: Kệ T1-08 (Kho Thiết Bị Công Nghệ TP.HCM)
 - Đơn giá niêm yết: **${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(matched.price)}**`,
         stockInquiry: {
           productName: matched.name,
           stock: matched.stock,
           inStock: inStock,
-          category: matched.category || 'Thời trang',
+          category: matched.category || 'Điện thoại & Phụ kiện',
           statusText: statusText,
           suggestedActionText: inStock ? 'Đặt mua ngay' : 'Đăng ký nhận thông báo khi có hàng'
         },
         products: [matched],
         suggestedActions: inStock 
-          ? [`Thêm "${matched.name}" vào giỏ`, 'Kiểm tra sản phẩm khác', 'Hỏi tư vấn size'] 
+          ? [`Thêm "${matched.name}" vào giỏ`, 'Kiểm tra sản phẩm khác', 'Hỏi tư vấn tương thích'] 
           : ['Xem sản phẩm tương tự', 'Lập phiếu nhập kho (Kho)', 'Báo quản trị viên']
       };
     }
@@ -868,17 +900,17 @@ Dựa trên phân tích tốc độ tiêu thụ (run-rate) 30 ngày qua:
       return {
         skill: 'BUSINESS_QA',
         message: `📈 **Trợ lý AI Phân tích Kinh doanh (UC09)**:
-- **Tăng trưởng Doanh thu**: +14.8% so với cùng kỳ tháng trước nhờ danh mục Thời trang mùa hè.
-- **Biên lợi nhuận gộp (Gross Margin)**: Đạt **34.2%**, cao hơn mức trung bình ngành (28%).
-- **Tỷ lệ đổi trả & hoàn hàng (UC10)**: Duy trì ở mức thấp **1.8%** (ngưỡng an toàn < 3%).
-- **Dự báo 7 ngày tới**: Dự kiến doanh thu đạt ~185.000.000đ khi triển khai chương trình Payday Mega Sale cuối tuần.
-- **Khuyến nghị chiến lược**: Tập trung tăng ngân sách quảng cáo cho Top 3 sản phẩm chủ lực và tích điểm khách hàng thân thiết để nâng cao tỷ lệ quay lại (Retention Rate).`,
+- **Tăng trưởng Doanh thu**: +18.5% so với cùng kỳ tháng trước nhờ danh mục Củ sạc GaN và Phụ kiện MagSafe.
+- **Biên lợi nhuận gộp (Gross Margin)**: Đạt **36.8%**, dẫn đầu phân khúc phụ kiện điện tử.
+- **Tỷ lệ đổi trả & hoàn hàng (UC10)**: Duy trì ở mức cực thấp **1.2%** (ngưỡng an toàn < 3%).
+- **Dự báo 7 ngày tới**: Dự kiến doanh thu đạt ~320.000.000đ khi mở bán đợt phụ kiện iPhone 16 / S24 Ultra.
+- **Khuyến nghị chiến lược**: Tăng lượng nhập kho củ sạc GaN 65W và cáp dù E-Marker 100W, đồng thời chạy combo kèm smartphone để tăng Average Order Value (AOV).`,
         businessInsights: {
-          revenueGrowth: '+14.8% MoM',
-          grossMargin: '34.2%',
-          returnRate: '1.8% (Rất tốt)',
-          forecastAdvice: 'Dự kiến tăng 22% vào cuối tuần khi chạy Mega Sale',
-          strategicAction: 'Bổ sung tồn kho Áo Polo và tặng Voucher 50k cho khách hạng Vàng.'
+          revenueGrowth: '+18.5% MoM',
+          grossMargin: '36.8%',
+          returnRate: '1.2% (Rất tốt)',
+          forecastAdvice: 'Dự kiến tăng 30% khi chạy Mega Sale phụ kiện sạc nhanh',
+          strategicAction: 'Bổ sung tồn kho Củ sạc Anker GaN 65W và tặng Voucher 50k cho khách mua điện thoại.'
         },
         suggestedActions: ['Xuất báo cáo doanh thu Excel', 'Xem chi tiết khách VIP', 'Mở phân hệ POS']
       };
@@ -902,12 +934,12 @@ Dựa trên phân tích tốc độ tiêu thụ (run-rate) 30 ngày qua:
         skill: 'SALES_ANALYTICS',
         message: `📊 **Báo cáo kinh doanh & Tồn kho ZShop**:
 - Tổng doanh thu ước tính: **${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalCalculatedRevenue)}**
-- Đơn hàng ghi nhận hôm nay: **18 đơn**
-- Mặt hàng bán chạy nhất: **${topSellingItems[0]?.name || 'Áo Thun DIOR'}** (${topSellingItems[0]?.sold || 1200} lượt bán)
+- Đơn hàng ghi nhận hôm nay: **26 đơn**
+- Mặt hàng bán chạy nhất: **${topSellingItems[0]?.name || 'Củ Sạc Nhanh Anker 67W GaN'}** (${topSellingItems[0]?.sold || 850} lượt bán)
 - ⚠️ Cảnh báo: Có **${lowStockItems.length}** sản phẩm số lượng tồn kho dưới 40 cần bổ sung gấp!`,
         analytics: {
           totalRevenue: totalCalculatedRevenue,
-          todayOrders: 18,
+          todayOrders: 26,
           topSelling: topSellingItems,
           lowStock: lowStockItems
         },
@@ -920,22 +952,22 @@ Dựa trên phân tích tốc độ tiêu thụ (run-rate) 30 ngày qua:
     if (copyKeywords.some(kw => query.includes(kw))) {
       const cleanedName = prompt
         .replace(/viết mô tả|viết bài|đăng bài|mô tả sản phẩm|hãy viết|cho tôi|giúp tôi|về|sản phẩm/gi, '')
-        .trim() || 'Áo Polo Thể Thao Nam ZShop Limited Edition';
+        .trim() || 'Củ Sạc Nhanh GaN 65W 3 Cổng Type-C & USB-A';
 
       return {
         skill: 'AI_COPYWRITER',
         message: `✍️ **AI đã khởi tạo nội dung bán hàng tối ưu cho "${cleanedName}":**`,
         copywriting: {
-          title: `🔥 [CHÍNH HÃNG] ${cleanedName} - Form Dáng Chuẩn, Thoáng Khí Cao Cấp`,
+          title: `🔥 [CHÍNH HÃNG] ${cleanedName} - Chip GaN III Tản Nhiệt Mát, Chuẩn PD 3.0 & PPS 45W`,
           highlights: [
-            'Chất liệu vải sợi tự nhiên cao cấp, co giãn 4 chiều mềm mịn',
-            'Công nghệ dệt kháng khuẩn, khử mùi vượt trội suốt 24 giờ',
-            'Thiết kế tôn dáng lịch lãm, dễ dàng phối trang phục công sở lẫn dạo phố',
-            'Đường may tiêu chuẩn xuất khẩu, cam kết không bai xù khi giặt máy'
+            'Công nghệ bán dẫn GaN III tiên tiến giúp thu nhỏ 50% kích thước củ sạc',
+            'Hỗ trợ sạc siêu nhanh PD 3.0 / PPS 45W cho Samsung S24 & iPhone 15/16',
+            '3 cổng ra thông minh cho phép sạc đồng thời Laptop, Điện thoại và Tai nghe',
+            'Hệ thống bảo vệ đa lớp ActiveShield chống quá nhiệt, quá tải dòng điện'
           ],
-          description: `Bạn đang tìm kiếm mẫu ${cleanedName} vừa thời thượng vừa thoải mái? Đây chính là sự lựa chọn số 1 dành cho bạn!\nSản phẩm được gia công tỉ mỉ, bảng màu tinh tế, tôn trọn vóc dáng năng động hiện đại.`,
-          suggestedPrice: 389000,
-          hashtags: ['#ZShop', '#ThoiTrangNam', '#ChatLuongCao', '#Trend2026', '#ShopeeStyle']
+          description: `Bạn đang tìm kiếm một củ sạc tất-cả-trong-một cho chuyến công tác hay bàn làm việc gọn gàng? ${cleanedName} chính là trợ thủ đắc lực!\nSản phẩm đạt chứng nhận an toàn quốc tế, bảo hành 18 tháng lỗi 1 đổi 1 chính hãng tại ZShop.`,
+          suggestedPrice: 489000,
+          hashtags: ['#ZShopTech', '#SacNhanhGaN', '#PhuKienChinhHang', '#iPhone16', '#SamsungS24']
         },
         suggestedActions: ['Áp dụng vào trang Seller', 'Chỉnh sửa nội dung', 'Gợi ý thêm từ khóa SEO']
       };
@@ -963,13 +995,13 @@ Dựa trên phân tích tốc độ tiêu thụ (run-rate) 30 ngày qua:
         {
           status: OrderStatus.PROCESSING,
           date: '28/12/2024 14:30',
-          description: 'Kho vận ZShop đang đóng gói và dán mã kiện',
+          description: 'Kho vận ZShop đang đóng gói và dán tem niêm phong IMEI',
           completed: true
         },
         {
           status: OrderStatus.SHIPPING,
           date: '29/12/2024 08:00',
-          description: 'Đang vận chuyển liên tỉnh (Dự kiến giao ngày mai)',
+          description: 'Đang vận chuyển hỏa tốc liên tỉnh (Shipper ZShop Express)',
           completed: false
         }
       ];
@@ -977,8 +1009,9 @@ Dựa trên phân tích tốc độ tiêu thụ (run-rate) 30 ngày qua:
       return {
         skill: 'TRACK_ORDER',
         message: `📦 **Thông tin hành trình đơn hàng [${targetOrderId}]**:
-- **Trạng thái**: Đang vận chuyển tới bưu cục phát.
-- **Dự kiến nhận hàng**: Trong vòng 24-48 giờ tới.
+- **Trạng thái**: Đang vận chuyển hỏa tốc tới bưu cục phát.
+- **Bảo hành điện tử**: Đã kích hoạt theo IMEI thiết bị trên hệ thống ZShop.
+- **Dự kiến nhận hàng**: Trong vòng 24 giờ tới (Giao hỏa tốc).
 - Quý khách vui lòng để ý điện thoại để shipper ZShop liên hệ giao hàng nhé!`,
         orderInfo: {
           orderId: targetOrderId,
@@ -986,7 +1019,7 @@ Dựa trên phân tích tốc độ tiêu thụ (run-rate) 30 ngày qua:
           steps: steps,
           estimatedDelivery: '30/12/2024 - 01/01/2025'
         },
-        suggestedActions: ['Liên hệ hỗ trợ shipper', 'Xem lịch sử thanh toán', 'Tiếp tục mua sắm']
+        suggestedActions: ['Liên hệ hỗ trợ shipper', 'Xem kích hoạt bảo hành IMEI', 'Tiếp tục mua sắm']
       };
     }
 
@@ -1033,7 +1066,7 @@ Nhập mã trực tiếp tại bước Thanh toán để nhận ưu đãi tức 
 
       return {
         skill: 'QUICK_ADD_TO_CART',
-        message: `🛒 Bạn muốn thêm sản phẩm **${matched.name}** vào giỏ hàng đúng không? Bạn có thể bấm ngay nút bên dưới để thêm hoặc chọn size phù hợp!`,
+        message: `🛒 Bạn muốn thêm sản phẩm **${matched.name}** vào giỏ hàng đúng không? Bạn có thể bấm ngay nút bên dưới để thêm vào giỏ!`,
         products: [matched],
         suggestedActions: [`Thêm "${matched.name}" vào giỏ`, 'Xem giỏ hàng', 'Tiếp tục tìm đồ khác']
       };
@@ -1047,7 +1080,7 @@ Nhập mã trực tiếp tại bước Thanh toán để nhận ưu đãi tức 
       return matchPrice;
     });
 
-    const keywords = ['áo', 'quần', 'giày', 'mũ', 'túi', 'đồng hồ', 'hoodie', 'jean', 'dior', 'polo', 'bomber', 'sneaker', 'nam', 'nữ'];
+    const keywords = ['iphone', 'samsung', 'xiaomi', 'sạc', 'cáp', 'dự phòng', 'tai nghe', 'ốp lưng', 'cường lực', 'giá đỡ', 'gimbal', 'anker', 'baseus', 'gan', 'type-c', 'lightning', 'magsafe', 'apple'];
     const activeKeywords = keywords.filter(kw => query.includes(kw));
 
     if (activeKeywords.length > 0) {
