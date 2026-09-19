@@ -7,53 +7,53 @@ from ..config import config
 KNOWLEDGE_DOCS = [
     {
         "id": "kb-warranty-tech",
-        "topic": "Chính sách bảo hành điện tử chính hãng và lỗi 1 đổi 1",
-        "content": "Chính sách bảo hành ZShop: 100% điện thoại và phụ kiện được bảo hành điện tử chính hãng từ 12 đến 24 tháng theo số IMEI hoặc Serial Number. Đặc biệt áp dụng chính sách 'LỖI 1 ĐỔI 1 TRONG 30 NGÀY ĐẦU' nếu thiết bị phát sinh lỗi phần cứng từ nhà sản xuất. Khách hàng chỉ cần đọc số điện thoại đặt hàng, không cần giữ lại hóa đơn giấy."
+        "topic": "Chính sách bảo hành Apple Care+ và lỗi 1 đổi 1 chính hãng",
+        "content": "Chính sách bảo hành ZShop Apple Authorized: 100% các dòng iPhone từ iPhone 6 đến iPhone 18 Pro Max và phụ kiện Apple đều được bảo hành điện tử chính hãng theo số Serial Number và IMEI trên hệ thống Apple. Áp dụng chính sách 'LỖI 1 ĐỔI 1 TRONG 30 NGÀY ĐẦU' cho mọi lỗi phần cứng. Khách hàng chỉ cần đọc số điện thoại đặt hàng để tra cứu bảo hành, không cần giữ hóa đơn giấy."
     },
     {
         "id": "kb-compatibility-return",
-        "topic": "Chính sách đổi trả phụ kiện không tương thích trong 7 ngày",
-        "content": "Chính sách đổi trả: ZShop hỗ trợ đổi trả MIỄN PHÍ trong vòng 7 ngày nếu phụ kiện (củ sạc, cáp sạc, ốp lưng, kính cường lực) không tương thích với thiết bị của bạn hoặc không vừa kích thước. Khách hàng được hoàn tiền 100% hoặc đổi sang mã phụ kiện tương thích. Shipper ZShop Express sẽ hỗ trợ lấy hàng tận nơi."
+        "topic": "Chính sách đổi trả phụ kiện Apple chính hãng trong 7 ngày",
+        "content": "Chính sách đổi trả: ZShop hỗ trợ đổi trả MIỄN PHÍ trong vòng 7 ngày nếu phụ kiện Apple (củ sạc 20W/35W, cáp sạc USB-C/Lightning, sạc MagSafe, ốp lưng, kính cường lực) không tương thích với thiết bị của bạn hoặc khách hàng muốn đổi màu sắc khác. Hoàn tiền 100% hoặc đổi mới tận nơi qua Shipper ZShop Express."
     },
     {
         "id": "kb-shipping-express",
-        "topic": "Giao hàng hỏa tốc 2 giờ và freeship toàn quốc",
-        "content": "Chính sách vận chuyển: Miễn phí vận chuyển (FREESHIP) toàn quốc cho mọi đơn hàng từ 300.000đ trở lên. Đối với khách hàng cần gấp củ sạc, cáp hoặc pin sạc dự phòng, ZShop cung cấp dịch vụ 'GIAO HỎA TỐC 2 GIỜ' trong khu vực nội thành với phí cố định chỉ 35.000đ."
+        "topic": "Giao hàng hỏa tốc 2 giờ và freeship toàn quốc cho thiết bị Apple",
+        "content": "Chính sách vận chuyển: Miễn phí vận chuyển (FREESHIP) toàn quốc cho mọi đơn hàng từ 300.000đ trở lên. Đối với khách hàng mua iPhone hoặc phụ kiện cần nhận ngay, ZShop cung cấp dịch vụ 'GIAO HỎA TỐC 2 GIỜ' có bảo hiểm nguyên seal niêm phong trong khu vực nội thành với phí chỉ 35.000đ."
     },
     {
         "id": "kb-trade-in-policy",
-        "topic": "Chương trình Thu cũ Đổi mới (Trade-in) trợ giá lên đời máy",
-        "content": "Chương trình Thu cũ Đổi mới (Trade-in): ZShop hỗ trợ thu mua điện thoại cũ lên đời iPhone 16/15 hoặc Samsung S24 Series với mức trợ giá thêm lên tới 2.000.000đ. Đội ngũ kỹ thuật viên hỗ trợ sao lưu chuyển toàn bộ dữ liệu, danh bạ, ảnh sang máy mới hoàn toàn miễn phí tại chỗ."
+        "topic": "Chương trình Thu cũ Đổi mới (Trade-in) lên đời iPhone 16/17/18 Pro Max",
+        "content": "Chương trình Thu cũ Đổi mới (Apple Trade-in): ZShop hỗ trợ thu mua toàn bộ các đời iPhone cũ từ iPhone 6, 7, 8, X, 11, 12, 13, 14, 15 để lên đời iPhone 16 Pro Max, iPhone 17 hay iPhone 18 Pro Max với mức trợ giá thêm lên tới 3.000.000đ. Đội ngũ chuyên viên Apple hỗ trợ sao lưu toàn bộ dữ liệu iCloud, hình ảnh, tin nhắn sang máy mới miễn phí 100% tại chỗ."
     },
     {
         "id": "kb-charging-standards",
-        "topic": "Hướng dẫn chuẩn sạc nhanh Power Delivery (PD), PPS và MagSafe",
-        "content": "Tư vấn chuẩn sạc nhanh: iPhone 15/16 hỗ trợ sạc nhanh chuẩn Power Delivery (PD) tối ưu ở mức 20W - 35W qua cổng Type-C. Dòng Samsung Galaxy S24/S23 Ultra yêu cầu củ sạc hỗ trợ chuẩn PPS (Super Fast Charging 2.0) đạt công suất tối đa 45W. Sạc không dây từ tính MagSafe và Qi2 hỗ trợ công suất chuẩn 15W hít chắc vào lưng máy."
+        "topic": "Hướng dẫn củ sạc Apple chính hãng 20W, 35W Dual và sạc MagSafe",
+        "content": "Tư vấn sạc Apple: iPhone 8 đến iPhone 14 Pro Max hỗ trợ sạc nhanh PD qua cáp Type-C to Lightning. iPhone 15, 16, 17, 18 Series sử dụng cổng Type-C hỗ trợ củ sạc Apple 20W và 35W Dual USB-C sạc 50% pin trong 25-30 phút. Công nghệ sạc không dây từ tính Apple MagSafe và Qi2 hỗ trợ công suất 15W - 25W hít chắc vào lưng máy từ dòng iPhone 12 trở lên."
     },
     {
         "id": "kb-port-compatibility",
-        "topic": "Phân biệt cổng kết nối Type-C và Lightning trên các dòng máy",
-        "content": "Tương thích cổng kết nối: Toàn bộ iPhone 15 Series, iPhone 16 Series, các dòng điện thoại Samsung Galaxy, Xiaomi và iPad mới đều đã chuyển đổi đồng bộ sang cổng USB Type-C. Cổng Lightning chỉ sử dụng cho các dòng iPhone 14 Series trở về trước và một số dòng phụ kiện AirPods cũ."
+        "topic": "Phân biệt cổng sạc Type-C và Lightning trên các thế hệ iPhone",
+        "content": "Tương thích cổng sạc: Toàn bộ iPhone 15 Series, iPhone 16 Series, iPhone 17 Series và iPhone 18 Series sử dụng chuẩn USB-C quốc tế tốc độ cao. Các dòng iPhone 14, iPhone 13, 12, 11, X, 8, 7, 6 Series sử dụng cổng kết nối Lightning truyền thống của Apple."
     },
     {
-        "id": "kb-screen-protector-guide",
-        "topic": "Hướng dẫn chọn kính cường lực và dán bảo vệ màn hình",
-        "content": "Tư vấn miếng dán: Kính cường lực KingKong Chống Nhìn Trộm (Privacy) có góc nghiêng 28 độ chống soi thông tin nơi công cộng; Kính Hoda Sapphire đạt độ cứng 9H chống trầy xước chìa khóa; Miếng dán dẻo PPF tự phục hồi vết xước dăm khi gặp nhiệt độ ấm thích hợp dán viền và mặt lưng máy trần."
+        "id": "kb-battery-health",
+        "topic": "Chính sách kiểm tra tình trạng pin (Battery Health) và thay pin chính hãng",
+        "content": "Chính sách pin Apple: Mọi máy iPhone bán ra tại ZShop đều được cam kết tình trạng pin (Battery Health) từ 85% đến 100%. Trong thời gian bảo hành, nếu dung lượng pin tụt dưới 80% theo thông báo 'Bảo trì' của iOS, ZShop hỗ trợ thay pin mới miễn phí 100% theo tiêu chuẩn Apple."
     },
     {
-        "id": "kb-case-protection",
-        "topic": "Hướng dẫn chọn ốp lưng chống sốc và ốp MagSafe",
-        "content": "Tư vấn ốp lưng: Ốp UAG Monarch chuẩn quân đội chống va đập rơi rớt ở độ cao 5 mét; Ốp trong suốt MagSafe phủ nano kháng tia UV chống ố vàng 6 tháng khoe trọn màu máy sang trọng; Ốp Liquid Silicone mềm mịn chống bám mồ hôi và dấu vân tay hiệu quả."
+        "id": "kb-vintage-iphone",
+        "topic": "Tư vấn chọn mua các dòng iPhone cổ điển và sưu tầm (iPhone 6, 7, 8, X)",
+        "content": "Dòng máy iPhone cổ điển & sưu tầm: iPhone 6/6 Plus, 6s/6s Plus, iPhone 7/7 Plus và iPhone 8/8 Plus sở hữu nút Home Touch ID truyền thống, thích hợp làm máy phụ nghe gọi, phát Wifi, máy cho người lớn tuổi hoặc phụ huynh mua cho con học tập. ZShop cam kết nguyên bản 100% vỏ đẹp likenew 99%."
     },
     {
         "id": "kb-payment-methods",
-        "topic": "Phương thức thanh toán và trả góp 0% lãi suất",
-        "content": "Phương thức thanh toán: Hỗ trợ trả góp 0% lãi suất qua thẻ tín dụng của 25 ngân hàng, thanh toán quét mã VietQR Napas 24/7 xác nhận đơn tức thì, ví MoMo, ZaloPay và thanh toán tiền mặt COD (được mở hộp đồng kiểm tra máy và phụ kiện trước khi thanh toán)."
+        "topic": "Phương thức thanh toán và trả góp 0% lãi suất Apple",
+        "content": "Phương thức thanh toán: Hỗ trợ trả góp 0% lãi suất qua thẻ tín dụng của 25 ngân hàng hoặc duyệt hồ sơ online trong 5 phút. Hỗ trợ thanh toán mã VietQR Napas 24/7, ví MoMo, Apple Pay và giao hàng tiền mặt COD (được mở hộp kiểm tra đúng model, màu sắc và số IMEI trước khi thanh toán)."
     },
     {
         "id": "kb-store-hotline",
-        "topic": "Trung tâm trải nghiệm công nghệ ZShop và hotline hỗ trợ kỹ thuật",
-        "content": "Trung tâm công nghệ ZShop Flagship: 12 Lê Lợi, P. Bến Nghé, Quận 1, TP. Hồ Chí Minh. Khách hàng được trải nghiệm trực tiếp máy demo và phụ kiện sạc thử tại bàn. Hotline kỹ thuật & CSKH: 0901 234 567 (hỗ trợ 8h00 - 22h00 hàng ngày)."
+        "topic": "Trung tâm trải nghiệm Apple ZShop Flagship và hotline kỹ thuật",
+        "content": "Trung tâm trải nghiệm Apple ZShop Store: 12 Lê Lợi, P. Bến Nghé, Quận 1, TP. Hồ Chí Minh. Khách hàng được trải nghiệm trực tiếp đầy đủ các dòng iPhone từ iPhone 6 đến iPhone 18 Pro Max trên bàn trải nghiệm. Hotline hỗ trợ kỹ thuật Apple & CSKH: 0901 234 567 (hoạt động 8h00 - 22h00 hàng ngày)."
     }
 ]
 

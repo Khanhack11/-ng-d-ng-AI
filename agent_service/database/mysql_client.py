@@ -31,8 +31,8 @@ SAMPLE_ORDERS = [
         "status": "ĐÃ GIAO HÀNG THÀNH CÔNG",
         "carrier": "Giao Hàng Nhanh (GHN)",
         "tracking_code": "GHN11223344",
-        "total_amount": 1240000,
-        "items": "Củ Sạc Nhanh Anker Prime 67W GaN + Cáp Sạc C to C 100W Anker PowerLine III",
+        "total_amount": 2180000,
+        "items": "Củ Sạc Apple 35W Dual USB-C Port Chính Hãng + Cáp Sạc Apple USB-C Đan Dù 1m",
         "expected_delivery": "Đã nhận hàng thành công (Bảo hành 1 đổi 1 trong 30 ngày)"
     }
 ]
@@ -136,61 +136,72 @@ class MySQLClient:
                 continue
             if category and category.lower() not in p.get("category", "").lower():
                 continue
+            match_score = 0
             if keywords:
-                matched = False
+                p_name_lower = p.get("name", "").lower()
+                p_desc_lower = p.get("description", "").lower()
+                p_cat_lower = p.get("category", "").lower()
                 p_tags = [t.lower() for t in p.get("tags", [])]
                 for kw in keywords:
                     kw_lower = kw.lower()
-                    if (kw_lower in p.get("name", "").lower() or 
-                        kw_lower in p.get("description", "").lower() or 
-                        kw_lower in p.get("category", "").lower() or
-                        any(kw_lower in tag for tag in p_tags)):
-                        matched = True
-                        break
-                if not matched:
+                    if kw_lower in p_name_lower:
+                        match_score += 10
+                    elif kw_lower in p_cat_lower:
+                        match_score += 5
+                    elif any(kw_lower in tag for tag in p_tags):
+                        match_score += 4
+                    elif kw_lower in p_desc_lower:
+                        match_score += 2
+                if match_score == 0:
                     continue
-            results.append(dict(p))
+            results.append((p, match_score))
 
         # Nếu lọc rỗng nhưng không có tiêu chí khắt khe, trả về danh mục gốc
         if not results and not max_price and not keywords:
-            results = [dict(x) for x in source_data]
+            results = [(x, 0) for x in source_data]
 
-        # Sắp xếp theo sort_by
-        if sort_by == "price_asc":
-            results.sort(key=lambda x: float(x.get("price", 0)))
-        elif sort_by == "price_desc":
-            results.sort(key=lambda x: float(x.get("price", 0)), reverse=True)
-        elif sort_by == "popularity_desc":
-            results.sort(key=lambda x: float(x.get("soldCount", 0)), reverse=True)
-        elif sort_by == "rating_desc":
-            results.sort(key=lambda x: float(x.get("rating", 0)), reverse=True)
+        # Sắp xếp kết quả
+        if keywords and not sort_by:
+            results.sort(key=lambda x: x[1], reverse=True)
+            output_products = [dict(x[0]) for x in results]
+        else:
+            output_products = [dict(x[0]) for x in results]
+            if sort_by == "price_asc":
+                output_products.sort(key=lambda x: float(x.get("price", 0)))
+            elif sort_by == "price_desc":
+                output_products.sort(key=lambda x: float(x.get("price", 0)), reverse=True)
+            elif sort_by == "popularity_desc":
+                output_products.sort(key=lambda x: float(x.get("soldCount", 0)), reverse=True)
+            elif sort_by == "rating_desc":
+                output_products.sort(key=lambda x: float(x.get("rating", 0)), reverse=True)
 
-        return results[:limit]
+        return output_products[:limit]
 
     def query_outfit(self, occasion: Optional[str]) -> List[Dict[str, Any]]:
         """
         Truy vấn chính xác các món tạo nên 1 combo công nghệ phối hoàn hảo theo nhu cầu
         """
         occ = (occasion or "office").lower()
+        pool = self.all_products if hasattr(self, 'all_products') and self.all_products else SAMPLE_PRODUCTS
         if any(w in occ for w in ["công sở", "cong so", "đi làm", "di lam", "doanh nhân", "doanh nhan", "magsafe", "office"]):
-            # Combo công sở: iPhone 16 Pro Max (PHONE-001) + Sạc GaN 67W (CHARGER-001) + Ốp UAG MagSafe (CASE-002)
-            target_ids = ["PHONE-001", "CHARGER-001", "CASE-002"]
-            matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
-            return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
+            # Combo công sở / doanh nhân: iPhone 16 Pro Max (PHONE-035) + Củ sạc 35W Dual (APPLE-ACC-002) + Ốp Silicone MagSafe (APPLE-ACC-009)
+            target_ids = ["PHONE-035", "APPLE-ACC-002", "APPLE-ACC-009"]
+            matched = [p for p in pool if p["id"] in target_ids]
+            return matched if len(matched) >= 2 else pool[:3]
         elif any(w in occ for w in ["gaming", "chơi game", "choi game", "game thủ", "game thu"]):
-            # Combo gaming: Xiaomi 14 Ultra (PHONE-005) + Cáp sạc gập chữ L (CABLE-002) + Tai nghe Bluetooth (AUDIO-005)
-            target_ids = ["PHONE-005", "CABLE-002", "AUDIO-005"]
-            matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
-            return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
+            # Combo gaming: iPhone 16 Pro Max (PHONE-035) + Cáp USB-C dù (APPLE-ACC-003) + AirPods Pro 2 (APPLE-ACC-007)
+            target_ids = ["PHONE-035", "APPLE-ACC-003", "APPLE-ACC-007"]
+            matched = [p for p in pool if p["id"] in target_ids]
+            return matched if len(matched) >= 2 else pool[:3]
         elif any(w in occ for w in ["creator", "vlog", "livestream", "quay video"]):
-            # Combo creator: Samsung S24 Ultra (PHONE-002) + Gimbal chống rung (STAND-002) + Pin dự phòng (POWER-003)
-            target_ids = ["PHONE-002", "STAND-002", "POWER-003"]
-            matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
-            return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
-        # Combo cơ bản mặc định
-        target_ids = ["CHARGER-006", "CABLE-001", "SCREEN-001"]
-        matched = [p for p in SAMPLE_PRODUCTS if p["id"] in target_ids]
-        return matched if len(matched) >= 2 else SAMPLE_PRODUCTS[:3]
+            # Combo creator / media: iPhone 16 Pro Max (PHONE-035) + AirPods Max (APPLE-ACC-008) + Pin MagSafe (APPLE-ACC-006)
+            target_ids = ["PHONE-035", "APPLE-ACC-008", "APPLE-ACC-006"]
+            matched = [p for p in pool if p["id"] in target_ids]
+            return matched if len(matched) >= 2 else pool[:3]
+        # Combo cơ bản / tiết kiệm mặc định: iPhone 6s (PHONE-003) + Củ sạc Apple 20W (APPLE-ACC-001) + Kính cường lực Apple Care+ (APPLE-ACC-010)
+        target_ids = ["PHONE-003", "APPLE-ACC-001", "APPLE-ACC-010"]
+        matched = [p for p in pool if p["id"] in target_ids]
+        return matched if len(matched) >= 2 else pool[:3]
 
     def query_order(self, order_id: str) -> Optional[Dict[str, Any]]:
         clean_id = order_id.upper().strip()

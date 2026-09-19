@@ -107,7 +107,7 @@ const Header: React.FC<HeaderProps> = ({
                   description: p.description,
                   rating: p.rating || 4.9,
                   soldCount: p.soldCount || 100,
-                  category: p.category || 'Thời trang'
+                  category: p.category || 'iPhone 16 Series'
               })) as ProductDetail[];
               
               setSearchResults(mapped);
@@ -330,7 +330,7 @@ const Header: React.FC<HeaderProps> = ({
                   handleSearchSubmit();
                 }
               }}
-              placeholder="Tìm kiếm: 'iPhone 16', 'Sạc GaN 65W', 'AirPods', 'MagSafe', 'S24 Ultra'..." 
+              placeholder="Tìm kiếm iPhone 6 -> 18 Pro Max, sạc Apple 20W, AirPods Pro 2..." 
               className="w-full px-3 py-1.5 text-surface-base text-sm focus-visible:outline-text-secondary"
             />
             {searchTerm && (
@@ -352,7 +352,7 @@ const Header: React.FC<HeaderProps> = ({
           </div>
           
           <div className="flex text-xs text-white/90 mt-1 space-x-3 overflow-hidden whitespace-nowrap">
-            {['iPhone 16 Pro', 'Samsung S24 Ultra', 'Củ Sạc GaN 65W', 'Tai Nghe Chống Ồn', 'Sạc Dự Phòng MagSafe', 'Ốp Lưng UAG', 'Kính Cường Lực'].map((tag) => (
+            {['iPhone 18 Pro Max', 'iPhone 16 Pro Max', 'iPhone 15 Pro', 'iPhone 13', 'iPhone 8 Plus', 'Sạc Apple 20W', 'AirPods Pro 2'].map((tag) => (
               <button
                 key={tag}
                 type="button"

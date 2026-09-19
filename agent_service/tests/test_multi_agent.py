@@ -163,7 +163,7 @@ def test_vector_db_api_endpoints():
 
     # Test POST /api/vector-db/search
     search_resp = client.post('/api/vector-db/search', json={
-        "query": "củ sạc nhanh GaN 65W",
+        "query": "củ sạc nhanh apple 35w dual",
         "type": "products",
         "top_k": 3
     })
@@ -177,15 +177,15 @@ def test_recommendation_agent_cross_sell():
     bus = StructuredMessageBus()
     rec_agent = RecommendationAgent(bus)
 
-    # Test Cross-sell: Mua Smartphone -> gợi ý củ sạc GaN / Cáp / Ốp
-    primary = {"id": "PHONE-001", "name": "iPhone 16 Pro Max 256GB Titan Tự Nhiên", "category": "Điện Thoại"}
+    # Test Cross-sell: Mua Smartphone -> gợi ý củ sạc Apple / Cáp / Ốp
+    primary = {"id": "PHONE-035", "name": "iPhone 16 Pro Max 256GB Titan Tự Nhiên", "category": "iPhone 16 Series"}
     cross_sell = rec_agent.recommend_cross_sell(primary, top_k=2)
     assert len(cross_sell) > 0
     # Không gợi ý lại đúng chiếc điện thoại đó
     assert all(it["id"] != primary["id"] for it in cross_sell)
 
     # Test Combo recommendation
-    combo = rec_agent.recommend_outfit(occasion="office", max_price=2000000)
+    combo = rec_agent.recommend_outfit(occasion="office", max_price=50000000)
     assert "items" in combo
     assert len(combo["items"]) >= 2
     assert combo["totalPrice"] > 0
@@ -198,7 +198,7 @@ def test_critic_agent_revise_decision():
     # Giả lập sản phẩm vi phạm ngân sách khách yêu cầu (ngân sách 200k, sản phẩm 30tr)
     reasoning_mock = {
         "draft_message": "Gợi ý smartphone cao cấp",
-        "candidate_products": [{"id": "PHONE-001", "name": "iPhone 16 Pro Max", "price": 34990000}],
+        "candidate_products": [{"id": "PHONE-035", "name": "iPhone 16 Pro Max", "price": 34990000}],
         "entities": {"max_price": 200000},
         "intent": "PRODUCT_SEARCH"
     }

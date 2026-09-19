@@ -9,12 +9,16 @@ interface ProductGridProps {
 
 const CATEGORY_ICONS: Record<string, string> = {
   'ALL': '🌟',
-  'Thời trang nam': '👔',
-  'Thời trang nữ': '👗',
-  'Áo khoác & Hoodie': '🧥',
-  'Giày dép': '👟',
-  'Túi xách': '🎒',
-  'Phụ kiện': '🕶️'
+  'iPhone 17 & 18 Series': '🚀',
+  'iPhone 16 Series': '🌟',
+  'iPhone 15 Series': '💎',
+  'iPhone 14 Series': '📱',
+  'iPhone 13 Series': '✨',
+  'iPhone 12 Series': '⚡',
+  'iPhone 11 Series': '🎯',
+  'iPhone Tràn Viền & Face ID': '👑',
+  'iPhone Cổ Điển & Sưu Tầm': '🕰️',
+  'Phụ Kiện Apple Chính Hãng': '🎧'
 };
 
 const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
@@ -43,10 +47,10 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
               name: p.name,
               currentPrice: rawPrice,
               originalPrice: originalPrice,
-              image: p.image_url || (p.images && p.images[0]) || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
+              image: p.image_url || (p.images && p.images[0]) || 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=600',
               soldCount: Number(p.soldCount) || Math.floor(Math.random() * 500) + 50,
               rating: Number(p.rating) || 4.9,
-              category: p.categoryName || p.category || 'Thời trang nam',
+              category: p.categoryName || p.category || 'iPhone 16 Series',
               discountBadge: discountPercent > 0 ? `-${discountPercent}%` : undefined
             };
           });
@@ -83,7 +87,19 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
       counts[cat] = (counts[cat] || 0) + 1;
     });
 
-    const definedCats = ['ALL', 'Thời trang nam', 'Thời trang nữ', 'Áo khoác & Hoodie', 'Giày dép', 'Túi xách', 'Phụ kiện'];
+    const definedCats = [
+      'ALL',
+      'iPhone 17 & 18 Series',
+      'iPhone 16 Series',
+      'iPhone 15 Series',
+      'iPhone 14 Series',
+      'iPhone 13 Series',
+      'iPhone 12 Series',
+      'iPhone 11 Series',
+      'iPhone Tràn Viền & Face ID',
+      'iPhone Cổ Điển & Sưu Tầm',
+      'Phụ Kiện Apple Chính Hãng'
+    ];
     const extraCats = Object.keys(counts).filter(c => !definedCats.includes(c));
     return [...definedCats, ...extraCats].filter(c => counts[c] !== undefined);
   }, [products]);

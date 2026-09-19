@@ -1,16 +1,16 @@
 import React from 'react';
 
 const mockCategories = [
-  { id: 1, name: "Điện Thoại Thông Minh", icon: "📱", keyword: "Điện Thoại" },
-  { id: 2, name: "Củ Sạc Nhanh GaN", icon: "⚡", keyword: "Củ Sạc" },
-  { id: 3, name: "Cáp Sạc & Dây Cáp", icon: "🔌", keyword: "Cáp Sạc" },
-  { id: 4, name: "Pin Sạc Dự Phòng", icon: "🔋", keyword: "Sạc Dự Phòng" },
-  { id: 5, name: "Tai Nghe & Âm Thanh", icon: "🎧", keyword: "Tai Nghe" },
-  { id: 6, name: "Ốp Lưng & Bao Da", icon: "🛡️", keyword: "Ốp Lưng" },
-  { id: 7, name: "Kính Cường Lực & Dán PPF", icon: "🪟", keyword: "Cường Lực" },
-  { id: 8, name: "Trạm Sạc Không Dây", icon: "🧲", keyword: "Trạm Sạc" },
-  { id: 9, name: "Giá Đỡ & Gimbal AI", icon: "📐", keyword: "Giá Đỡ" },
-  { id: 10, name: "Phụ Kiện Tiện Ích", icon: "✨", keyword: "Phụ Kiện" },
+  { id: 1, name: "iPhone 17 & 18", icon: "🚀", keyword: "iPhone 17 & 18 Series" },
+  { id: 2, name: "iPhone 16 Series", icon: "🌟", keyword: "iPhone 16 Series" },
+  { id: 3, name: "iPhone 15 Series", icon: "💎", keyword: "iPhone 15 Series" },
+  { id: 4, name: "iPhone 14 Series", icon: "📱", keyword: "iPhone 14 Series" },
+  { id: 5, name: "iPhone 13 Series", icon: "✨", keyword: "iPhone 13 Series" },
+  { id: 6, name: "iPhone 12 Series", icon: "⚡", keyword: "iPhone 12 Series" },
+  { id: 7, name: "iPhone 11 Series", icon: "🎯", keyword: "iPhone 11 Series" },
+  { id: 8, name: "iPhone X / XS / XR", icon: "👑", keyword: "iPhone Tràn Viền & Face ID" },
+  { id: 9, name: "iPhone 6 / 7 / 8", icon: "🕰️", keyword: "iPhone Cổ Điển & Sưu Tầm" },
+  { id: 10, name: "Phụ Kiện Apple", icon: "🎧", keyword: "Phụ Kiện Apple Chính Hãng" },
 ];
 
 const Categories: React.FC = () => {

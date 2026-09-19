@@ -159,10 +159,10 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
     },
     quickPromptChips: (context) => {
       const chips = [
-        '⚡ Combo phụ kiện cần thiết cho iPhone 16',
-        '🎮 Combo Smartphone Gaming độ trễ thấp',
-        '💼 Combo Doanh nhân sạc nhanh đa thiết bị',
-        '🎬 Combo Vlogger & Livestream chuyên nghiệp'
+        '⚡ Combo phụ kiện Apple cho iPhone 18 Pro Max',
+        '💼 Combo sạc nhanh Apple 35W & Ốp MagSafe',
+        '🎧 Combo AirPods Pro 2 & Cáp sạc dù Apple',
+        '📱 So sánh iPhone 16 Pro Max vs iPhone 18 Pro Max'
       ];
       if (context?.cartItems && context.cartItems.length > 0) {
         chips.unshift(`🛍️ Gợi ý phụ kiện cho "${context.cartItems[0].name.slice(0, 22)}..."`);
@@ -174,24 +174,24 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
   FITTING: {
     id: 'FITTING',
     name: 'Ken TechSpec',
-    roleTitle: 'Chuyên Viên Thông Số & Kiểm Tra Tương Thích',
+    roleTitle: 'Chuyên Viên Thông Số Kỹ Thuật Apple',
     avatar: '🔬',
-    badge: 'Compatibility AI',
+    badge: 'Apple Spec AI',
     accentColor: 'emerald',
     themeGradient: 'from-emerald-500 via-teal-500 to-cyan-600',
-    description: 'Kiểm tra tương thích chuẩn sạc nhanh (PD, PPS, MagSafe, Qi2), cổng kết nối (Type-C vs Lightning) và so sánh cấu hình máy.',
+    description: 'Kiểm tra tương thích chuẩn sạc Apple (MagSafe 25W, sạc nhanh 20W/35W, USB-C vs Lightning) và so sánh thông số các đời iPhone từ iPhone 6 đến 18 Pro Max.',
     getGreeting: (context) => {
       const name = context?.customerProfile?.name || context?.currentUser?.name;
-      let greeting = `🔬 Chào${name ? ` **${name}**` : ''}! Tôi là **Ken TechSpec** - Chuyên viên kiểm tra tương thích & tư vấn thông số kỹ thuật chuẩn xác tại ZShop.\n\n`;
-      greeting += `💡 Tôi có thể giúp bạn giải đáp mọi thắc mắc kỹ thuật: củ sạc có kích hoạt được sạc siêu nhanh 45W cho Samsung không, cáp sạc có dùng được cho iPhone 15/16 không, hoặc so sánh chi tiết chip/RAM/camera giữa các dòng máy. Bạn đang quan tâm sản phẩm nào?`;
+      let greeting = `🔬 Chào${name ? ` **${name}**` : ''}! Tôi là **Ken TechSpec** - Chuyên viên kiểm tra tương thích & tư vấn thông số kỹ thuật chuẩn Apple tại ZShop.\n\n`;
+      greeting += `💡 Tôi có thể giúp bạn giải đáp mọi thắc mắc kỹ thuật: iPhone 15/16/17/18 dùng cổng USB-C hay Lightning, củ sạc 20W/35W sạc được cho những đời máy nào, hoặc so sánh chi tiết camera/chip A-series giữa các dòng iPhone từ iPhone 6 đến iPhone 18 Pro Max. Bạn đang quan tâm dòng máy nào?`;
       return greeting;
     },
     quickPromptChips: () => {
       return [
-        'Củ sạc này có sạc nhanh 45W cho Samsung S24 không?',
-        'Cáp sạc Type-C này có dùng được cho iPhone 15/16?',
-        'So sánh iPhone 16 Pro Max vs Galaxy S24 Ultra',
-        'Nên chọn dung lượng 128GB hay 256GB?'
+        'Củ sạc Apple 20W có dùng được cho iPhone 11 và iPhone 13?',
+        'iPhone 15 và 16 dùng cáp USB-C hay Lightning?',
+        'So sánh iPhone 16 Pro Max vs iPhone 18 Pro Max',
+        'iPhone 8 Plus và iPhone X còn dùng tốt các app cơ bản không?'
       ];
     }
   },
@@ -199,21 +199,21 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
   ORDERS: {
     id: 'ORDERS',
     name: 'Logistics Alex',
-    roleTitle: 'Chuyên Viên Vận Chuyển & Bảo Hành IMEI',
+    roleTitle: 'Chuyên Viên Đơn Hàng & AppleCare+ IMEI',
     avatar: '📦',
     badge: 'Tracking & Warranty AI',
     accentColor: 'blue',
     themeGradient: 'from-blue-600 via-indigo-600 to-cyan-700',
-    description: 'Theo dõi lộ trình giao hỏa tốc 2 giờ, tra cứu bảo hành điện tử chính hãng theo IMEI/Serial và chính sách 1 đổi 1.',
+    description: 'Theo dõi lộ trình giao hỏa tốc 2 giờ, tra cứu bảo hành Apple Care+ chính hãng theo IMEI/Serial và chính sách 1 đổi 1 trong 30 ngày.',
     getGreeting: (context) => {
       const name = context?.customerProfile?.name || context?.currentUser?.name;
       const orders = context?.customerOrders || [];
-      let greeting = `📦 Kính chào${name ? ` anh/chị **${name}**` : ''}! Tôi là **Logistics Alex** - Chuyên viên hỗ trợ Đơn hàng, Vận chuyển & Bảo hành ZShop.\n\n`;
+      let greeting = `📦 Kính chào${name ? ` anh/chị **${name}**` : ''}! Tôi là **Logistics Alex** - Chuyên viên hỗ trợ Đơn hàng Apple, Vận chuyển & Bảo hành IMEI ZShop.\n\n`;
       if (orders.length > 0) {
         const latest = orders[0];
-        greeting += `🔍 Tôi đã tìm thấy đơn hàng gần nhất của bạn: **[${latest.id}]** đặt ngày **${new Date(latest.createdAt).toLocaleDateString('vi-VN')}**.\nBạn có muốn kiểm tra lộ trình giao hàng hoặc thông tin kích hoạt bảo hành điện tử không?`;
+        greeting += `🔍 Tôi đã tìm thấy đơn hàng gần nhất của bạn: **[${latest.id}]** đặt ngày **${new Date(latest.createdAt).toLocaleDateString('vi-VN')}**.\nBạn có muốn kiểm tra lộ trình giao hàng hoặc thông tin kích hoạt bảo hành Apple Care+ theo IMEI không?`;
       } else {
-        greeting += `Tôi có thể giúp bạn tra cứu hành trình giao hàng hỏa tốc 2 giờ, kích hoạt bảo hành điện tử chính hãng theo IMEI hoặc hỗ trợ quy trình 1 đổi 1 trong 30 ngày (UC10).`;
+        greeting += `Tôi có thể giúp bạn tra cứu hành trình giao hàng hỏa tốc 2 giờ, kích hoạt bảo hành Apple Care+ chính hãng theo Serial/IMEI hoặc hỗ trợ quy trình 1 đổi 1 trong 30 ngày (UC10).`;
       }
       return greeting;
     },
@@ -227,8 +227,8 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
         ];
       }
       return [
-        'Tra cứu đơn hàng gần nhất của tôi',
-        'Kiểm tra bảo hành điện tử theo IMEI',
+        'Tra cứu đơn hàng iPhone gần nhất của tôi',
+        'Kiểm tra bảo hành Apple Care+ theo IMEI',
         'Chính sách lỗi 1 đổi 1 trong 30 ngày'
       ];
     }
@@ -464,11 +464,12 @@ export class AISkillEngine {
     if (cartItems.length > 0 && (query.includes('giỏ hàng') || query.includes('món trong giỏ') || query.includes('phụ kiện cho') || query.includes('gợi ý phụ kiện'))) {
       const cartItem = cartItems[0];
       const matchedMain = catalog.find(p => p.id === cartItem.id || p.name === cartItem.name) || catalog[0];
-      const isPhone = (matchedMain.category && matchedMain.category.toLowerCase().includes('thoại')) || matchedMain.name.toLowerCase().includes('iphone') || matchedMain.name.toLowerCase().includes('galaxy');
+      const isPhone = matchedMain.name.toLowerCase().includes('iphone');
       
       let accessories = catalog.filter(p => {
         const cat = (p.category || '').toLowerCase();
-        return cat.includes('sạc') || cat.includes('cáp') || cat.includes('ốp') || cat.includes('cường lực');
+        const nm = p.name.toLowerCase();
+        return nm.includes('sạc') || nm.includes('cáp') || nm.includes('ốp') || nm.includes('cường lực') || cat.includes('phụ kiện');
       }).slice(0, 2);
 
       if (accessories.length < 2) {
@@ -480,89 +481,89 @@ export class AISkillEngine {
 
       return {
         id: `tech-combo-cart-${Date.now()}`,
-        title: `Combo Phụ Kiện Chuẩn Tương Thích Cùng "${matchedMain.name.slice(0, 25)}..."`,
-        style: isPhone ? 'Flagship Full Protection & Fast Charge' : 'High Performance Gear',
-        occasion: 'Sạc nhanh an toàn, chống va đập toàn diện',
-        description: `Alex TechPro đã ghép nối thêm củ sạc GaN và phụ kiện tương thích 100% công suất cho thiết bị của bạn, đạt chuẩn PD/PPS an toàn pin.`,
+        title: `Combo Phụ Kiện Apple Chính Hãng Cho "${matchedMain.name.slice(0, 25)}..."`,
+        style: 'Apple Ecosystem Genuine Fast Charge & Protection',
+        occasion: 'Sạc nhanh an toàn với chuẩn sạc Apple, bảo vệ toàn diện',
+        description: `Alex TechPro đã ghép nối củ sạc Apple chính hãng và phụ kiện tương thích 100% công suất cho iPhone của bạn, đảm bảo an toàn pin tối đa.`,
         items: comboItems,
         totalPrice,
         discountPrice: Math.round(totalPrice * 0.92)
       };
     }
 
-    // 2. Combo Gaming độ trễ thấp
-    if (query.includes('gaming') || query.includes('chơi game') || query.includes('game thủ') || query.includes('fps')) {
+    // 2. Combo Gaming & Giải Trí Âm Thanh
+    if (query.includes('gaming') || query.includes('chơi game') || query.includes('game thủ') || query.includes('tai nghe') || query.includes('âm thanh')) {
       const items = catalog.filter(p => 
-        p.name.includes('Gaming') || p.name.includes('Tai Nghe') || p.name.includes('Sạc Nhanh 100W') || p.name.includes('ROG')
-      ).slice(0, 3);
+        p.id === 'PHONE-035' || p.id === 'APPLE-ACC-007' || p.id === 'APPLE-ACC-003'
+      );
       const comboItems = items.length >= 2 ? items : catalog.slice(0, 3);
       const totalPrice = comboItems.reduce((acc, item) => acc + item.price, 0);
 
       return {
-        id: 'combo-gaming-pro',
-        title: 'Combo Chiến Game Đỉnh Cao (Độ Trễ Siêu Thấp & Tản Nhiệt Tốt)',
-        style: 'Gaming Ultra-Low Latency & Fast Charging',
-        occasion: 'Leo rank, chơi game đồ họa cao kéo dài mà không lo nóng máy hay tụt pin',
-        description: 'Tập hợp phụ kiện cáp sạc góc gập 90 độ chống cấn tay, củ sạc công suất cao và tai nghe hỗ trợ Gaming Mode độ trễ cực thấp.',
+        id: 'combo-gaming-apple',
+        title: 'Combo Apple Pro Gaming & Âm Thanh Không Dây (iPhone 16 Pro Max + AirPods Pro 2)',
+        style: 'Apple Spatial Audio & High Refresh Rate Gaming',
+        occasion: 'Chơi game đồ họa cao mượt mà với chip A18 Pro và âm thanh không gian sống động',
+        description: 'iPhone 16 Pro Max màn hình Super Retina XDR 120Hz kết hợp AirPods Pro 2 chống ồn chủ động và cáp bọc dù bền bỉ.',
         items: comboItems,
         totalPrice,
-        discountPrice: Math.round(totalPrice * 0.9)
+        discountPrice: Math.round(totalPrice * 0.95)
       };
     }
 
     // 3. Combo Doanh nhân / Công sở MagSafe
     if (query.includes('công sở') || query.includes('văn phòng') || query.includes('doanh nhân') || query.includes('magsafe') || query.includes('đa thiết bị')) {
       const items = catalog.filter(p => 
-        p.name.includes('GaN 65W') || p.name.includes('MagSafe') || p.name.includes('UAG') || p.name.includes('Cáp Sạc Nhanh Type-C')
-      ).slice(0, 3);
+        p.id === 'PHONE-035' || p.id === 'APPLE-ACC-002' || p.id === 'APPLE-ACC-009'
+      );
       const comboItems = items.length >= 2 ? items : catalog.slice(0, 3);
       const totalPrice = comboItems.reduce((acc, item) => acc + item.price, 0);
 
       return {
         id: 'combo-office-magsafe',
-        title: 'Combo Doanh Nhân Văn Phòng Sạc Nhanh Đa Thiết Bị',
-        style: 'Executive Multi-Device Fast Charge & Wireless',
-        occasion: 'Làm việc văn phòng, công tác, họp hành và di chuyển liên tục',
-        description: 'Bộ củ sạc GaN 3 cổng đa năng cấp nguồn đồng thời cho Laptop/iPad/Điện thoại cùng sạc dự phòng không dây MagSafe chuẩn Qi2.',
+        title: 'Combo Doanh Nhân Đẳng Cấp (iPhone 16 Pro Max + Sạc Apple 35W Dual + Ốp MagSafe)',
+        style: 'Executive Apple MagSafe Ecosystem',
+        occasion: 'Làm việc văn phòng, công tác và di chuyển liên tục',
+        description: 'Bộ đôi củ sạc 35W 2 cổng USB-C chính hãng và ốp lưng Silicone MagSafe bảo vệ máy sang trọng.',
         items: comboItems,
         totalPrice,
-        discountPrice: Math.round(totalPrice * 0.9)
+        discountPrice: Math.round(totalPrice * 0.95)
       };
     }
 
     // 4. Combo Vlogger / Creator Livestream
     if (query.includes('vlog') || query.includes('quay phim') || query.includes('livestream') || query.includes('creator') || query.includes('youtube')) {
       const items = catalog.filter(p => 
-        p.name.includes('Gimbal') || p.name.includes('Giá Đỡ') || p.name.includes('100W') || p.name.includes('Tai Nghe')
-      ).slice(0, 3);
+        p.id === 'PHONE-035' || p.id === 'APPLE-ACC-008' || p.id === 'APPLE-ACC-006'
+      );
       const comboItems = items.length >= 2 ? items : catalog.slice(0, 3);
       const totalPrice = comboItems.reduce((acc, item) => acc + item.price, 0);
 
       return {
         id: 'combo-vlogger-creator',
-        title: 'Combo Sáng Tạo Nội Dung & Livestream Bắt Mọi Khung Hình',
-        style: 'Pro Creator & Streaming Kit',
-        occasion: 'Quay Tiktok, Youtube vlog, livestream bán hàng chống rung chuyên nghiệp',
-        description: 'Bao gồm gimbal chống rung thông minh kèm chân tripod, nguồn sạc liên tục và micro/tai nghe lọc tạp âm công nghệ AI.',
+        title: 'Combo Sáng Tạo Nội Dung Điện Ảnh (iPhone 16 Pro Max + AirPods Max + MagSafe Battery)',
+        style: 'Pro Cinematic Video & Sound Creation Kit',
+        occasion: 'Quay video 4K 120fps ProRes, dựng vlog và di chuyển cả ngày',
+        description: 'iPhone 16 Pro Max quay phim điện ảnh kèm Pin dự phòng MagSafe cấp nguồn liên tục và AirPods Max kiểm âm chất lượng studio.',
         items: comboItems,
         totalPrice,
-        discountPrice: Math.round(totalPrice * 0.9)
+        discountPrice: Math.round(totalPrice * 0.95)
       };
     }
 
     // 5. Combo Mặc định: Bộ trang bị cơ bản bảo vệ toàn diện (Budget Starter Kit)
     const defaultItems = catalog.filter(p => 
-      p.name.includes('GaN') || p.name.includes('Cáp') || p.name.includes('Kính Cường Lực') || p.name.includes('Ốp Lưng')
-    ).slice(0, 3);
+      p.id === 'PHONE-003' || p.id === 'APPLE-ACC-001' || p.id === 'APPLE-ACC-010'
+    );
     const finalItems = defaultItems.length >= 2 ? defaultItems : catalog.slice(0, 3);
     const totalPrice = finalItems.reduce((acc, item) => acc + item.price, 0);
 
     return {
       id: 'combo-essential-starter',
-      title: 'Combo Trang Bị Thiết Yếu (Sạc GaN Chuẩn PD + Kính Cường Lực)',
-      style: 'All-in-One Daily Protection & Fast Charging',
-      occasion: 'Sử dụng hằng ngày, bảo vệ chống va đập và rút ngắn 60% thời gian sạc',
-      description: 'Bộ phụ kiện phải có khi sắm máy mới: củ sạc GaN nhỏ gọn mát máy, cáp sạc bọc dù chống đứt gãy và kính cường lực chống trầy xước.',
+      title: 'Combo Apple Tiết Kiệm & Bền Bỉ (iPhone 6s + Sạc Apple 20W + Kính Cường Lực)',
+      style: 'All-in-One Apple Daily Protection & Fast Charging',
+      occasion: 'Sử dụng hằng ngày, máy phụ nhỏ gọn hoặc sưu tầm hoài niệm',
+      description: 'Củ sạc chính hãng Apple 20W Type-C cùng miếng dán cường lực Apple Care+ Shield bảo vệ màn hình tối đa.',
       items: finalItems,
       totalPrice,
       discountPrice: Math.round(totalPrice * 0.92)

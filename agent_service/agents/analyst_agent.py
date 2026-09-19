@@ -120,27 +120,42 @@ class AnalystAgent:
 
     def _extract_keywords(self, text: str) -> List[str]:
         known_kw = [
-            # Smartphone Brands & Models
-            "iphone 16", "iphone 15", "iphone", "galaxy s24", "s24 ultra", "galaxy a55", "samsung",
-            "xiaomi 14", "redmi note", "xiaomi", "oppo reno", "oppo", "vivo v30", "vivo",
-            # Chargers & Power
-            "củ sạc nhanh", "cu sac nhanh", "củ sạc", "cu sac", "cốc sạc", "coc sac", "gan 65w", "gan 100w", "gan 30w", "gan",
-            "anker", "baseus", "ugreen", "sạc 45w", "sac 45w", "sạc 20w", "sac 20w", "tẩu sạc", "tau sac",
-            # Cables
-            "cáp sạc", "cap sac", "dây sạc", "day sac", "c to c", "type-c to lightning", "cáp 3 trong 1", "cap 3 trong 1",
-            # Power banks
-            "sạc dự phòng", "sac du phong", "pin dự phòng", "pin du phong", "magsafe", "shargeek",
-            # Audio
-            "tai nghe bluetooth", "tai nghe", "airpods pro", "airpods", "galaxy buds", "buds fe", "sony wh-1000xm5", "sony", "loa bluetooth", "loa jbl", "jbl",
-            # Cases & Protectors
-            "ốp lưng", "op lung", "uag", "spigen", "hoda", "bao da", "kính cường lực", "kinh cuong luc", "cường lực", "cuong luc", "kingkong", "ppf",
-            # Stands & Gadgets
-            "trạm sạc", "tram sac", "gimbal", "giá đỡ", "gia do", "otg", "combo", "bộ phụ kiện"
+            # iPhone Models (iPhone 18 down to iPhone 6)
+            "iphone 18 pro max", "iphone 18 pro", "iphone 18", "18 pro max", "18prm", "18 pro", "ip18",
+            "iphone 17 pro max", "iphone 17 pro", "iphone 17", "17 pro max", "17prm", "17 pro", "ip17",
+            "iphone 16 pro max", "iphone 16 pro", "iphone 16 plus", "iphone 16", "16 pro max", "16prm", "16 pro", "ip16",
+            "iphone 15 pro max", "iphone 15 pro", "iphone 15 plus", "iphone 15", "15 pro max", "15prm", "15 pro", "ip15",
+            "iphone 14 pro max", "iphone 14 pro", "iphone 14 plus", "iphone 14", "14 pro max", "14prm", "14 pro", "ip14",
+            "iphone 13 pro max", "iphone 13 pro", "iphone 13 mini", "iphone 13", "13 pro max", "13prm", "13 pro", "ip13",
+            "iphone 12 pro max", "iphone 12 pro", "iphone 12 mini", "iphone 12", "12 pro max", "12prm", "12 pro", "ip12",
+            "iphone 11 pro max", "iphone 11 pro", "iphone 11", "11 pro max", "11prm", "11 pro", "ip11",
+            "iphone xs max", "iphone xs", "iphone xr", "iphone x", "xs max", "ipx", "ipxr", "ipxs",
+            "iphone 8 plus", "iphone 8", "8 plus", "8p", "ip8",
+            "iphone 7 plus", "iphone 7", "7 plus", "7p", "ip7",
+            "iphone 6s plus", "iphone 6s", "iphone 6 plus", "iphone 6", "6s plus", "6 plus", "ip6", "ip6s", "iphone", "apple",
+            # Apple Colors
+            "titan sa mạc", "desert titanium", "titan tự nhiên", "natural titanium", "deep purple", "tím đậm",
+            "sierra blue", "xanh sierra", "pacific blue", "xanh thái bình dương", "midnight green", "xanh bóng đêm",
+            "rose gold", "vàng hồng", "jet black", "đen bóng", "product red", "gốm", "ceramic",
+            # Apple Accessories & Power
+            "sạc apple 20w", "sạc 20w", "củ sạc apple", "củ sạc 35w", "củ sạc nhanh", "củ sạc", "sạc nhanh", "sạc", "gan",
+            "cáp type-c apple", "cáp lightning", "cáp sạc bọc dù", "cáp sạc", "dây sạc",
+            "magsafe", "sạc magsafe", "pin magsafe", "battery pack",
+            "airpods pro 2", "airpods max", "airpods pro", "airpods", "tai nghe apple", "tai nghe",
+            "ốp silicone apple", "ốp magsafe", "ốp lưng apple", "ốp lưng",
+            "kính cường lực apple", "cường lực apple", "kính cường lực", "cường lực", "miếng dán",
+            "combo", "bộ phụ kiện", "combo apple"
         ]
         found = []
         for kw in known_kw:
             if kw in text:
                 found.append(kw)
+        
+        # Nếu đã có từ khóa model iPhone cụ thể (như "iphone 18", "iphone 6"), loại bỏ từ khóa chung "iphone", "apple"
+        has_specific_iphone = any(kw.startswith("iphone ") or kw.startswith("ip") or "plus" in kw or "pro" in kw for kw in found if kw not in ["iphone", "apple"])
+        if has_specific_iphone:
+            found = [kw for kw in found if kw not in ["iphone", "apple"]]
+
         return found
 
     def _extract_max_price(self, text: str) -> Optional[float]:
@@ -168,22 +183,10 @@ class AnalystAgent:
         return None
 
     def _detect_category(self, text: str) -> Optional[str]:
-        if any(w in text for w in ["điện thoại", "dien thoai", "smartphone", "iphone", "samsung", "xiaomi", "redmi", "oppo", "vivo"]):
-            return "Điện Thoại Thông Minh"
-        if any(w in text for w in ["củ sạc", "cu sac", "cốc sạc", "coc sac", "bộ sạc", "bo sac", "sạc nhanh", "gan"]):
-            return "Củ Sạc & Bộ Sạc Nhanh"
-        if any(w in text for w in ["cáp sạc", "cap sac", "dây sạc", "day sac", "dây cáp", "day cap", "type-c", "lightning", "c to c"]):
-            return "Cáp Sạc & Dây Cáp"
-        if any(w in text for w in ["sạc dự phòng", "sac du phong", "pin dự phòng", "pin du phong", "powerbank"]):
-            return "Pin Sạc Dự Phòng"
-        if any(w in text for w in ["tai nghe", "airpods", "buds", "headphone", "loa", "jbl", "sony"]):
-            return "Tai Nghe & Âm Thanh"
-        if any(w in text for w in ["ốp lưng", "op lung", "bao da", "uag", "spigen"]):
-            return "Ốp Lưng & Bao Da"
-        if any(w in text for w in ["kính cường lực", "kinh cuong luc", "cường lực", "cuong luc", "dán màn hình", "dan man hinh", "ppf", "kingkong"]):
-            return "Kính Cường Lực & Dán Màn Hình"
-        if any(w in text for w in ["giá đỡ", "gia do", "gimbal", "trạm sạc", "tram sac", "otg"]):
-            return "Giá Đỡ & Trạm Sạc"
+        if any(w in text for w in ["phụ kiện", "phu kien", "tai nghe", "airpods", "củ sạc", "cu sac", "cáp sạc", "cap sac", "magsafe", "ốp", "op", "cường lực", "cuong luc", "dán"]):
+            return "Phụ Kiện"
+        if any(w in text for w in ["iphone", "ip", "điện thoại", "dien thoai", "smartphone", "máy"]):
+            return "iPhone"
         return None
 
     def _extract_order_id(self, text: str) -> Optional[str]:
@@ -193,9 +196,19 @@ class AnalystAgent:
         return None
 
     def _extract_measurements(self, text: str) -> Dict[str, Any]:
-        h_match = re.search(r'(?:cao|m8|m7|m6)?\s*(\d{2,3})\s*(?:cm)?', text)
-        w_match = re.search(r'(?:nặng)?\s*(\d{2})\s*(?:kg)?', text)
+        h_match = re.search(r'(?:cao\s*(\d{2,3})\s*(?:cm)?)|(?:1m(\d{2}))|(?:(\d{3})\s*cm)', text)
+        height = None
+        if h_match:
+            if h_match.group(1):
+                height = int(h_match.group(1))
+            elif h_match.group(2):
+                height = 100 + int(h_match.group(2))
+            elif h_match.group(3):
+                height = int(h_match.group(3))
+
+        w_match = re.search(r'(?:nặng\s*(\d{2,3})\s*(?:kg|kí|ký)?)|(?:(\d{2,3})\s*(?:kg|kí|ký))', text)
+        weight = int(w_match.group(1) or w_match.group(2)) if w_match else None
         return {
-            "height": int(h_match.group(1)) if h_match else None,
-            "weight": int(w_match.group(1)) if w_match else None
+            "height": height,
+            "weight": weight
         }

@@ -40,18 +40,12 @@ class RecommendationAgent:
         p_id = primary_product.get("id")
 
         target_categories = []
-        if "điện thoại" in cat.lower():
-            target_categories = ["Củ Sạc & Bộ Sạc Nhanh", "Ốp Lưng & Bao Da", "Kính Cường Lực & Dán Màn Hình"]
-        elif "củ sạc" in cat.lower():
-            target_categories = ["Cáp Sạc & Dây Cáp", "Pin Sạc Dự Phòng"]
-        elif "cáp sạc" in cat.lower():
-            target_categories = ["Củ Sạc & Bộ Sạc Nhanh", "Pin Sạc Dự Phòng"]
-        elif "pin sạc" in cat.lower():
-            target_categories = ["Cáp Sạc & Dây Cáp", "Củ Sạc & Bộ Sạc Nhanh"]
-        elif "tai nghe" in cat.lower():
-            target_categories = ["Giá Đỡ & Trạm Sạc", "Củ Sạc & Bộ Sạc Nhanh"]
+        if "iphone" in cat.lower():
+            target_categories = ["Phụ Kiện Apple Chính Hãng"]
+        elif "phụ kiện" in cat.lower() or "sạc" in cat.lower():
+            target_categories = ["iPhone 16 Series", "iPhone 15 Series", "iPhone 14 Series", "iPhone 13 Series"]
         else:
-            target_categories = ["Cáp Sạc & Dây Cáp", "Củ Sạc & Bộ Sạc Nhanh"]
+            target_categories = ["Phụ Kiện Apple Chính Hãng"]
 
         recommendations = []
         for p in self.catalog:
@@ -71,7 +65,7 @@ class RecommendationAgent:
         max_price: Optional[float] = None
     ) -> Dict[str, Any]:
         """
-        Xây dựng Combo thiết bị & phụ kiện công nghệ đồng bộ theo nhu cầu và ngân sách.
+        Xây dựng Combo thiết bị & phụ kiện Apple chính hãng đồng bộ theo nhu cầu và ngân sách.
         """
         occasion = (occasion or "office").lower()
         top_item = None
@@ -79,36 +73,36 @@ class RecommendationAgent:
         accessory_item = None
 
         if "gaming" in occasion:
-            title = "Combo Smartphone Gaming & Phụ Kiện Độ Trễ Thấp"
-            style = "High Performance Gaming"
-            desc = "Sự phối hợp giữa Smartphone cấu hình mạnh, cáp sạc chữ L chống cấn tay và tai nghe gaming độ trễ siêu thấp."
-            top_item = self._find_by_id_or_keyword(["PHONE-005", "PHONE-006", "PHONE-004"])
-            bottom_item = self._find_by_id_or_keyword(["CABLE-005", "CHARGER-005"])
-            accessory_item = self._find_by_id_or_keyword(["AUDIO-005", "POWER-003"])
+            title = "Combo iPhone Gaming Hiệu Năng Đỉnh Cao & AirPods Pro"
+            style = "Pro Apple Gaming & Entertainment"
+            desc = "Sự kết hợp giữa iPhone chip Apple A-Series Pro mượt mà, Cáp bọc dù siêu bền và Tai nghe AirPods Pro 2 chống ồn độ trễ thấp."
+            top_item = self._find_by_id_or_keyword(["PHONE-035", "PHONE-040", "PHONE-034", "PHONE-030"])
+            bottom_item = self._find_by_id_or_keyword(["APPLE-ACC-003", "APPLE-ACC-002"])
+            accessory_item = self._find_by_id_or_keyword(["APPLE-ACC-007", "APPLE-ACC-009"])
 
         elif "creator" in occasion or "vlogger" in occasion:
-            title = "Combo Sáng Tạo Nội Dung & Vlogger Chuyên Nghiệp"
-            style = "Pro Content Creator"
-            desc = "Trang bị Flagship camera siêu nét kết hợp Gimbal chống rung 3 trục AI và pin sạc dự phòng dung lượng lớn."
-            top_item = self._find_by_id_or_keyword(["PHONE-001", "PHONE-003"])
-            bottom_item = self._find_by_id_or_keyword(["STAND-002", "STAND-001"])
-            accessory_item = self._find_by_id_or_keyword(["POWER-002", "AUDIO-001"])
+            title = "Combo Sáng Tạo Nội Dung & Quay Phim Điện Ảnh Apple"
+            style = "Apple Cinematic & Content Pro"
+            desc = "iPhone Pro Max camera tiềm vọng 5x/10x quay phim Log chuẩn điện ảnh kết hợp Tai nghe AirPods Max và Sạc MagSafe từ tính."
+            top_item = self._find_by_id_or_keyword(["PHONE-035", "PHONE-038", "PHONE-040", "PHONE-031"])
+            bottom_item = self._find_by_id_or_keyword(["APPLE-ACC-008", "APPLE-ACC-007"])
+            accessory_item = self._find_by_id_or_keyword(["APPLE-ACC-006", "APPLE-ACC-005"])
 
-        elif "budget" in occasion or "tiết kiệm" in occasion:
-            title = "Combo Phụ Kiện Cơ Bản Tiết Kiệm (Starter Pack)"
-            style = "Essential Daily Pack"
-            desc = "Bộ ba phụ kiện không thể thiếu: Củ sạc nhanh 30W nhỏ gọn, Cáp sạc bọc dù chống đứt và Kính cường lực KingKong."
-            top_item = self._find_by_id_or_keyword(["CHARGER-006", "CHARGER-003"])
-            bottom_item = self._find_by_id_or_keyword(["CABLE-001", "CABLE-003"])
-            accessory_item = self._find_by_id_or_keyword(["SCREEN-001", "CASE-006"])
+        elif "budget" in occasion or "tiết kiệm" in occasion or "cổ" in occasion:
+            title = "Combo iPhone Tiết Kiệm & Phụ Kiện Cơ Bản (Starter Pack)"
+            style = "Essential Apple Pack"
+            desc = "Bộ ba tối ưu chi phí: iPhone máy phụ bền đẹp, Củ sạc Apple 20W chuẩn an toàn và Kính cường lực Apple Care+ Shield."
+            top_item = self._find_by_id_or_keyword(["PHONE-003", "PHONE-005", "PHONE-007", "PHONE-013"])
+            bottom_item = self._find_by_id_or_keyword(["APPLE-ACC-001", "APPLE-ACC-004"])
+            accessory_item = self._find_by_id_or_keyword(["APPLE-ACC-010", "APPLE-ACC-009"])
 
         else: # office / doanh nhân / mặc định
             title = "Combo Doanh Nhân & Công Sở Đa Năng MagSafe"
             style = "Smart Executive Tech"
-            desc = "Điện thoại cao cấp kết hợp Củ sạc GaN 65W 3 cổng sạc đồng thời Laptop/Phone và Ốp lưng MagSafe kháng ố vàng."
-            top_item = self._find_by_id_or_keyword(["PHONE-002", "PHONE-003", "PHONE-001"])
-            bottom_item = self._find_by_id_or_keyword(["CHARGER-001", "CHARGER-004"])
-            accessory_item = self._find_by_id_or_keyword(["CASE-002", "POWER-001"])
+            desc = "iPhone Flagship kết hợp Củ sạc Apple 35W Dual sạc đồng thời máy & tai nghe, cùng Ốp lưng Apple Silicone MagSafe sang trọng."
+            top_item = self._find_by_id_or_keyword(["PHONE-035", "PHONE-034", "PHONE-040", "PHONE-031"])
+            bottom_item = self._find_by_id_or_keyword(["APPLE-ACC-002", "APPLE-ACC-001"])
+            accessory_item = self._find_by_id_or_keyword(["APPLE-ACC-009", "APPLE-ACC-005", "APPLE-ACC-006"])
 
         items = [item for item in [top_item, bottom_item, accessory_item] if item is not None]
 
