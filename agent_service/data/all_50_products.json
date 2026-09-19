@@ -1,0 +1,702 @@
+[
+  {
+    "id": "NAM-001",
+    "name": "Áo Polo Nam Gucci Maxi GG Silk Cotton",
+    "category": "Thời trang nam",
+    "price": 12000000,
+    "originalPrice": 15000000,
+    "stock": 15,
+    "rating": 4.9,
+    "soldCount": 42,
+    "images": [
+      "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600"
+    ],
+    "description": "Áo polo nam chất liệu lụa cotton thượng hạng từ BST Maxi GG, form dáng chuẩn sang trọng."
+  },
+  {
+    "id": "NAM-002",
+    "name": "Áo Thun DIOR - Chính Hãng",
+    "category": "Thời trang nam",
+    "price": 1889000,
+    "originalPrice": 2400000,
+    "stock": 58,
+    "rating": 4.9,
+    "soldCount": 310,
+    "images": [
+      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600"
+    ],
+    "description": "Áo thun Dior thêu logo ngực tinh xảo, chất cotton 100% co giãn 4 chiều mềm mịn mát mẻ."
+  },
+  {
+    "id": "NAM-003",
+    "name": "Quần Jeans Slimfit Rách Gối Nam",
+    "category": "Thời trang nam",
+    "price": 550000,
+    "originalPrice": 750000,
+    "stock": 120,
+    "rating": 4.7,
+    "soldCount": 450,
+    "images": [
+      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600"
+    ],
+    "description": "Quần jeans nam form dáng slimfit tôn dáng, chất liệu denim co giãn nhẹ thoải mái vận động."
+  },
+  {
+    "id": "NAM-004",
+    "name": "Áo Sơ Mi Lụa Dài Tay Công Sở",
+    "category": "Thời trang nam",
+    "price": 450000,
+    "originalPrice": 600000,
+    "stock": 85,
+    "rating": 4.8,
+    "soldCount": 280,
+    "images": [
+      "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600"
+    ],
+    "description": "Áo sơ mi lụa chống nhăn cao cấp, bề mặt mềm mịn, mang lại vẻ lịch lãm chuẩn công sở."
+  },
+  {
+    "id": "NAM-005",
+    "name": "Quần Tây Âu Co Giãn Hàn Quốc",
+    "category": "Thời trang nam",
+    "price": 380000,
+    "originalPrice": 500000,
+    "stock": 95,
+    "rating": 4.6,
+    "soldCount": 520,
+    "images": [
+      "https://images.unsplash.com/photo-1479064555552-3ef4979f8908?w=600"
+    ],
+    "description": "Quần âu may đo phong cách Hàn Quốc, cạp chun thông minh co giãn nhẹ, giữ ly cả ngày."
+  },
+  {
+    "id": "NAM-006",
+    "name": "Áo Thun Trơn Cổ Tròn Cotton 100%",
+    "category": "Thời trang nam",
+    "price": 149000,
+    "originalPrice": 200000,
+    "stock": 220,
+    "rating": 4.9,
+    "soldCount": 1420,
+    "images": [
+      "https://images.unsplash.com/photo-1527719327859-c6ce80353573?w=600"
+    ],
+    "description": "Áo thun trơn basic cotton 220gsm định lượng dày dặn, thấm hút mồ hôi tối đa."
+  },
+  {
+    "id": "NAM-007",
+    "name": "Áo Tank Top Thể Thao Nam Co Giãn",
+    "category": "Thời trang nam",
+    "price": 129000,
+    "originalPrice": 180000,
+    "stock": 140,
+    "rating": 4.5,
+    "soldCount": 680,
+    "images": [
+      "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600"
+    ],
+    "description": "Áo ba lỗ tank top chuyên tập gym thể hình, vải mè thoáng khí nhanh khô."
+  },
+  {
+    "id": "NAM-008",
+    "name": "Bộ Quần Áo Đũi Nam Mùa Hè Thoáng Mát",
+    "category": "Thời trang nam",
+    "price": 320000,
+    "originalPrice": 450000,
+    "stock": 65,
+    "rating": 4.7,
+    "soldCount": 390,
+    "images": [
+      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600"
+    ],
+    "description": "Bộ đũi cộc tay tự nhiên, phong cách phóng khoáng cực mát mẻ cho những chuyến du lịch."
+  },
+  {
+    "id": "KHOAC-001",
+    "name": "Áo Hoodie Streetwear Unisex Nỉ Bông",
+    "category": "Áo khoác & Hoodie",
+    "price": 420000,
+    "originalPrice": 600000,
+    "stock": 45,
+    "rating": 4.8,
+    "soldCount": 890,
+    "images": [
+      "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600"
+    ],
+    "description": "Áo hoodie chất nỉ bông dày dặn, form rộng phong cách đường phố cá tính năng động."
+  },
+  {
+    "id": "KHOAC-002",
+    "name": "Áo Khoác Gió Bomber 2 Lớp Chống Nước",
+    "category": "Áo khoác & Hoodie",
+    "price": 350000,
+    "originalPrice": 480000,
+    "stock": 110,
+    "rating": 4.7,
+    "soldCount": 760,
+    "images": [
+      "https://images.unsplash.com/photo-1544441893-675973e31985?w=600"
+    ],
+    "description": "Áo khoác gió vải dù cao cấp cản gió cản mưa, lót lưới thông hơi bên trong thoáng khí."
+  },
+  {
+    "id": "KHOAC-003",
+    "name": "Áo Khoác Da Biker Nam Cao Cấp",
+    "category": "Áo khoác & Hoodie",
+    "price": 1150000,
+    "originalPrice": 1600000,
+    "stock": 28,
+    "rating": 4.9,
+    "soldCount": 130,
+    "images": [
+      "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=600"
+    ],
+    "description": "Áo khoác da PU cao cấp không bong tróc, thiết kế khóa kéo chéo biker mạnh mẽ bụi bặm."
+  },
+  {
+    "id": "KHOAC-004",
+    "name": "Áo Khoác Dạ Dáng Dài Hàn Quốc",
+    "category": "Áo khoác & Hoodie",
+    "price": 890000,
+    "originalPrice": 1200000,
+    "stock": 35,
+    "rating": 4.8,
+    "soldCount": 210,
+    "images": [
+      "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600"
+    ],
+    "description": "Măng tô dạ dáng dài chuẩn phong cách Hàn Quốc, chất vải dạ lì giữ ấm cực tốt trong mùa đông."
+  },
+  {
+    "id": "KHOAC-005",
+    "name": "Áo Khoác Phao Siêu Nhẹ Lông Vũ",
+    "category": "Áo khoác & Hoodie",
+    "price": 650000,
+    "originalPrice": 850000,
+    "stock": 75,
+    "rating": 4.7,
+    "soldCount": 430,
+    "images": [
+      "https://images.unsplash.com/photo-1548883354-7622d03aca27?w=600"
+    ],
+    "description": "Áo phao siêu nhẹ gấp gọn bỏ túi tiện lợi, trần bông lông vũ giữ ấm thân nhiệt tối đa."
+  },
+  {
+    "id": "KHOAC-006",
+    "name": "Áo Cardigan Len Dệt Kim Unisex",
+    "category": "Áo khoác & Hoodie",
+    "price": 290000,
+    "originalPrice": 390000,
+    "stock": 80,
+    "rating": 4.6,
+    "soldCount": 350,
+    "images": [
+      "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600"
+    ],
+    "description": "Áo khoác len cardigan dệt kim mỏng nhẹ, họa tiết cổ điển dễ dàng phối layer cùng áo thun."
+  },
+  {
+    "id": "KHOAC-007",
+    "name": "Áo Khoác Jean Denim Cổ Bẻ Cổ Điển",
+    "category": "Áo khoác & Hoodie",
+    "price": 480000,
+    "originalPrice": 650000,
+    "stock": 60,
+    "rating": 4.8,
+    "soldCount": 510,
+    "images": [
+      "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600"
+    ],
+    "description": "Áo khoác denim wash màu vintage cổ điển, cúc đồng kim loại bền bỉ thách thức thời gian."
+  },
+  {
+    "id": "NU-001",
+    "name": "Váy Đầm Dự Tiệc Dáng Xòe Voan Tơ",
+    "category": "Thời trang nữ",
+    "price": 750000,
+    "originalPrice": 1050000,
+    "stock": 40,
+    "rating": 4.9,
+    "soldCount": 290,
+    "images": [
+      "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=600"
+    ],
+    "description": "Đầm xòe công chúa chất liệu voan tơ cao cấp bồng bềnh, đính ngọc trai thủ công tinh tế."
+  },
+  {
+    "id": "NU-002",
+    "name": "Áo Blazer Nữ Form Rộng Phong Cách Hàn",
+    "category": "Thời trang nữ",
+    "price": 520000,
+    "originalPrice": 700000,
+    "stock": 65,
+    "rating": 4.8,
+    "soldCount": 480,
+    "images": [
+      "https://images.unsplash.com/photo-1584273143981-41c073dfe8f8?w=600"
+    ],
+    "description": "Áo khoác blazer nữ 2 lớp độn vai nhẹ tôn dáng, phối cùng quần short hoặc chân váy cực sành điệu."
+  },
+  {
+    "id": "NU-003",
+    "name": "Set Áo Tweed Phối Chân Váy Cao Cấp",
+    "category": "Thời trang nữ",
+    "price": 850000,
+    "originalPrice": 1200000,
+    "stock": 30,
+    "rating": 4.9,
+    "soldCount": 160,
+    "images": [
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600"
+    ],
+    "description": "Set đồ dạ tweed tiểu thư sang trọng, đường may viền nẹp kim tuyến lấp lánh nổi bật."
+  },
+  {
+    "id": "NU-004",
+    "name": "Áo Croptop Nữ Tay Ngắn Năng Động",
+    "category": "Thời trang nữ",
+    "price": 120000,
+    "originalPrice": 160000,
+    "stock": 180,
+    "rating": 4.7,
+    "soldCount": 1150,
+    "images": [
+      "https://images.unsplash.com/photo-1503342394128-c104d54dba01?w=600"
+    ],
+    "description": "Áo croptop ôm sát body thun gân tăm co giãn, khoe trọn vòng eo thon gọn quyến rũ."
+  },
+  {
+    "id": "NU-005",
+    "name": "Quần Ống Rộng Nữ Suông Lưng Cao",
+    "category": "Thời trang nữ",
+    "price": 280000,
+    "originalPrice": 380000,
+    "stock": 130,
+    "rating": 4.8,
+    "soldCount": 920,
+    "images": [
+      "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600"
+    ],
+    "description": "Quần suông hack dáng dài miên man, chất tuyết mưa mềm rũ không nhăn không xù."
+  },
+  {
+    "id": "NU-006",
+    "name": "Chân Váy Xếp Ly Tennis Nữ Trẻ Trung",
+    "category": "Thời trang nữ",
+    "price": 180000,
+    "originalPrice": 240000,
+    "stock": 150,
+    "rating": 4.6,
+    "soldCount": 840,
+    "images": [
+      "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=600"
+    ],
+    "description": "Chân váy tennis xếp ly có quần bảo hộ bên trong, phong cách nữ sinh Hàn Quốc năng động."
+  },
+  {
+    "id": "NU-007",
+    "name": "Đầm Maxi Đi Biển Họa Tiết Hoa Nhí",
+    "category": "Thời trang nữ",
+    "price": 340000,
+    "originalPrice": 450000,
+    "stock": 70,
+    "rating": 4.8,
+    "soldCount": 380,
+    "images": [
+      "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600"
+    ],
+    "description": "Váy maxi hở lưng hoa nhí mùa hè thướt tha, chất lụa tơ bay bổng lý tưởng cho kỳ nghỉ biển."
+  },
+  {
+    "id": "GIAY-001",
+    "name": "Giày Sneaker Cổ Thấp Basic Trắng",
+    "category": "Giày dép",
+    "price": 890000,
+    "originalPrice": 1200000,
+    "stock": 30,
+    "rating": 4.6,
+    "soldCount": 120,
+    "images": [
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600"
+    ],
+    "description": "Giày sneaker thiết kế tối giản, dễ phối đồ, đế cao su nguyên khối êm ái chống trơn trượt."
+  },
+  {
+    "id": "GIAY-002",
+    "name": "Giày Thể Thao Chạy Bộ Đệm Khí Air",
+    "category": "Giày dép",
+    "price": 1250000,
+    "originalPrice": 1700000,
+    "stock": 45,
+    "rating": 4.9,
+    "soldCount": 310,
+    "images": [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600"
+    ],
+    "description": "Giày running chuyên nghiệp công nghệ túi khí Air Sole giảm chấn động bảo vệ khớp gối."
+  },
+  {
+    "id": "GIAY-003",
+    "name": "Giày Da Nam Oxford Buộc Dây Cao Cấp",
+    "category": "Giày dép",
+    "price": 1450000,
+    "originalPrice": 2000000,
+    "stock": 20,
+    "rating": 4.9,
+    "soldCount": 95,
+    "images": [
+      "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=600"
+    ],
+    "description": "Giày da bò thật nhập khẩu đánh xi thủ công bóng bẩy, đế phíp gỗ quý phái cho quý ông."
+  },
+  {
+    "id": "GIAY-004",
+    "name": "Giày Lười Loafer Da Bóng Nam Nữ",
+    "category": "Giày dép",
+    "price": 680000,
+    "originalPrice": 900000,
+    "stock": 55,
+    "rating": 4.7,
+    "soldCount": 260,
+    "images": [
+      "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=600"
+    ],
+    "description": "Giày loafer quai xích kim loại sang trọng, đế đệm mút lót da êm chân không gây đau gót."
+  },
+  {
+    "id": "GIAY-005",
+    "name": "Giày Sandal Quai Dù Đi Mưa Siêu Bền",
+    "category": "Giày dép",
+    "price": 250000,
+    "originalPrice": 350000,
+    "stock": 120,
+    "rating": 4.6,
+    "soldCount": 780,
+    "images": [
+      "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=600"
+    ],
+    "description": "Sandal quai dán tiện lợi chống nước tuyệt đối, đế rãnh sâu bám đường vững chãi."
+  },
+  {
+    "id": "GIAY-006",
+    "name": "Dép Quai Ngang Đúc Nguyên Khối Êm Chân",
+    "category": "Giày dép",
+    "price": 99000,
+    "originalPrice": 150000,
+    "stock": 250,
+    "rating": 4.8,
+    "soldCount": 2300,
+    "images": [
+      "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=600"
+    ],
+    "description": "Dép đúc EVA siêu nhẹ êm như bước trên mây, chống nước chống bám bẩn dễ vệ sinh."
+  },
+  {
+    "id": "GIAY-007",
+    "name": "Giày Boots Cổ Lửng Da Lì Cá Tính",
+    "category": "Giày dép",
+    "price": 720000,
+    "originalPrice": 950000,
+    "stock": 35,
+    "rating": 4.8,
+    "soldCount": 190,
+    "images": [
+      "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600"
+    ],
+    "description": "Chelsea boots da lộn thời thượng, cổ co giãn thun đàn hồi xỏ chân nhanh gọn cá tính."
+  },
+  {
+    "id": "PK-001",
+    "name": "Mũ Lưỡi Trai NY Phong Cách Basic",
+    "category": "Phụ kiện",
+    "price": 150000,
+    "originalPrice": 220000,
+    "stock": 200,
+    "rating": 4.9,
+    "soldCount": 1450,
+    "images": [
+      "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600"
+    ],
+    "description": "Mũ lưỡi trai thêu logo nổi khối 3D sắc nét, form cứng cáp tôn khuôn mặt, khóa gài kim loại."
+  },
+  {
+    "id": "PK-002",
+    "name": "Kính Mát Chống Tia UV Đi Biển Polarized",
+    "category": "Phụ kiện",
+    "price": 320000,
+    "originalPrice": 450000,
+    "stock": 65,
+    "rating": 4.8,
+    "soldCount": 380,
+    "images": [
+      "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600"
+    ],
+    "description": "Mắt kính phân cực Polarized chống lóa UV400 bảo vệ mắt hoàn hảo dưới ánh nắng hè."
+  },
+  {
+    "id": "PK-003",
+    "name": "Thắt Lưng Da Bò Khóa Tự Động Nam",
+    "category": "Phụ kiện",
+    "price": 280000,
+    "originalPrice": 400000,
+    "stock": 90,
+    "rating": 4.7,
+    "soldCount": 520,
+    "images": [
+      "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=600"
+    ],
+    "description": "Dây nịt da bò nguyên miếng dập vân sang trọng, mặt khóa hợp kim không rỉ tự động ăn khớp."
+  },
+  {
+    "id": "PK-004",
+    "name": "Vòng Tay Bạc Phong Cách Tối Giản",
+    "category": "Phụ kiện",
+    "price": 199000,
+    "originalPrice": 300000,
+    "stock": 80,
+    "rating": 4.9,
+    "soldCount": 410,
+    "images": [
+      "https://images.unsplash.com/photo-1611591475871-3bc21e6be57f?w=600"
+    ],
+    "description": "Lắc tay bạc dạng chuỗi xích mảnh mai thanh lịch, thích hợp làm quà tặng ý nghĩa."
+  },
+  {
+    "id": "PK-005",
+    "name": "Mũ Bucket Vành Tròn Vải Canvas",
+    "category": "Phụ kiện",
+    "price": 110000,
+    "originalPrice": 160000,
+    "stock": 140,
+    "rating": 4.6,
+    "soldCount": 630,
+    "images": [
+      "https://images.unsplash.com/photo-1575428652377-a2d80e2277fc?w=600"
+    ],
+    "description": "Nón vành tròn tai bèo phong cách dã ngoại unisex, chất vải canvas dày che nắng tốt."
+  },
+  {
+    "id": "PK-006",
+    "name": "Khăn Choàng Cổ Cashmere Mùa Đông",
+    "category": "Phụ kiện",
+    "price": 260000,
+    "originalPrice": 350000,
+    "stock": 75,
+    "rating": 4.8,
+    "soldCount": 290,
+    "images": [
+      "https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=600"
+    ],
+    "description": "Khăn len cashmere đan mịn ấm áp, tua rua đuôi khăn phong cách châu Âu trang nhã."
+  },
+  {
+    "id": "DH-001",
+    "name": "Đồng Hồ Nam Dây Da Cổ Điển Dapper",
+    "category": "Đồng hồ & Trang sức",
+    "price": 1250000,
+    "originalPrice": 1800000,
+    "stock": 25,
+    "rating": 5,
+    "soldCount": 85,
+    "images": [
+      "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600"
+    ],
+    "description": "Đồng hồ kim số La Mã mặt kính sapphire chống xước, máy quartz Nhật Bản siêu chuẩn xác."
+  },
+  {
+    "id": "DH-002",
+    "name": "Đồng Hồ Nữ Mặt Vuông Đính Đá Dây Kim Loại",
+    "category": "Đồng hồ & Trang sức",
+    "price": 890000,
+    "originalPrice": 1300000,
+    "stock": 35,
+    "rating": 4.9,
+    "soldCount": 140,
+    "images": [
+      "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=600"
+    ],
+    "description": "Đồng hồ nữ mặt số xà cừ viền đính đá pha lê Swarovski kiêu sa, dây thép mạ vàng hồng PVD."
+  },
+  {
+    "id": "DH-003",
+    "name": "Đồng Hồ Cơ Nam Lộ Máy Automatic Thể Thao",
+    "category": "Đồng hồ & Trang sức",
+    "price": 3500000,
+    "originalPrice": 4800000,
+    "stock": 12,
+    "rating": 4.9,
+    "soldCount": 45,
+    "images": [
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"
+    ],
+    "description": "Đồng hồ cơ tự động Skeleton lộ tim máy cơ khí đỉnh cao, chống nước 5ATM đi bơi thoải mái."
+  },
+  {
+    "id": "DH-004",
+    "name": "Dây Chuyền Bạc Ý S925 Mặt Trăng Khuyết",
+    "category": "Đồng hồ & Trang sức",
+    "price": 350000,
+    "originalPrice": 500000,
+    "stock": 60,
+    "rating": 4.8,
+    "soldCount": 220,
+    "images": [
+      "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600"
+    ],
+    "description": "Dây chuyền bạc Ý sáng bóng không xỉn màu, mặt dây nạm đá zircon lấp lánh hút ánh nhìn."
+  },
+  {
+    "id": "DH-005",
+    "name": "Nhẫn Bạc Đôi Tình Nhân Khắc Tên",
+    "category": "Đồng hồ & Trang sức",
+    "price": 290000,
+    "originalPrice": 420000,
+    "stock": 50,
+    "rating": 4.9,
+    "soldCount": 360,
+    "images": [
+      "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600"
+    ],
+    "description": "Cặp nhẫn đôi bạc thiết kế hở tự do chỉnh size ngón tay, tặng kèm dịch vụ khắc laser miễn phí."
+  },
+  {
+    "id": "TUI-001",
+    "name": "Túi Đeo Chéo Canvas Mini Streetwear",
+    "category": "Túi xách & Balo",
+    "price": 290000,
+    "originalPrice": 400000,
+    "stock": 80,
+    "rating": 4.8,
+    "soldCount": 650,
+    "images": [
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600"
+    ],
+    "description": "Túi đeo chéo nhiều ngăn thông minh, để vừa điện thoại, ví tiền và chìa khóa nhỏ gọn."
+  },
+  {
+    "id": "TUI-002",
+    "name": "Balo Laptop 15.6 Inch Chống Nước",
+    "category": "Túi xách & Balo",
+    "price": 450000,
+    "originalPrice": 650000,
+    "stock": 90,
+    "rating": 4.9,
+    "soldCount": 810,
+    "images": [
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600"
+    ],
+    "description": "Balo công sở có ngăn chống sốc laptop 15.6 inch, tích hợp cổng sạc USB và đệm lưng tổ ong thoáng khí."
+  },
+  {
+    "id": "TUI-003",
+    "name": "Túi Tote Vải Canvas In Hình Nghệ Thuật",
+    "category": "Túi xách & Balo",
+    "price": 85000,
+    "originalPrice": 120000,
+    "stock": 200,
+    "rating": 4.7,
+    "soldCount": 1800,
+    "images": [
+      "https://images.unsplash.com/photo-1544816155-12df9643f363?w=600"
+    ],
+    "description": "Túi tote vải bố tự nhiên quai xách chắc chắn, tiện lợi đi học đi chơi hay đựng đồ siêu thị."
+  },
+  {
+    "id": "TUI-004",
+    "name": "Túi Xách Tay Nữ Da Mềm Kèm Dây Đeo",
+    "category": "Túi xách & Balo",
+    "price": 550000,
+    "originalPrice": 790000,
+    "stock": 45,
+    "rating": 4.8,
+    "soldCount": 270,
+    "images": [
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600"
+    ],
+    "description": "Túi xách nữ form hộp công sở thanh lịch, chất da sần chống xước cao cấp kèm móc khóa charm."
+  },
+  {
+    "id": "TUI-005",
+    "name": "Ví Nam Da Bò Thật Cầm Tay Nhỏ Gọn",
+    "category": "Túi xách & Balo",
+    "price": 220000,
+    "originalPrice": 320000,
+    "stock": 110,
+    "rating": 4.8,
+    "soldCount": 590,
+    "images": [
+      "https://images.unsplash.com/photo-1627123424574-724758594e93?w=600"
+    ],
+    "description": "Bóp da nam dáng đứng nhiều ngăn thẻ căn cước và tiền mặt, may viền chỉ dù tỉ mỉ."
+  },
+  {
+    "id": "TECH-001",
+    "name": "Tai Nghe Bluetooth Chống Ồn Chủ Động ANC",
+    "category": "Thiết bị công nghệ & Phụ kiện",
+    "price": 1150000,
+    "originalPrice": 1600000,
+    "stock": 40,
+    "rating": 4.9,
+    "soldCount": 320,
+    "images": [
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"
+    ],
+    "description": "Tai nghe True Wireless công nghệ chống ồn ANC -35dB, pin trâu 30 tiếng kèm hộp sạc không dây."
+  },
+  {
+    "id": "TECH-002",
+    "name": "Đồng Hồ Thông Minh Smartwatch Theo Dõi Sức Khỏe",
+    "category": "Thiết bị công nghệ & Phụ kiện",
+    "price": 1490000,
+    "originalPrice": 2100000,
+    "stock": 35,
+    "rating": 4.8,
+    "soldCount": 240,
+    "images": [
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600"
+    ],
+    "description": "Smartwatch màn hình AMOLED sắc nét, đo nhịp tim SpO2, nhận thông báo cuộc gọi và tin nhắn."
+  },
+  {
+    "id": "TECH-003",
+    "name": "Bàn Phím Cơ Không Dây 3 Chế Độ RGB",
+    "category": "Thiết bị công nghệ & Phụ kiện",
+    "price": 980000,
+    "originalPrice": 1350000,
+    "stock": 50,
+    "rating": 4.9,
+    "soldCount": 410,
+    "images": [
+      "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600"
+    ],
+    "description": "Bàn phím cơ layout 87 phím hot-swap switch êm ái, kết nối Bluetooth 5.0, 2.4Ghz và cáp Type-C."
+  },
+  {
+    "id": "TECH-004",
+    "name": "Chuột Không Dây Công Thái Học Silent Click",
+    "category": "Thiết bị công nghệ & Phụ kiện",
+    "price": 350000,
+    "originalPrice": 490000,
+    "stock": 90,
+    "rating": 4.7,
+    "soldCount": 880,
+    "images": [
+      "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=600"
+    ],
+    "description": "Chuột không dây form công thái học bảo vệ cổ tay, nút bấm Silent Click triệt tiêu tiếng ồn ban đêm."
+  },
+  {
+    "id": "TECH-005",
+    "name": "Sạc Dự Phòng 20.000mAh Sạc Nhanh 22.5W",
+    "category": "Thiết bị công nghệ & Phụ kiện",
+    "price": 390000,
+    "originalPrice": 550000,
+    "stock": 110,
+    "rating": 4.8,
+    "soldCount": 1200,
+    "images": [
+      "https://images.unsplash.com/photo-1609592424300-349a1753765e?w=600"
+    ],
+    "description": "Pin sạc dự phòng dung lượng chuẩn 20.000mAh hỗ trợ PD 20W và QC 3.0 sạc siêu nhanh 3 thiết bị cùng lúc."
+  }
+]

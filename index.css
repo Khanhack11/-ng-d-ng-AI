@@ -1,0 +1,28 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  html {
+    font-family: theme('fontFamily.primary');
+    font-size: 14px;
+    background-color: theme('colors.surface.raised');
+    color: theme('colors.surface.base');
+  }
+
+  /* Accessibility: WCAG 2.2 AA Focus Visible Rules */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+  
+  :focus-visible {
+    outline: 2px solid theme('colors.text.secondary');
+    outline-offset: 2px;
+  }
+
+  .font-arial-stylized {
+    font-family: 'Arial', sans-serif !important;
+    letter-spacing: 0.01em;
+    font-weight: 500;
+  }
+}

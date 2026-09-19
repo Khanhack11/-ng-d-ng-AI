@@ -1,0 +1,34 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../.pytest_cache"
+		},
+		{
+			"path": "../../.vscode"
+		},
+		{
+			"path": "../../backend"
+		},
+		{
+			"path": "../../components"
+		},
+		{
+			"path": "../../dist"
+		},
+		{
+			"path": "../../docs"
+		},
+		{
+			"path": "../../node_modules"
+		},
+		{
+			"path": "../../public"
+		},
+		{
+			"path": "../../szshop-backend"
+		}
+	]
+}
