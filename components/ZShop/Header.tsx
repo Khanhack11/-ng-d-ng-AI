@@ -163,146 +163,149 @@ const Header: React.FC<HeaderProps> = ({
         onLogout={onLogout}
       />
 
-      {/* 2. Main E-Commerce Header */}
-      <header className="sticky top-0 z-50 bg-brand-600 shadow-md text-white">
+      {/* 2. Main E-Commerce Header — Luxury Titanium Gray & Desert Titanium Gold */}
+      <header className="sticky top-0 z-50 bg-gradient-to-b from-[#1e1d1a] via-[#262420] to-[#2e2b26] border-b border-[#c5a880]/30 shadow-md text-stone-100">
         {/* Top Navbar */}
-        <div className="container mx-auto px-4 py-1 flex justify-between text-xs sm:text-sm">
+        <div className="container mx-auto px-4 py-1.5 flex justify-between text-xs sm:text-sm border-b border-white/5">
           <div className="flex space-x-4 items-center">
 
-            {/* VAI TRÒ KHÁCH HÀNG (CUSTOMER): CHỈ HIỂN THỊ MUA SẮM */}
+            {/* VAI TRÒ KHÁCH HÀNG (CUSTOMER): CHỈ HIỂN THỊ MUA SẮM & ĐIỂM VIP */}
             {userRole === 'CUSTOMER' && (
               <>
-                <button onClick={onOpenLoyaltyModal} className="hover:text-amber-200 text-amber-300 font-bold flex items-center gap-1 bg-black/20 px-2.5 py-0.5 rounded-full border border-amber-300/30 cursor-pointer">
-                  ⭐ {customerPoints || 450} Điểm ({customerTier || 'Vàng'})
+                <button onClick={onOpenLoyaltyModal} className="hover:text-amber-200 text-[#e5c9a3] font-bold flex items-center gap-1 bg-black/30 px-2.5 py-0.5 rounded-full border border-[#c5a880]/40 cursor-pointer">
+                  ⭐ {customerPoints || 450} Điểm ({customerTier || 'Vàng Titan'})
                 </button>
-                <span className="hidden sm:inline">|</span>
-                <button onClick={onViewOrders} className="hover:text-gray-200 font-medium flex items-center gap-1 cursor-pointer">
-                  📦 Đơn Mua Của Tôi
+                <span className="hidden sm:inline text-stone-500">|</span>
+                <button onClick={onViewOrders} className="hover:text-[#e5c9a3] font-medium flex items-center gap-1 cursor-pointer">
+                  📦 Đơn Mua Của Tôi (UC06)
                 </button>
-                <span className="hidden sm:inline">|</span>
-                <button onClick={onBecomeSeller} className="inline-block px-2 hover:text-white transition-colors duration-200 cursor-pointer">
-                  Trở thành Người bán ZS-Economy
-                </button>
-                <span className="hidden sm:inline">|</span>
+                <span className="hidden sm:inline text-stone-500">|</span>
               </>
             )}
 
             {/* VAI TRÒ KHÁCH VÃNG LAI (GUEST) */}
             {userRole === 'GUEST' && (
               <>
-                <button onClick={onBecomeSeller} className="inline-block px-2 hover:text-white transition-colors duration-200 cursor-pointer">
-                  Trở thành Người bán ZS-Economy
-                </button>
-                <span className="hidden sm:inline">|</span>
+                <span className="inline-block px-2 text-[#e5c9a3] font-medium">
+                  Chào mừng đến với Thế Giới iPhone — Luxury Titanium Boutique
+                </span>
+                <span className="hidden sm:inline text-stone-500">|</span>
               </>
             )}
 
-            {/* VAI TRÒ ADMIN: HUY HIỆU VÀO TRANG QUẢN TRỊ */}
+            {/* VAI TRÒ ADMIN (CHỦ CỬA HÀNG): HUY HIỆU VÀO TRANG QUẢN TRỊ */}
             {userRole === 'ADMIN' && (
               <>
-                <button onClick={onGoToAdmin} className="hover:text-amber-200 text-amber-300 font-bold flex items-center gap-1 bg-purple-950/40 px-2.5 py-0.5 rounded-md border border-purple-400/40 cursor-pointer">
-                  👑 Bàn Làm Việc Quản Trị Viên (Admin)
+                <button onClick={onGoToAdmin} className="hover:text-amber-200 text-[#e5c9a3] font-bold flex items-center gap-1 bg-[#3a342b] px-2.5 py-0.5 rounded-md border border-[#c5a880]/40 cursor-pointer">
+                  👑 Bàn Làm Việc Admin - Chủ Cửa Hàng
                 </button>
-                <span className="hidden sm:inline">|</span>
+                <span className="hidden sm:inline text-stone-500">|</span>
               </>
             )}
 
-            {/* VAI TRÒ SELLER: HUY HIỆU VÀO KÊNH NGƯỜI BÁN */}
-            {userRole === 'SELLER' && (
+            {/* VAI TRÒ NHÂN VIÊN BÁN HÀNG (SALES) */}
+            {(userRole === 'SALES' || userRole === 'SUPPORT') && (
               <>
-                <button onClick={onOpenSellerChannel} className="hover:text-amber-200 text-amber-300 font-bold flex items-center gap-1 bg-emerald-950/40 px-2.5 py-0.5 rounded-md border border-emerald-400/40 cursor-pointer">
-                  🏪 Bàn Làm Việc Nhà Bán Hàng (Seller)
+                <button onClick={() => onSwitchWorkspace && onSwitchWorkspace('CSKH')} className="hover:text-amber-200 text-[#e5c9a3] font-bold flex items-center gap-1 bg-[#3a342b] px-2.5 py-0.5 rounded-md border border-[#c5a880]/40 cursor-pointer">
+                  🎧 Bàn Làm Việc Nhân Viên Bán Hàng (POS & CSKH)
                 </button>
-                <span className="hidden sm:inline">|</span>
+                <span className="hidden sm:inline text-stone-500">|</span>
               </>
             )}
 
-            {/* VAI TRÒ CSKH / SALES / WAREHOUSE */}
-            {(userRole === 'SALES' || userRole === 'SUPPORT' || userRole === 'WAREHOUSE') && (
+            {/* VAI TRÒ NHÂN VIÊN KHO (WAREHOUSE) */}
+            {userRole === 'WAREHOUSE' && (
               <>
-                <button onClick={() => onSwitchWorkspace && onSwitchWorkspace('CSKH')} className="hover:text-indigo-200 text-indigo-300 font-bold flex items-center gap-1 bg-indigo-950/40 px-2.5 py-0.5 rounded-md border border-indigo-400/40 cursor-pointer">
-                  🎧 Cổng Chăm Sóc Khách Hàng (CSKH & Sales)
+                <button onClick={onGoToWarehouse} className="hover:text-amber-200 text-[#e5c9a3] font-bold flex items-center gap-1 bg-[#3a342b] px-2.5 py-0.5 rounded-md border border-[#c5a880]/40 cursor-pointer">
+                  📦 Bàn Làm Việc Nhân Viên Kho (UC05)
                 </button>
-                <span className="hidden sm:inline">|</span>
+                <span className="hidden sm:inline text-stone-500">|</span>
               </>
             )}
 
-            <a href="#" className="hover:text-gray-200">Tải ứng dụng</a>
-            <span className="hidden sm:inline">|</span>
-            <span className="hidden sm:inline">Kết nối</span>
+            <span className="hidden md:inline text-stone-300 font-medium">
+              📍 Chuyên Điện Thoại iPhone Chính Hãng (iPhone 4s ➔ 18 Pro Max)
+            </span>
+            {onNavigateAdminTab && (
+              <button
+                onClick={() => onNavigateAdminTab('AI_BI')}
+                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#8c6f46] to-[#6b5231] hover:from-[#a38355] hover:to-[#7d603a] text-[#fffdf9] text-[11px] font-black border border-[#e5c9a3]/50 shadow-sm cursor-pointer transition-all"
+                title="Mở Hệ Thống AI Chủ Cửa Hàng (AI Chatbot + AI Forecasting + AI Text-to-Data)"
+              >
+                🤖 Hệ Thống AI Chủ Shop (Text-to-Data)
+              </button>
+            )}
           </div>
         <div className="flex space-x-4 items-center">
-          {/* Voucher / Notifications Dropdown */}
+          {/* Thông báo gọn gàng với icon vector cố định kích thước */}
           <div className="relative" ref={voucherRef}>
             <button 
               onClick={() => setIsVoucherOpen(!isVoucherOpen)}
-              className="flex items-center gap-1 hover:text-gray-200 focus:outline-none"
+              className="flex items-center gap-1 hover:text-[#e5c9a3] focus:outline-none cursor-pointer"
             >
               <Bell size={14} /> Thông báo
             </button>
             {isVoucherOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-md shadow-xl border border-gray-100 py-2 z-50 text-gray-800">
-                <div className="px-4 py-2 border-b border-gray-100 text-sm font-semibold text-gray-500">
-                  Thông báo mới nhận
+              <div className="absolute right-0 top-full mt-2 w-72 bg-[#faf8f5] rounded-xl shadow-2xl border border-[#e5e0d5] py-2 z-50 text-stone-800">
+                <div className="px-4 py-2 border-b border-[#e5e0d5] text-xs font-bold uppercase tracking-wider text-[#8c6f46]">
+                  Thông báo Thế Giới iPhone
                 </div>
-                <div className="max-h-[300px] overflow-y-auto">
-                    <div className="px-4 py-3 hover:bg-brand-50 cursor-pointer border-b border-gray-50 flex gap-3">
-                        <img src="https://down-vn.img.susercontent.com/file/vn-11134258-7r98o-lsth7f13m6d45e_tn" className="w-10 h-10 object-contain" alt="voucher" />
-                        <div>
-                            <p className="text-sm font-semibold text-gray-800">Mã Miễn Phí Vận Chuyển</p>
-                            <p className="text-xs text-gray-500 mt-1">Sử dụng ngay mã FREESHIP0D để được miễn phí vận chuyển cho đơn hàng từ 0Đ!</p>
-                        </div>
+                <div className="max-h-[260px] overflow-y-auto divide-y divide-stone-100">
+                  <div className="px-4 py-3 hover:bg-stone-100/70 cursor-pointer flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#f3ede2] border border-[#d4b996] text-[#8c6f46] flex items-center justify-center shrink-0 font-black text-sm">
+                      📱
                     </div>
-                    <div className="px-4 py-3 hover:bg-brand-50 cursor-pointer border-b border-gray-50 flex gap-3">
-                        <img src="https://down-vn.img.susercontent.com/file/vn-11134258-7r98o-lzabtz9n7rhy96_tn" className="w-10 h-10 object-contain" alt="voucher" />
-                        <div>
-                            <p className="text-sm font-semibold text-gray-800">Giảm giá 50k</p>
-                            <p className="text-xs text-gray-500 mt-1">Chào mừng bạn mới, tặng bạn mã ZSNEW giảm 50.000đ khi thanh toán.</p>
-                        </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-stone-900">Sẵn hàng iPhone 18 Pro Max VN/A</p>
+                      <p className="text-[11px] text-stone-600 mt-0.5 leading-snug">Bản màu Đỏ Rượu Vang Burgundy & Xanh Glacier Titan mới nhất 2026, giao hỏa tốc 2h.</p>
                     </div>
-                </div>
-                <div className="text-center py-2 border-t border-gray-100">
-                    <button className="text-brand-600 hover:text-brand-800 text-sm">Xem tất cả</button>
+                  </div>
+                  <div className="px-4 py-3 hover:bg-stone-100/70 cursor-pointer flex items-start gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-700 flex items-center justify-center shrink-0 font-black text-sm">
+                      🎁
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-stone-900">Ưu đãi Thế Giới iPhone</p>
+                      <p className="text-[11px] text-stone-600 mt-0.5 leading-snug">Thu cũ đổi mới trợ giá tới 3 triệu & miễn phí ship toàn quốc.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
-          <a href="#" className="hover:text-gray-200">Hỗ trợ</a>
           {userRole === 'GUEST' ? (
             <>
-              <button onClick={onOpenRegister} className="hover:text-gray-200 font-semibold transition-colors">Đăng ký</button>
-              <span className="hidden sm:inline opacity-60">|</span>
-              <button onClick={onLogin} className="hover:text-gray-200 font-semibold transition-colors">Đăng nhập</button>
+              <button onClick={onOpenRegister} className="hover:text-[#e5c9a3] font-semibold transition-colors">Đăng ký</button>
+              <span className="hidden sm:inline opacity-40">|</span>
+              <button onClick={onLogin} className="hover:text-[#e5c9a3] font-semibold transition-colors">Đăng nhập</button>
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 bg-black/15 px-2.5 py-0.5 rounded-full text-xs border border-white/10">
-                <div className="w-4 h-4 rounded-full bg-white text-brand-600 font-bold flex items-center justify-center text-[10px]">
+              <div className="flex items-center gap-1.5 bg-black/25 px-2.5 py-0.5 rounded-full text-xs border border-[#c5a880]/30">
+                <div className="w-4 h-4 rounded-full bg-[#d4b996] text-[#1e1d1a] font-bold flex items-center justify-center text-[10px]">
                   {(currentUser?.name || currentUser?.email || userRole || 'U').charAt(0).toUpperCase()}
                 </div>
                 <span className="font-medium max-w-[120px] truncate hidden md:inline">
                   {currentUser?.name || currentUser?.email || 'Thành viên'}
                 </span>
                 <span className={`text-[10px] px-1.5 py-0.2 rounded font-bold uppercase tracking-wider ${
-                  userRole === 'ADMIN' ? 'bg-purple-400 text-purple-950' : 
-                  userRole === 'SELLER' ? 'bg-emerald-400 text-emerald-950' : 
+                  userRole === 'ADMIN' ? 'bg-[#d4b996] text-[#1e1d1a]' : 
                   userRole === 'WAREHOUSE' ? 'bg-amber-400 text-amber-950' : 
-                  userRole === 'SALES' ? 'bg-indigo-300 text-indigo-950' : 
-                  'bg-sky-300 text-blue-950'
+                  userRole === 'SALES' ? 'bg-stone-300 text-stone-900' : 
+                  'bg-[#e5c9a3] text-[#1e1d1a]'
                 }`}>
-                  {userRole === 'ADMIN' ? 'Admin' : 
-                   userRole === 'SELLER' ? 'Seller' : 
-                   userRole === 'WAREHOUSE' ? 'Thủ Kho' : 
+                  {userRole === 'ADMIN' ? 'Admin (Chủ CH)' : 
+                   userRole === 'WAREHOUSE' ? 'NV Kho' : 
                    userRole === 'SALES' ? 'NV Bán hàng' : 
-                   'Member'}
+                   'Khách hàng'}
                 </span>
               </div>
-              <button onClick={onOpenChangePassword} className="hover:text-white text-[11px] font-medium underline underline-offset-2 transition-colors ml-0.5">
+              <button onClick={onOpenChangePassword} className="hover:text-[#e5c9a3] text-[11px] font-medium underline underline-offset-2 transition-colors ml-0.5">
                 Đổi MK
               </button>
               <span className="opacity-40">|</span>
-              <button onClick={onLogout} className="hover:text-red-200 text-xs font-semibold underline underline-offset-2 transition-colors">
+              <button onClick={onLogout} className="hover:text-red-300 text-xs font-semibold underline underline-offset-2 transition-colors">
                 Đăng xuất
               </button>
             </div>
@@ -311,15 +314,21 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Main Header Content */}
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex-shrink-0 text-3xl font-bold tracking-tighter mr-8 cursor-pointer">
-          ZS-Economy
+      <div className="container mx-auto px-4 py-3.5 flex items-center justify-between">
+        {/* Logo Thế Giới iPhone — Luxury Titanium Gold */}
+        <div onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex-shrink-0 mr-6 cursor-pointer group">
+          <div className="text-2xl sm:text-3xl font-black tracking-tight leading-none flex items-center gap-1.5">
+            <span className="text-stone-100">Thế Giới</span>
+            <span className="bg-gradient-to-r from-[#e5c9a3] via-[#d4b996] to-[#b89768] bg-clip-text text-transparent">iPhone</span>
+          </div>
+          <div className="text-[10px] text-[#c5a880] font-semibold tracking-widest uppercase mt-1">
+            Titanium Apple Boutique • VN/A
+          </div>
         </div>
 
         {/* Search Bar Interactive */}
-        <div className="flex-grow max-w-3xl relative hidden sm:block" ref={searchRef}>
-          <div className="flex bg-white rounded-sm p-1">
+        <div className="flex-grow max-w-2xl relative hidden sm:block" ref={searchRef}>
+          <div className="flex bg-[#faf8f5] border border-[#d4b996]/40 rounded-xl p-1 shadow-inner">
             <input 
               type="text" 
               value={searchTerm}
@@ -330,13 +339,13 @@ const Header: React.FC<HeaderProps> = ({
                   handleSearchSubmit();
                 }
               }}
-              placeholder="Tìm kiếm iPhone 6 -> 18 Pro Max, sạc Apple 20W, AirPods Pro 2..." 
-              className="w-full px-3 py-1.5 text-surface-base text-sm focus-visible:outline-text-secondary"
+              placeholder="Tìm tại Thế Giới iPhone (vd: ip 18prm, 17 air, 16prm, 13prm, 8 plus, 4s)..." 
+              className="w-full px-3 py-1.5 bg-transparent text-stone-900 placeholder:text-stone-400 text-sm focus-visible:outline-none"
             />
             {searchTerm && (
                 <button 
                   onClick={handleClearSearch}
-                  className="px-2 text-gray-400 hover:text-gray-600"
+                  className="px-2 text-stone-400 hover:text-stone-600"
                 >
                   <X size={16} />
                 </button>
@@ -344,20 +353,20 @@ const Header: React.FC<HeaderProps> = ({
             <button 
               type="button"
               onClick={() => handleSearchSubmit()}
-              className="bg-brand-600 text-white px-5 py-1.5 ml-1 rounded-sm hover:bg-brand-700 transition flex items-center justify-center cursor-pointer"
+              className="bg-gradient-to-r from-[#b89768] to-[#9a7b4f] text-white px-5 py-1.5 ml-1 rounded-lg hover:brightness-110 transition flex items-center justify-center cursor-pointer shadow-sm"
               title="Tìm kiếm"
             >
               <Search size={18} />
             </button>
           </div>
           
-          <div className="flex text-xs text-white/90 mt-1 space-x-3 overflow-hidden whitespace-nowrap">
-            {['iPhone 18 Pro Max', 'iPhone 16 Pro Max', 'iPhone 15 Pro', 'iPhone 13', 'iPhone 8 Plus', 'Sạc Apple 20W', 'AirPods Pro 2'].map((tag) => (
+          <div className="flex text-[11px] text-stone-300 mt-1.5 space-x-3 overflow-hidden whitespace-nowrap">
+            {['iPhone 18 Pro Max', 'iPhone 17 Pro Max', 'iPhone 17 Air', 'iPhone 16 Pro Max', 'iPhone 15 Pro Max', 'iPhone 13 Pro Max', 'iPhone 8 Plus', 'iPhone 4s'].map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => handleSearchSubmit(tag)}
-                className="hover:underline hover:text-white transition-colors cursor-pointer text-left focus:outline-none"
+                className="hover:underline hover:text-[#e5c9a3] transition-colors cursor-pointer text-left focus:outline-none"
               >
                 {tag}
               </button>

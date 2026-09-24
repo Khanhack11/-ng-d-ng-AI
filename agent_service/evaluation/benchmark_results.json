@@ -1,6 +1,6 @@
 {
   "status": "COMPLETED",
-  "benchmark_timestamp": "2026-09-19 10:22:42",
+  "benchmark_timestamp": "2026-09-19 10:49:03",
   "scenarios_count": 5,
   "metrics_comparison": {
     "anti_hallucination_rate": {
@@ -19,60 +19,60 @@
       "winner": "Multi-Agent"
     },
     "average_latency": {
-      "single_agent": "40.4 ms",
-      "multi_agent": "539.5 ms",
+      "single_agent": "40.6 ms",
+      "multi_agent": "2398.0 ms",
       "note": "Multi-Agent có độ trễ cao hơn do kiểm định chéo và tra cứu Vector DB nhưng đảm bảo độ tin cậy tuyệt đối"
     }
   },
   "detailed_results": [
     {
       "scenario": "Ràng buộc ngân sách khắt khe",
-      "query": "Tìm cho tôi áo thun nam giá dưới 200k",
+      "query": "Tìm củ sạc hoặc phụ kiện Apple giá dưới 500k",
       "single_agent": {
-        "response_sample": "Dạ em gợi ý bạn Áo Polo Nam Gucci Maxi GG giá 12.000.000đ và Áo Thun DIOR giá 1....",
+        "response_sample": "Dạ em gợi ý bạn iPhone 16 Pro Max giá 34.990.000đ cực đỉnh ạ!...",
         "hallucination": true,
         "budget_adherence": false,
-        "latency_ms": 40.4
+        "latency_ms": 41.7
       },
       "multi_agent": {
-        "response_sample": "ZShop đã tìm thấy 1 sản phẩm phù hợp nhất với yêu cầu của bạn. Tất cả đều cam kế...",
+        "response_sample": "ZShop đã tìm thấy 3 sản phẩm liên quan đến 'apple, củ sạc, sạc' phù hợp nhất với...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 650.6,
-        "products_count": 1
+        "latency_ms": 2281.5,
+        "products_count": 3
       }
     },
     {
-      "scenario": "Chính xác hóa chính sách đổi trả & freeship",
-      "query": "Chính sách đổi trả hàng và freeship toàn quốc như thế nào?",
+      "scenario": "Chính xác hóa chính sách bảo hành AppleCare+ & đổi trả",
+      "query": "Chính sách bảo hành AppleCare+ và đổi trả 1 đổi 1 như thế nào?",
       "single_agent": {
-        "response_sample": "ZShop hỗ trợ đổi trả trong 30 ngày đối với mọi đơn hàng trên 500k....",
+        "response_sample": "ZShop bảo hành trọn đời mọi thiết bị kể cả rơi vỡ ngập nước đổi mới miễn phí!...",
         "hallucination": true,
         "budget_adherence": true,
-        "latency_ms": 40.1
+        "latency_ms": 40.4
       },
       "multi_agent": {
-        "response_sample": "Dạ ZShop xin thông tin đến bạn:\n\n[Chính sách] Giao hàng hỏa tốc 2 giờ và freeshi...",
+        "response_sample": "Dạ ZShop xin thông tin đến bạn:\n\n[Chính sách] Chính sách bảo hành Apple Care+ và...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 552.2,
+        "latency_ms": 2125.3,
         "products_count": 6
       }
     },
     {
-      "scenario": "Phối đồ phong cách công sở Smart Casual",
-      "query": "Tư vấn set đồ công sở thanh lịch nam nữ",
+      "scenario": "Tư vấn Combo hệ sinh thái Apple Flagship",
+      "query": "Tư vấn combo phụ kiện cho iPhone 18 Pro Max",
       "single_agent": {
-        "response_sample": "Bạn có thể mặc Quần Jeans rách gối cùng áo thun đi họp nhé!...",
+        "response_sample": "Bạn có thể dùng củ sạc rẻ tiền 5W không rõ nguồn gốc cho iPhone 18 Pro Max nhé!...",
         "hallucination": false,
         "budget_adherence": true,
-        "latency_ms": 40.5
+        "latency_ms": 40.3
       },
       "multi_agent": {
         "response_sample": "💼 **Alex TechPro** thiết kế riêng cho bạn **Combo Doanh Nhân & Công Sở Đa Năng M...",
@@ -81,47 +81,47 @@
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 490.1,
+        "latency_ms": 2777.7,
         "products_count": 3
       }
     },
     {
-      "scenario": "Chống ảo giác sản phẩm không tồn tại",
-      "query": "Tôi muốn mua điện thoại iPhone 17 Pro Max mạ vàng",
+      "scenario": "Chống ảo giác sản phẩm không tồn tại (iPhone 25 Pro)",
+      "query": "Tôi muốn mua điện thoại iPhone 25 Pro Max bằng kim cương",
       "single_agent": {
-        "response_sample": "Dạ iPhone 17 Pro Max mạ vàng hiện đang có sẵn tại ZShop giá 45 triệu, bạn đặt ng...",
+        "response_sample": "Dạ iPhone 25 Pro Max kim cương hiện đang có sẵn tại ZShop giá 99 triệu, bạn đặt ...",
         "hallucination": true,
         "budget_adherence": true,
-        "latency_ms": 40.4
+        "latency_ms": 40.3
       },
       "multi_agent": {
-        "response_sample": "ZShop đã tìm thấy 6 sản phẩm liên quan đến 'iphone 17 pro max, iphone 17 pro, ip...",
+        "response_sample": "ZShop đã tìm thấy 6 sản phẩm liên quan đến 'iphone' phù hợp nhất với yêu cầu của...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 526.1,
+        "latency_ms": 2465.3,
         "products_count": 6
       }
     },
     {
-      "scenario": "Tìm kiếm ngữ nghĩa phụ kiện công nghệ",
-      "query": "phụ kiện công nghệ chống ồn cho dân văn phòng",
+      "scenario": "Tìm kiếm ngữ nghĩa tai nghe chống ồn Apple",
+      "query": "tai nghe bluetooth chống ồn chủ động cho iPhone",
       "single_agent": {
-        "response_sample": "ZShop có các thiết bị điện tử, bạn tham khảo website nhé....",
+        "response_sample": "ZShop có một số đồ công nghệ, bạn vào app xem nhé....",
         "hallucination": false,
         "budget_adherence": true,
-        "latency_ms": 40.5
+        "latency_ms": 40.2
       },
       "multi_agent": {
-        "response_sample": "ZShop đã tìm thấy 6 sản phẩm phù hợp nhất với yêu cầu của bạn. Tất cả đều cam kế...",
+        "response_sample": "ZShop đã tìm thấy 6 sản phẩm liên quan đến 'iphone, tai nghe' phù hợp nhất với y...",
         "hallucination": false,
         "budget_adherence": true,
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 478.3,
+        "latency_ms": 2340.0,
         "products_count": 6
       }
     }

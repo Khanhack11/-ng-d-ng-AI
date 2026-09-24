@@ -172,49 +172,65 @@ export class GioHangService {
 // 5. SanPhamAdminService: Xử lý quản lý sản phẩm giao tiếp REST API
 export class SanPhamAdminService {
     static async layTatCaSanPham(): Promise<any[]> {
+        const canonicalList = HeThongBanHangDB.getAllSanPham();
+        const canonicalById = new Map(canonicalList.map(item => [String(item.id), item]));
+
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 2000);
+            const timeoutId = setTimeout(() => controller.abort(), 1500);
             const res = await fetch('http://localhost:5000/api/products', { signal: controller.signal });
             clearTimeout(timeoutId);
             if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data) && data.length > 0) {
-                    return data.map((p: any) => enrichProduct({
-                        id: p.id,
-                        name: p.name,
-                        price: p.price,
-                        stock: p.stock || 50,
-                        category: p.category,
-                        categoryName: p.category,
-                        image_url: p.image_url || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
-                        rating: p.rating || 4.9,
-                        soldCount: p.soldCount || 120,
-                        originalPrice: p.originalPrice || Math.round(p.price * 1.25),
-                        discountRate: p.discountRate || 20,
-                        sizes: p.sizes,
-                        colors: p.colors,
-                        description: p.description
-                    }));
+                    const backendById = new Map(data.map((p: any) => [String(p.id), p]));
+                    return canonicalList.map((canon) => {
+                        const p = backendById.get(String(canon.id));
+                        if (!p) return canon;
+                        const finalPrice = Number(p.price) > 0 ? Number(p.price) : canon.price;
+                        const finalImages = (canon.images && canon.images.length > 0)
+                            ? canon.images
+                            : (p.images && p.images.length > 0 ? p.images : [p.image_url || canon.images[0]]);
+                        return {
+                            ...canon,
+                            id: canon.id,
+                            name: canon.name || p.name,
+                            price: finalPrice,
+                            originalPrice: Number(p.originalPrice) > 0 ? Number(p.originalPrice) : canon.originalPrice,
+                            discountRate: Number(p.discountRate) > 0 ? Number(p.discountRate) : canon.discountRate,
+                            stock: p.stock ?? canon.stock ?? 30,
+                            category: canon.category,
+                            categoryName: canon.category,
+                            image_url: finalImages[0],
+                            images: finalImages,
+                            rating: Number(p.rating) || canon.rating || 4.9,
+                            soldCount: Number(p.soldCount) || canon.soldCount || 350,
+                            sizes: (canon.sizes && canon.sizes.length > 0) ? canon.sizes : p.sizes,
+                            colors: (canon.colors && canon.colors.length > 0) ? canon.colors : p.colors,
+                            description: canon.description || p.description
+                        };
+                    });
                 }
             }
         } catch (e) {
             // Không ngắt mạch UI khi backend chưa bật
         }
 
-        // Luôn cung cấp đầy đủ danh mục sản phẩm phong phú từ CSDL mẫu đã được làm giàu thông tin
-        return HeThongBanHangDB.getAllSanPham().map(p => enrichProduct({
+        // Luôn cung cấp đầy đủ 25 mẫu iPhone chuẩn (25 màu độc bản & 25 ảnh riêng biệt)
+        return canonicalList.map(p => ({
+            ...p,
             id: p.id,
             name: p.name,
-            price: p.price,
-            stock: p.stock || 50,
+            price: Number(p.price) || 15990000,
+            originalPrice: Number(p.originalPrice) || Math.round((Number(p.price) || 15990000) * 1.18),
+            discountRate: Number(p.discountRate) || 15,
+            stock: p.stock || 30,
             category: p.category,
             categoryName: p.category,
-            image_url: p.images && p.images.length > 0 ? p.images[0] : 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
+            image_url: p.images && p.images.length > 0 ? p.images[0] : '',
+            images: p.images || [],
             rating: p.rating || 4.9,
-            soldCount: p.soldCount || 120,
-            originalPrice: p.originalPrice || Math.round(p.price * 1.25),
-            discountRate: p.discountRate || 20,
+            soldCount: p.soldCount || 350,
             sizes: p.sizes,
             colors: p.colors,
             description: p.description
@@ -276,7 +292,7 @@ export interface AuthUserData {
 
 export interface AuthSession {
     token: string;
-    role: 'CUSTOMER' | 'ADMIN' | 'SELLER' | 'SALES' | 'WAREHOUSE';
+    role: 'CUSTOMER' | 'ADMIN' | 'SALES' | 'WAREHOUSE';
     user: AuthUserData;
     isOffline?: boolean;
 }
@@ -358,14 +374,15 @@ export const AuthService = {
 
             const data = await response.json();
             if (response.ok && data.success) {
+                const mappedRole = (data.role === 'SELLER' ? 'ADMIN' : (data.role || 'CUSTOMER')) as 'CUSTOMER' | 'ADMIN' | 'SALES' | 'WAREHOUSE';
                 const session: AuthSession = {
                     token: data.token || 'jwt-sql-token',
-                    role: (data.role || 'CUSTOMER') as 'CUSTOMER' | 'ADMIN' | 'SELLER',
+                    role: mappedRole,
                     user: {
                         id: data.user?.id || 1,
                         email: data.user?.email || cleanEmail,
-                        name: cleanEmail.includes('admin') ? 'Quản trị viên Hệ thống' : cleanEmail.includes('seller') ? 'Nhà bán hàng ZShop' : 'Khách hàng Thành viên',
-                        role: data.role || 'CUSTOMER'
+                        name: cleanEmail.includes('admin') ? 'Admin (Chủ cửa hàng)' : cleanEmail.includes('sales') ? 'Nhân viên Bán hàng' : cleanEmail.includes('warehouse') ? 'Nhân viên Kho' : 'Khách hàng Thành viên',
+                        role: mappedRole
                     },
                     isOffline: false
                 };
@@ -379,13 +396,13 @@ export const AuthService = {
         }
 
         // 2. Chế độ Ngoại tuyến thông minh (Smart Offline Fallback)
-        // Hỗ trợ các tài khoản mẫu chuẩn theo sơ đồ Use Case
-        const mockAccounts: Record<string, { role: 'CUSTOMER' | 'SELLER' | 'ADMIN' | 'SALES' | 'WAREHOUSE'; name: string }> = {
+        // Hỗ trợ đúng 4 tác nhân chuẩn theo sơ đồ Use Case UML:
+        // 1. Khách hàng (CUSTOMER), 2. Nhân viên bán hàng (SALES), 3. Nhân viên kho (WAREHOUSE), 4. Admin - Chủ cửa hàng (ADMIN)
+        const mockAccounts: Record<string, { role: 'CUSTOMER' | 'ADMIN' | 'SALES' | 'WAREHOUSE'; name: string }> = {
             'customer@test.com': { role: 'CUSTOMER', name: 'Khách hàng ZShop' },
-            'sales@test.com': { role: 'SALES', name: 'Nguyễn Thu Ngân (NV Bán hàng POS)' },
-            'warehouse@test.com': { role: 'WAREHOUSE', name: 'Trần Văn Kho (Thủ kho chính)' },
-            'seller@test.com': { role: 'SELLER', name: 'ZShop Official Store' },
-            'admin@test.com': { role: 'ADMIN', name: 'Chủ cửa hàng (Quản trị viên)' },
+            'sales@test.com': { role: 'SALES', name: 'Nguyễn Thu Ngân (Nhân viên Bán hàng)' },
+            'warehouse@test.com': { role: 'WAREHOUSE', name: 'Trần Văn Kho (Nhân viên Kho)' },
+            'admin@test.com': { role: 'ADMIN', name: 'Admin (Chủ cửa hàng ZShop)' },
             'testkhach@gmail.com': { role: 'CUSTOMER', name: 'Khách Hàng Mẫu' }
         };
 
@@ -395,7 +412,7 @@ export const AuthService = {
                 token: `offline_token_${cleanEmail}_${Date.now()}`,
                 role: acc.role,
                 user: {
-                    id: cleanEmail.includes('admin') ? 3 : cleanEmail.includes('seller') ? 2 : 1,
+                    id: cleanEmail.includes('admin') ? 4 : cleanEmail.includes('warehouse') ? 3 : cleanEmail.includes('sales') ? 2 : 1,
                     email: cleanEmail,
                     name: acc.name,
                     role: acc.role
@@ -414,12 +431,12 @@ export const AuthService = {
             if (found) {
                 const session: AuthSession = {
                     token: `offline_token_${cleanEmail}_${Date.now()}`,
-                    role: found.role || 'CUSTOMER',
+                    role: 'CUSTOMER',
                     user: {
                         id: found.id || Date.now(),
                         email: cleanEmail,
                         name: found.name || cleanEmail.split('@')[0],
-                        role: found.role || 'CUSTOMER'
+                        role: 'CUSTOMER'
                     },
                     isOffline: true
                 };
@@ -430,12 +447,12 @@ export const AuthService = {
 
         return { 
             success: false, 
-            error: 'Sai tài khoản hoặc mật khẩu (Gợi ý tài khoản mẫu: customer@test.com / seller@test.com / admin@test.com - Mật khẩu: 123)' 
+            error: 'Sai tài khoản hoặc mật khẩu (Gợi ý 4 tác nhân mẫu: customer@test.com / sales@test.com / warehouse@test.com / admin@test.com - Mật khẩu: 123)' 
         };
     },
 
-    // Đăng ký tài khoản
-    register: async (email: string, password: string, name?: string, role: 'CUSTOMER' | 'SELLER' = 'CUSTOMER'): Promise<any> => {
+    // Đăng ký tài khoản (Chỉ dành cho Khách hàng - CUSTOMER; tài khoản nhân viên do Admin cấp)
+    register: async (email: string, password: string, name?: string, role: 'CUSTOMER' = 'CUSTOMER'): Promise<any> => {
         const cleanEmail = email.trim().toLowerCase();
         
         try {

@@ -74,7 +74,7 @@ const HomePage: React.FC<HomePageProps> = ({
             <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
                     <div className="font-black text-2xl tracking-tighter text-brand-600 flex-shrink-0 cursor-pointer" onClick={() => window.scrollTo(0,0)}>
-                        SZSHOP
+                        Thế Giới APPLE
                     </div>
                     
                     {/* Search Bar Interactive with Dropdown Results */}

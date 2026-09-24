@@ -3,7 +3,7 @@ import { User, Lock, ArrowLeft, Mail, ShoppingBag, Eye, EyeOff, X, CheckCircle2,
 import { AuthService } from '../services';
 
 interface RegisterPageProps {
-  onRegisterSuccess: (role?: 'CUSTOMER' | 'ADMIN' | 'SELLER') => void;
+  onRegisterSuccess: (role?: 'CUSTOMER' | 'ADMIN') => void;
   onBack: () => void;
   onGoToLogin: () => void;
 }
@@ -22,7 +22,6 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [accountRole, setAccountRole] = useState<'CUSTOMER' | 'SELLER'>('CUSTOMER');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -55,17 +54,12 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
     setIsLoading(true);
 
     try {
-      let registerEmail = email.trim();
-      if (accountRole === 'SELLER' && !registerEmail.toLowerCase().includes('seller')) {
-        const parts = registerEmail.split('@');
-        registerEmail = `${parts[0]}.seller@${parts[1] || 'zshop.vn'}`;
-      }
-
-      const response = await AuthService.register(registerEmail, password, name, accountRole);
+      const registerEmail = email.trim();
+      const response = await AuthService.register(registerEmail, password, name, 'CUSTOMER');
       if (response.success) {
-        setSuccessMsg('Đăng ký thành công! Dữ liệu đã lưu vào CSDL SQL Server.');
+        setSuccessMsg('Đăng ký tài khoản Khách hàng thành công! Dữ liệu đã lưu vào CSDL.');
         setTimeout(() => {
-          onRegisterSuccess(response.role as 'CUSTOMER' | 'ADMIN' | 'SELLER');
+          onRegisterSuccess('CUSTOMER');
         }, 700);
       } else {
         setErrorMsg(response.error || 'Lỗi đăng ký tài khoản.');
@@ -98,7 +92,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
       if (response.success) {
         setSuccessMsg(`Đăng ký Google thành công! Chào mừng ${selectedName}.`);
         setTimeout(() => {
-          onRegisterSuccess(response.role as 'CUSTOMER' | 'ADMIN' | 'SELLER');
+          onRegisterSuccess('CUSTOMER');
         }, 500);
       } else {
         setErrorMsg(response.error || 'Đăng ký Google thất bại.');
@@ -117,7 +111,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
         <button onClick={onBack} className="text-gray-600 hover:text-gray-900 transition-colors p-2 -ml-2 rounded-full hover:bg-gray-100">
           <ArrowLeft size={22} />
         </button>
-        <div className="text-lg font-semibold text-gray-800">Tạo tài khoản ZShop</div>
+        <div className="text-lg font-semibold text-gray-800">Tạo tài khoản Khách hàng ZShop (UC01)</div>
         <div className="w-8"></div>
       </div>
 
@@ -128,7 +122,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
             <ShoppingBag size={32} />
           </div>
           <h2 className="text-gray-900 font-bold text-2xl tracking-tight">ZShop E-Commerce</h2>
-          <p className="text-gray-500 text-sm mt-1 text-center">Đăng ký thành viên để trải nghiệm hệ sinh thái thương mại 3D</p>
+          <p className="text-gray-500 text-sm mt-1 text-center">Đăng ký tài khoản Khách hàng thành viên để tích điểm VIP & mua sắm 3D</p>
         </div>
 
         {/* Thông báo Lỗi / Thành công */}
@@ -149,33 +143,12 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
         {/* Form Đăng ký */}
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
           
-          {/* Lựa chọn vai trò tài khoản */}
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1.5">Bạn muốn đăng ký với tư cách:</label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => setAccountRole('CUSTOMER')}
-                className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all text-center ${
-                  accountRole === 'CUSTOMER'
-                    ? 'border-brand-600 bg-brand-50 text-brand-700 shadow-sm'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                🛒 Khách hàng mua sắm
-              </button>
-              <button
-                type="button"
-                onClick={() => setAccountRole('SELLER')}
-                className={`py-2 px-3 text-xs font-semibold rounded-xl border transition-all text-center ${
-                  accountRole === 'SELLER'
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-700 shadow-sm'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                🏪 Nhà bán hàng (Seller)
-              </button>
+          {/* Thông tin vai trò mặc định chuẩn UML */}
+          <div className="p-3 bg-brand-50/70 border border-brand-200 rounded-xl flex items-center justify-between">
+            <div className="text-xs font-semibold text-brand-800">
+              🛒 Tác nhân đăng ký: <span className="font-bold">Khách hàng (Customer - UC01)</span>
             </div>
+            <span className="text-[10px] font-bold bg-brand-600 text-white px-2 py-0.5 rounded-full">Tích điểm VIP</span>
           </div>
 
           <div className="space-y-3.5 pt-1">

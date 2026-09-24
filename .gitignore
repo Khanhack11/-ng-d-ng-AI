@@ -28,6 +28,9 @@ venv/
 # Environment secrets
 .env
 .env*.local
+**/.env
+**/.env.*
+!**/.env.example
 backend/.env
 
 # Editor directories and files

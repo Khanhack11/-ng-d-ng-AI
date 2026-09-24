@@ -1,8 +1,6 @@
 import React from 'react';
 import Header from './Header';
 import HeroBanner from './HeroBanner';
-import Categories from './Categories';
-import FlashSale from './FlashSale';
 import ProductGrid from './ProductGrid';
 import Footer from './Footer';
 
@@ -39,7 +37,7 @@ interface ShopeeHomePageProps {
 
 const ShopeeHomePage: React.FC<ShopeeHomePageProps> = (props) => {
   return (
-    <div className="bg-surface-raised min-h-screen font-primary text-surface-base">
+    <div className="bg-gradient-to-b from-[#C4B49E] via-[#BBA992] to-[#B2A088] min-h-screen font-primary text-[#241F1A]">
       <Header 
         onOpenCart={props.onOpenCart} 
         cartItemCount={props.cartItemCount}
@@ -71,11 +69,8 @@ const ShopeeHomePage: React.FC<ShopeeHomePageProps> = (props) => {
         onSwitchWorkspace={props.onSwitchWorkspace}
       />
       
-      <main className="pb-8">
+      <main className="pb-10">
         <HeroBanner />
-        <Categories />
-        {/* Hướng dẫn click thay vì FlashSale tạm thời pass callback thủ công vào component bên dưới */}
-        <FlashSale onProductClick={props.onProductClick} />
         <ProductGrid onProductClick={props.onProductClick} />
       </main>
 

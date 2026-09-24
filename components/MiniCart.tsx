@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { 
   X, Trash2, ShoppingBag, ArrowRight, Minus, Plus, Sparkles, 
   Ticket, Check, Tag, Truck, ShieldCheck, AlertCircle, 
-  RotateCcw, Shield, CheckCircle2, ChevronRight
+  RotateCcw, CheckCircle2, CheckSquare, Square, Layers, Zap
 } from 'lucide-react';
 import { CartItem } from '../types';
+import { MOCK_PRODUCTS_LIST } from '../constants';
+import { getProductVisualSync } from '../services';
 
 interface MiniCartProps {
   isOpen: boolean;
@@ -16,6 +18,10 @@ interface MiniCartProps {
   onContinueShopping: () => void;
   onAddToCart?: (item: CartItem) => void;
   onClearCart?: () => void;
+  onToggleSelectItem?: (id: string) => void;
+  onSelectAllItems?: (selectAll: boolean) => void;
+  onSelectCartGroup?: (groupKey: 'ALL' | 'FLAGSHIP_18_17' | 'PRO_16_15_14' | 'CLASSIC_OTHER') => void;
+  onBuySingleItem?: (id: string) => void;
 }
 
 const AVAILABLE_VOUCHERS = [
@@ -35,7 +41,11 @@ export const MiniCart: React.FC<MiniCartProps> = ({
   onCheckout, 
   onContinueShopping, 
   onAddToCart,
-  onClearCart
+  onClearCart,
+  onToggleSelectItem,
+  onSelectAllItems,
+  onSelectCartGroup,
+  onBuySingleItem
 }) => {
   const [voucherInput, setVoucherInput] = useState<string>('');
   const [appliedVoucher, setAppliedVoucher] = useState<{ code: string; discount: number } | null>({
@@ -43,14 +53,37 @@ export const MiniCart: React.FC<MiniCartProps> = ({
     discount: 30000
   });
   const [voucherMsg, setVoucherMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [activeCartCategoryTab, setActiveCartCategoryTab] = useState<'ALL' | 'FLAGSHIP_18_17' | 'PRO_16_15_14' | 'CLASSIC_OTHER'>('ALL');
 
-  // Tính toán tiền
+  // Phân loại các món trong giỏ theo nhóm mục sản phẩm
+  const enrichedCart = cartItems.map(item => ({
+    item,
+    visual: getProductVisualSync(item, MOCK_PRODUCTS_LIST)
+  }));
+
+  const countByGroup = {
+    ALL: enrichedCart.length,
+    FLAGSHIP_18_17: enrichedCart.filter(x => x.visual.categoryGroup === 'FLAGSHIP_18_17').length,
+    PRO_16_15_14: enrichedCart.filter(x => x.visual.categoryGroup === 'PRO_16_15_14').length,
+    CLASSIC_OTHER: enrichedCart.filter(x => x.visual.categoryGroup === 'CLASSIC_OTHER').length
+  };
+
+  const visibleEnrichedCart = enrichedCart.filter(x =>
+    activeCartCategoryTab === 'ALL' ? true : x.visual.categoryGroup === activeCartCategoryTab
+  );
+
+  // Tính toán tiền CHỈ TRÊN CÁC MÓN ĐƯỢC TÍCH CHỌN MUA (selected !== false)
+  const selectedItems = cartItems.filter(item => item.selected !== false);
+  const unselectedCount = cartItems.length - selectedItems.length;
+  const isAllSelected = cartItems.length > 0 && selectedItems.length === cartItems.length;
+
   const totalItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const discountAmount = appliedVoucher ? appliedVoucher.discount : 0;
+  const selectedItemQuantity = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
+  const subtotal = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const discountAmount = appliedVoucher && selectedItems.length > 0 ? appliedVoucher.discount : 0;
   const isFreeshipEligible = subtotal >= FREESHIP_THRESHOLD || appliedVoucher?.code === 'FREESHIPMAX';
-  const shippingFee = isFreeshipEligible ? 0 : 30000;
-  const finalTotal = Math.max(0, subtotal + shippingFee - (appliedVoucher?.code === 'FREESHIPMAX' ? 0 : discountAmount));
+  const shippingFee = selectedItems.length === 0 ? 0 : (isFreeshipEligible ? 0 : 30000);
+  const finalTotal = selectedItems.length === 0 ? 0 : Math.max(0, subtotal + shippingFee - (appliedVoucher?.code === 'FREESHIPMAX' ? 0 : discountAmount));
 
   // Tiến độ Freeship
   const freeshipProgress = Math.min(100, Math.round((subtotal / FREESHIP_THRESHOLD) * 100));
@@ -66,7 +99,7 @@ export const MiniCart: React.FC<MiniCartProps> = ({
     if (subtotal < found.minSpend) {
       setVoucherMsg({ 
         type: 'error', 
-        text: `Đơn hàng cần tối thiểu ${new Intl.NumberFormat('vi-VN').format(found.minSpend)}đ để dùng mã này.` 
+        text: `Các món đã chọn cần tối thiểu ${new Intl.NumberFormat('vi-VN').format(found.minSpend)}đ để dùng mã này.` 
       });
       return;
     }
@@ -99,21 +132,22 @@ export const MiniCart: React.FC<MiniCartProps> = ({
       />
 
       {/* Slide-over Drawer Panel */}
-      <div className={`absolute top-0 right-0 h-full w-full sm:w-[460px] bg-white shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`absolute top-0 right-0 h-full w-full sm:w-[490px] bg-white shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         
         {/* --- HEADER --- */}
-        <div className="h-16 px-5 border-b border-slate-100 flex items-center justify-between bg-white shrink-0 shadow-2xs">
+        <div className="h-16 px-5 border-b border-slate-100 flex items-center justify-between bg-[#1c1b18] text-white shrink-0 shadow-xs">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#d4b996] to-[#8c6f46] text-[#1c1b18] flex items-center justify-center font-bold shadow-xs">
               <ShoppingBag size={18} />
             </div>
             <div>
-              <h2 className="text-base font-black text-slate-900 tracking-tight flex items-center gap-1.5">
-                <span>Giỏ Hàng Của Bạn</span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">
-                  {totalItemCount} món
+              <h2 className="text-sm sm:text-base font-black text-white tracking-tight flex items-center gap-1.5">
+                <span>Giỏ Hàng Thông Minh</span>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#d4b996]/20 text-[#e5c9a3] border border-[#d4b996]/40">
+                  Đã chọn {selectedItems.length}/{cartItems.length} món
                 </span>
               </h2>
+              <p className="text-[10px] text-stone-300">Tích chọn món muốn mua • Giữ lại các món chưa mua trong giỏ</p>
             </div>
           </div>
 
@@ -122,16 +156,16 @@ export const MiniCart: React.FC<MiniCartProps> = ({
               <button
                 type="button"
                 onClick={handleConfirmClearAll}
-                className="text-xs font-semibold text-slate-400 hover:text-rose-600 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors flex items-center gap-1 cursor-pointer"
+                className="text-xs font-semibold text-stone-400 hover:text-rose-400 px-2 py-1 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-1 cursor-pointer"
                 title="Làm trống toàn bộ giỏ hàng"
               >
                 <Trash2 size={13} />
-                <span className="hidden sm:inline">Xóa tất cả</span>
+                <span className="hidden sm:inline">Xóa hết</span>
               </button>
             )}
             <button 
               onClick={onClose} 
-              className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center text-stone-300 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer"
               title="Đóng giỏ hàng"
             >
               <X size={18} />
@@ -139,184 +173,283 @@ export const MiniCart: React.FC<MiniCartProps> = ({
           </div>
         </div>
 
-        {/* --- THANH TIẾN ĐỘ FREESHIP NỔI BẬT --- */}
+        {/* --- BỘ CHIA MỤC CHỌN MUA SẢN PHẨM TRONG GIỎ HÀNG (MULTI-CATEGORY CART SELECTOR) --- */}
         {cartItems.length > 0 && (
-          <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 px-5 py-3 border-b border-emerald-100/80 shrink-0">
-            <div className="flex items-center justify-between text-xs mb-1.5 font-sans">
-              <span className="font-bold text-emerald-900 flex items-center gap-1.5">
-                <Truck size={15} className="text-emerald-600" />
-                {amountToFreeship > 0 && !isFreeshipEligible ? (
-                  <>Mua thêm <strong className="text-emerald-700 font-extrabold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amountToFreeship)}</strong> để Freeship</>
+          <div className="bg-[#faf8f5] px-4 py-2.5 border-b border-[#e5dfd3] shrink-0 space-y-2">
+            {/* Các tab chia mục sản phẩm */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+              {[
+                { key: 'ALL' as const, label: `Tất cả (${countByGroup.ALL})` },
+                { key: 'FLAGSHIP_18_17' as const, label: `🔥 Flagship 18/17 (${countByGroup.FLAGSHIP_18_17})` },
+                { key: 'PRO_16_15_14' as const, label: `📱 iPhone 16/15/14 (${countByGroup.PRO_16_15_14})` },
+                { key: 'CLASSIC_OTHER' as const, label: `💎 Sưu tầm (${countByGroup.CLASSIC_OTHER})` }
+              ].map(tab => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => {
+                    setActiveCartCategoryTab(tab.key);
+                    if (tab.key !== 'ALL' && onSelectCartGroup) {
+                      onSelectCartGroup(tab.key);
+                    }
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold whitespace-nowrap transition-all cursor-pointer border ${
+                    activeCartCategoryTab === tab.key
+                      ? 'bg-[#1c1b18] text-[#e5c9a3] border-[#8c6f46] shadow-2xs'
+                      : 'bg-white text-stone-600 border-stone-200 hover:border-stone-300'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Thanh điều khiển Chọn tất cả / Chỉ chọn mục này */}
+            <div className="flex items-center justify-between text-xs pt-0.5">
+              <button
+                type="button"
+                onClick={() => onSelectAllItems && onSelectAllItems(!isAllSelected)}
+                className="flex items-center gap-1.5 font-bold text-stone-800 hover:text-[#8c6f46] cursor-pointer"
+              >
+                {isAllSelected ? (
+                  <CheckSquare size={16} className="text-rose-600 fill-rose-50" />
                 ) : (
-                  <span className="text-emerald-700 font-black flex items-center gap-1">
-                    <CheckCircle2 size={14} className="text-emerald-600" /> Đơn hàng đã đủ điều kiện MIỄN PHÍ VẬN CHUYỂN!
+                  <Square size={16} className="text-stone-400" />
+                )}
+                <span>Chọn tất cả ({cartItems.length} sản phẩm)</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                {activeCartCategoryTab !== 'ALL' && onSelectCartGroup && (
+                  <button
+                    type="button"
+                    onClick={() => onSelectCartGroup(activeCartCategoryTab)}
+                    className="text-[11px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-md hover:bg-rose-100 cursor-pointer flex items-center gap-1"
+                  >
+                    <Layers size={11} /> Chỉ mua mục này
+                  </button>
+                )}
+                {selectedItems.length > 0 && selectedItems.length < cartItems.length && (
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
+                    Giữ lại {unselectedCount} món trong giỏ
                   </span>
                 )}
-              </span>
-              <span className="font-mono font-black text-[11px] text-emerald-700">{freeshipProgress}%</span>
-            </div>
-            <div className="w-full h-2 bg-emerald-200/50 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500 rounded-full shadow-inner"
-                style={{ width: `${isFreeshipEligible ? 100 : freeshipProgress}%` }}
-              />
+              </div>
             </div>
           </div>
         )}
 
-        {/* --- DANH SÁCH SẢN PHẨM (ITEMS LIST) --- */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 bg-slate-50/70 space-y-3">
+        {/* --- DANH SÁCH SẢN PHẨM (ITEMS LIST VỚI CHECKBOX CHỌN LẺ & ẢNH STUDIO ĐỒNG BỘ) --- */}
+        <div className="flex-1 overflow-y-auto px-4 py-3.5 bg-slate-50/70 space-y-3">
           {cartItems.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center px-4 py-16 space-y-4 animate-fade-in">
-              <div className="w-24 h-24 rounded-full bg-rose-50 flex items-center justify-center text-rose-400 shadow-inner">
+              <div className="w-24 h-24 rounded-full bg-[#faf6f0] border border-[#e5dfd3] flex items-center justify-center text-[#8c6f46] shadow-inner">
                 <ShoppingBag size={42} strokeWidth={1.5} />
               </div>
               <div>
                 <h3 className="text-base font-bold text-slate-800">Giỏ hàng của bạn đang trống</h3>
                 <p className="text-xs text-slate-400 mt-1 max-w-xs">
-                  Chưa có sản phẩm nào trong giỏ. Hãy chọn những món thời trang ưng ý nhất hôm nay nhé!
+                  Chưa có mẫu iPhone nào trong giỏ. Hãy chọn màu máy và dung lượng ưng ý nhất hôm nay nhé!
                 </p>
               </div>
               <button 
                 onClick={onContinueShopping} 
-                className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-brand-500/20 active:scale-98 cursor-pointer"
+                className="px-6 py-2.5 bg-[#1c1b18] hover:bg-[#332e27] text-[#e5c9a3] font-bold text-xs rounded-xl transition-all shadow-md cursor-pointer"
               >
-                Khám Phá Sản Phẩm Ngay
+                Khám Phá 45 Mẫu iPhone Ngay
+              </button>
+            </div>
+          ) : visibleEnrichedCart.length === 0 ? (
+            <div className="p-8 text-center bg-white rounded-2xl border border-stone-200 space-y-2">
+              <p className="text-xs font-bold text-stone-700">Chưa có sản phẩm nào thuộc mục này trong giỏ hàng.</p>
+              <button
+                type="button"
+                onClick={() => setActiveCartCategoryTab('ALL')}
+                className="px-3 py-1.5 bg-[#1c1b18] text-[#e5c9a3] rounded-lg text-xs font-bold cursor-pointer"
+              >
+                Xem tất cả ({cartItems.length} món)
               </button>
             </div>
           ) : (
-            cartItems.map((item) => (
-              <div 
-                key={item.id} 
-                className="bg-white p-3 rounded-2xl border border-slate-200/70 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex gap-3 relative group"
-              >
-                {/* Product Thumbnail */}
-                <div className="w-20 h-24 rounded-xl overflow-hidden shrink-0 bg-slate-100 border border-slate-100 relative">
-                  <img 
-                    src={item.image} 
-                    alt={item.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                  />
-                </div>
+            visibleEnrichedCart.map(({ item, visual }) => {
+              const isSelected = item.selected !== false;
+              return (
+                <div 
+                  key={item.id} 
+                  className={`p-3 rounded-2xl border transition-all flex items-center gap-2.5 relative group ${
+                    isSelected
+                      ? 'bg-white border-[#8c6f46] ring-1 ring-[#8c6f46]/25 shadow-xs'
+                      : 'bg-white/70 border-slate-200/80 opacity-75 hover:opacity-100'
+                  }`}
+                >
+                  {/* Checkbox tích chọn món muốn mua */}
+                  <button
+                    type="button"
+                    onClick={() => onToggleSelectItem && onToggleSelectItem(item.id)}
+                    className="shrink-0 p-1 -ml-1 text-slate-500 hover:text-rose-600 cursor-pointer"
+                    title={isSelected ? 'Bỏ chọn món này (Giữ lại trong giỏ)' : 'Tích chọn để mua món này'}
+                  >
+                    {isSelected ? (
+                      <CheckSquare size={19} className="text-rose-600 fill-rose-50" />
+                    ) : (
+                      <Square size={19} className="text-slate-300" />
+                    )}
+                  </button>
 
-                {/* Details */}
-                <div className="flex-1 flex flex-col min-w-0 justify-between py-0.5">
-                  <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-bold text-xs text-slate-900 line-clamp-2 leading-snug">
-                        {item.name}
-                      </h4>
-                      <button 
-                        onClick={() => onRemoveItem(item.id)}
-                        className="text-slate-300 hover:text-rose-500 transition-colors p-1 -mr-1 -mt-1 cursor-pointer"
-                        title="Xóa khỏi giỏ"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                  {/* Product Studio Thumbnail — Đồng bộ 100% như ngoài mục sản phẩm (ProductCard) */}
+                  <div
+                    onClick={() => onToggleSelectItem && onToggleSelectItem(item.id)}
+                    className={`w-20 h-24 rounded-xl overflow-hidden shrink-0 bg-gradient-to-br ${visual.studioBg} p-1.5 border border-stone-300/80 relative flex flex-col items-center justify-center cursor-pointer shadow-xs`}
+                  >
+                    <div className="bg-white/95 rounded-lg w-full h-full flex items-center justify-center p-1 shadow-inner">
+                      <img 
+                        src={visual.image} 
+                        alt={item.name} 
+                        style={{ filter: visual.imgFilter }}
+                        className="max-w-full max-h-full object-contain group-hover:scale-108 transition-transform duration-300" 
+                      />
                     </div>
-                    
-                    {/* Variant tags */}
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="text-[11px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
-                        Phân loại: {item.size}
-                      </span>
-                    </div>
+                    <span
+                      className="absolute bottom-1 right-1 w-3 h-3 rounded-full border border-white shadow-xs"
+                      style={{ backgroundColor: visual.swatchHex }}
+                      title={visual.colorLabel}
+                    />
                   </div>
 
-                  {/* Quantity Stepper & Price */}
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2">
-                    {/* Stepper */}
-                    {onUpdateQuantity ? (
-                      <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
-                        <button 
-                          onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                          className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                  {/* Details */}
+                  <div className="flex-1 flex flex-col min-w-0 justify-between py-0.5">
+                    <div>
+                      <div className="flex items-start justify-between gap-1.5">
+                        <h4
+                          onClick={() => onToggleSelectItem && onToggleSelectItem(item.id)}
+                          className="font-bold text-xs text-slate-900 line-clamp-2 leading-snug cursor-pointer hover:text-[#8c6f46]"
                         >
-                          <Minus size={11} />
-                        </button>
-                        <span className="font-mono font-bold text-xs px-2.5 text-slate-900 select-none">
-                          {item.quantity}
-                        </span>
+                          {item.name}
+                        </h4>
                         <button 
-                          onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                          className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                          onClick={() => onRemoveItem(item.id)}
+                          className="text-slate-300 hover:text-rose-500 transition-colors p-1 -mr-1 -mt-1 cursor-pointer shrink-0"
+                          title="Xóa khỏi giỏ"
                         >
-                          <Plus size={11} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
-                    ) : (
-                      <span className="text-xs text-slate-500 font-medium">SL: {item.quantity}</span>
-                    )}
+                      
+                      {/* Variant & Color Sync tags */}
+                      <div className="flex flex-wrap items-center gap-1 mt-1">
+                        <span className="text-[10px] font-bold text-stone-800 bg-[#faf6f0] border border-[#e5dfd3] px-2 py-0.5 rounded-md flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: visual.swatchHex }} />
+                          <span className="truncate max-w-[165px]">{item.size}</span>
+                        </span>
+                        <span className="text-[9px] font-bold text-[#8c6f46] bg-amber-50/80 px-1.5 py-0.5 rounded">
+                          {visual.categoryGroupLabel}
+                        </span>
+                      </div>
+                    </div>
 
-                    {/* Price */}
-                    <div className="text-right">
-                      <span className="font-mono font-black text-rose-600 text-xs sm:text-sm">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price * item.quantity)}
-                      </span>
+                    {/* Quantity Stepper, Buy Single Item & Price */}
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2 gap-1">
+                      <div className="flex items-center gap-1.5">
+                        {onUpdateQuantity ? (
+                          <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
+                            <button 
+                              onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                              className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                            >
+                              <Minus size={11} />
+                            </button>
+                            <span className="font-mono font-bold text-xs px-2 text-slate-900 select-none">
+                              {item.quantity}
+                            </span>
+                            <button 
+                              onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+                              className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                            >
+                              <Plus size={11} />
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-500 font-medium">SL: {item.quantity}</span>
+                        )}
+
+                        {onBuySingleItem && cartItems.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => onBuySingleItem(item.id)}
+                            className="px-2 py-1 rounded-lg bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white border border-rose-200 text-[10px] font-black transition-all cursor-pointer flex items-center gap-0.5"
+                            title="Chỉ thanh toán riêng món hàng này (Các món khác giữ nguyên trong giỏ)"
+                          >
+                            <Zap size={10} /> Mua riêng
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Price */}
+                      <div className="text-right">
+                        <span className="font-mono font-black text-rose-600 text-xs sm:text-sm">
+                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price * item.quantity)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
 
-          {/* Gợi ý mua kèm (Deal sốc) */}
+          {/* Gợi ý mua kèm iPhone Chính hãng */}
           {cartItems.length > 0 && (
             <div className="pt-2 border-t border-slate-200 mt-4 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black text-slate-800 flex items-center gap-1.5">
-                  <Sparkles size={14} className="text-amber-500" /> Ưu Đãi Mua Kèm Deal Hot
+                  <Sparkles size={14} className="text-amber-500" /> Gợi Ý Thêm Vào Giỏ Để So Sánh & Chọn Mua
                 </span>
-                <span className="text-[10px] text-amber-700 font-extrabold bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
-                  Tiết Kiệm Thêm
+                <span className="text-[10px] text-[#8c6f46] font-extrabold bg-[#faf6f0] px-2 py-0.5 rounded-md border border-[#e5dfd3]">
+                  Chuẩn Apple VN/A
                 </span>
               </div>
 
               <div className="space-y-1.5">
-                {[
-                  {
-                    id: 'REC-01',
-                    name: 'Vớ Dệt Kim Cổ Cao Thoáng Khí ZShop',
-                    price: 29000,
-                    size: 'FreeSize',
-                    image: 'https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=300'
-                  },
-                  {
-                    id: 'REC-02',
-                    name: 'Nón Lưỡi Trai Phong Cách Thể Thao Nam',
-                    price: 69000,
-                    size: 'FreeSize',
-                    image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=300'
-                  }
-                ].map(rec => (
-                  <div key={rec.id} className="p-2 bg-white rounded-xl border border-slate-200/80 flex items-center justify-between gap-2 shadow-2xs">
-                    <img src={rec.image} alt={rec.name} className="w-10 h-10 object-cover rounded-lg shrink-0 bg-slate-50 border border-slate-100" />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-[11px] font-bold text-slate-800 truncate">{rec.name}</h4>
-                      <p className="text-[10px] text-rose-600 font-extrabold font-mono">
-                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(rec.price)}
-                      </p>
+                {MOCK_PRODUCTS_LIST.slice(0, 2).map(rec => {
+                  const recVisual = getProductVisualSync(rec, MOCK_PRODUCTS_LIST);
+                  return (
+                    <div key={rec.id} className="p-2 bg-white rounded-xl border border-slate-200/80 flex items-center justify-between gap-2 shadow-2xs">
+                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${recVisual.studioBg} p-1 shrink-0 flex items-center justify-center`}>
+                        <img src={recVisual.image} alt={rec.name} style={{ filter: recVisual.imgFilter }} className="w-full h-full object-contain bg-white rounded p-0.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-[11px] font-bold text-slate-800 truncate">{rec.name}</h4>
+                        <p className="text-[10px] text-rose-600 font-extrabold font-mono">
+                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(rec.price)}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (onAddToCart) {
+                            onAddToCart({
+                              id: `${rec.id}-${Date.now()}`,
+                              productId: rec.id,
+                              name: rec.name,
+                              price: rec.price,
+                              size: `${rec.sizes[0]} - ${rec.colors[0].replace(/\s*\(Mới\)/gi, '')}`,
+                              color: rec.colors[0].replace(/\s*\(Mới\)/gi, ''),
+                              quantity: 1,
+                              image: recVisual.image,
+                              selected: true,
+                              imgFilter: recVisual.imgFilter,
+                              studioBg: recVisual.studioBg,
+                              swatchHex: recVisual.swatchHex
+                            });
+                          }
+                        }}
+                        className="px-2.5 py-1 bg-[#1c1b18] hover:bg-[#332e27] text-[#e5c9a3] rounded-lg text-[11px] font-bold shrink-0 transition-all shadow-xs cursor-pointer"
+                      >
+                        + Thêm
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (onAddToCart) {
-                          onAddToCart({
-                            id: `rec-${rec.id}-${Date.now()}`,
-                            name: rec.name,
-                            price: rec.price,
-                            size: rec.size,
-                            quantity: 1,
-                            image: rec.image
-                          });
-                        }
-                      }}
-                      className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[11px] font-bold shrink-0 transition-all shadow-xs cursor-pointer"
-                    >
-                      + Thêm
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -400,10 +533,10 @@ export const MiniCart: React.FC<MiniCartProps> = ({
               )}
             </div>
 
-            {/* Price Details */}
+            {/* Price Details (Tính riêng cho các món đã chọn mua) */}
             <div className="pt-2 border-t border-slate-100 space-y-1.5 text-xs text-slate-600 font-sans">
               <div className="flex justify-between">
-                <span>Tiền hàng ({totalItemCount} sản phẩm):</span>
+                <span>Tiền hàng đã chọn ({selectedItems.length}/{cartItems.length} món • SL {selectedItemQuantity}):</span>
                 <span className="font-semibold text-slate-900 font-mono">
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}
                 </span>
@@ -411,17 +544,24 @@ export const MiniCart: React.FC<MiniCartProps> = ({
               <div className="flex justify-between">
                 <span>Phí giao hàng:</span>
                 <span className={`font-semibold font-mono ${isFreeshipEligible ? 'text-emerald-600' : 'text-slate-900'}`}>
-                  {isFreeshipEligible ? 'Miễn phí (Freeship)' : '30.000₫'}
+                  {selectedItems.length === 0 ? '0₫' : (isFreeshipEligible ? 'Miễn phí (Freeship)' : '30.000₫')}
                 </span>
               </div>
-              {appliedVoucher && appliedVoucher.code !== 'FREESHIPMAX' && (
+              {appliedVoucher && appliedVoucher.code !== 'FREESHIPMAX' && selectedItems.length > 0 && (
                 <div className="flex justify-between text-emerald-600 font-bold">
                   <span>Giảm giá Voucher ({appliedVoucher.code}):</span>
                   <span className="font-mono">-{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(appliedVoucher.discount)}</span>
                 </div>
               )}
               <div className="flex justify-between items-baseline pt-2 border-t border-slate-200">
-                <span className="text-xs font-bold text-slate-900">Tổng thanh toán:</span>
+                <div>
+                  <span className="text-xs font-bold text-slate-900 block">Tổng thanh toán món đã chọn:</span>
+                  {unselectedCount > 0 && (
+                    <span className="text-[10px] text-emerald-700 font-semibold">
+                      ✓ {unselectedCount} món chưa chọn sẽ được giữ lại trong giỏ
+                    </span>
+                  )}
+                </div>
                 <span className="text-xl font-black text-rose-600 font-mono">
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(finalTotal)}
                 </span>
@@ -431,9 +571,14 @@ export const MiniCart: React.FC<MiniCartProps> = ({
             {/* Checkout Button */}
             <button 
               onClick={onCheckout}
-              className="w-full py-3.5 bg-gradient-to-r from-rose-600 to-orange-500 hover:from-rose-700 hover:to-orange-600 text-white font-black text-sm rounded-xl shadow-lg shadow-rose-500/25 active:scale-98 transition-all flex items-center justify-center gap-2 tracking-wide cursor-pointer uppercase"
+              disabled={selectedItems.length === 0}
+              className="w-full py-3.5 bg-gradient-to-r from-[#1c1b18] via-[#2c251d] to-[#8c6f46] hover:from-[#2c251d] hover:to-[#a38254] disabled:opacity-40 text-[#e5c9a3] font-black text-sm rounded-xl shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 tracking-wide cursor-pointer uppercase border border-[#d4b996]/40"
             >
-              <span>Tiến Hành Đặt Hàng</span>
+              <span>
+                {selectedItems.length === 0
+                  ? 'Hãy Tích Chọn Ít Nhất 1 Món Để Mua'
+                  : `Mua Ngay ${selectedItems.length}/${cartItems.length} Món Đã Chọn`}
+              </span>
               <ArrowRight size={16} />
             </button>
 

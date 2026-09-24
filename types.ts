@@ -62,14 +62,22 @@ export interface ProductVariant {
     stockQuantity: number;
 }
 
-// New types for UC03 - Order Confirmation
+// New types for UC03 - Order Confirmation & Selective Cart Checkout
 export interface CartItem {
   id: string;
+  productId?: string;
   name: string;
   size: string;
+  color?: string;
+  category?: string;
   price: number;
+  originalPrice?: number;
   quantity: number;
   image: string;
+  selected?: boolean;
+  imgFilter?: string;
+  studioBg?: string;
+  swatchHex?: string;
 }
 
 // Entity: KhachHang (Thông tin khách hàng)
@@ -96,11 +104,10 @@ export interface PaymentTransaction {
 
 export enum UserRole {
   GUEST = 'GUEST',
-  CUSTOMER = 'CUSTOMER',
-  SUPPORT = 'SUPPORT',
-  SELLER = 'SELLER',
-  ADMIN = 'ADMIN',
-  SALES = 'SALES',          // Nhân viên Bán hàng (POS)
+  CUSTOMER = 'CUSTOMER',    // Khách hàng
+  SUPPORT = 'SUPPORT',      // Hỗ trợ / CSKH (gộp vào Nhân viên Bán hàng)
+  ADMIN = 'ADMIN',          // Admin (Chủ cửa hàng)
+  SALES = 'SALES',          // Nhân viên Bán hàng (POS & CSKH)
   WAREHOUSE = 'WAREHOUSE'   // Nhân viên Kho
 }
 
@@ -299,6 +306,8 @@ export interface CustomerContext {
   customerProfile?: CustomerProfile | null;
   cartItems?: CartItem[];
   allProducts?: ProductDetail[];
+  activeProduct?: ProductDetail | null;
+  currentView?: string;
   customerOrders?: Order[];
   measurements?: UserMeasurements | null;
 }

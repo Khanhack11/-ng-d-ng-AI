@@ -278,20 +278,22 @@ class ReasoningAgent:
         return reasoning_output
 
     def _refine_with_llm(self, query: str, base_answer: str, products: List[Dict[str, Any]], rag_context: str, api_key: str) -> Optional[str]:
-        try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key.strip()}"
-            prompt = (
-                f"Bạn là Trợ lý AI ZShop bán hàng thông minh và lịch sự.\n"
-                f"Khách hỏi: '{query}'\n"
-                f"Ngữ cảnh Vector DB (nguồn sự thật duy nhất): {rag_context}\n"
-                f"Danh sách sản phẩm gợi ý (chỉ được dùng đúng các trường này): {products}\n"
-                f"Bản thảo trả lời: {base_answer}\n"
-                f"Nhiệm vụ: Chỉ viết lại văn phong bằng tiếng Việt. Tuyệt đối không thêm, sửa hoặc suy diễn tên, ID, giá, tồn kho, rating, size, chính sách, thời gian hay cam kết. Nếu không có dữ liệu thì phải nói rõ là chưa có dữ liệu."
-            )
-            resp = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=4)
-            if resp.status_code == 200:
-                data = resp.json()
-                return data["candidates"][0]["content"]["parts"][0]["text"].strip()
-        except Exception:
-            pass
+        prompt = (
+            f"Bạn là Trợ lý AI ZShop chuyên biệt về Điện thoại iPhone (từ iPhone 4 đến iPhone 18 Pro Max) hiểu chuẩn ngôn ngữ GenZ (18prm, 17prm, 16prm...).\n"
+            f"Khách hỏi: '{query}'\n"
+            f"Ngữ cảnh Vector DB (nguồn sự thật duy nhất): {rag_context}\n"
+            f"Danh sách sản phẩm iPhone gợi ý (chỉ được dùng đúng các trường này): {products}\n"
+            f"Bản thảo trả lời: {base_answer}\n"
+            f"Nhiệm vụ: Trả lời tự nhiên, trẻ trung chuẩn GenZ bằng tiếng Việt, tuyệt đối bám sát dữ liệu Database ZShop (giá, cấu hình, tồn kho)."
+        )
+        for model_name in ("gemini-2.5-flash", "gemini-2.0-flash"):
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key.strip()}"
+                resp = requests.post(url, json={"contents": [{"parts": [{"text": prompt}]}]}, timeout=4)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+            except Exception:
+                continue
         return None
+

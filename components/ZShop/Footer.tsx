@@ -2,80 +2,62 @@ import React from 'react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-100 text-gray-600 text-sm border-t border-gray-200 mt-12 pb-8">
-      <div className="container mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+    <footer className="bg-[#1e1d1a] text-stone-300 text-sm border-t border-[#c5a880]/30 mt-12 pb-8">
+      <div className="container mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         
-        {/* Column 1: Customer Care */}
+        {/* Column 1: Thương hiệu Thế Giới iPhone */}
         <div>
-          <h3 className="font-bold text-gray-800 mb-4 uppercase">Chăm sóc khách hàng</h3>
-          <ul className="space-y-2">
-            <li><a href="#" className="hover:text-primary transition">Trung Tâm Trợ Giúp</a></li>
-            <li><a href="#" className="hover:text-primary transition">ZS-Economy Blog</a></li>
-            <li><a href="#" className="hover:text-primary transition">ZS-Economy Mall</a></li>
-            <li><a href="#" className="hover:text-primary transition">Hướng Dẫn Mua Hàng</a></li>
-            <li><a href="#" className="hover:text-primary transition">Thanh Toán</a></li>
-            <li><a href="#" className="hover:text-primary transition">Vận Chuyển</a></li>
-          </ul>
-        </div>
-
-        {/* Column 2: About Shopee */}
-        <div>
-          <h3 className="font-bold text-gray-800 mb-4 uppercase">Về ZS-Economy</h3>
-          <ul className="space-y-2">
-            <li><a href="#" className="hover:text-primary transition">Giới Thiệu</a></li>
-            <li><a href="#" className="hover:text-primary transition">Tuyển Dụng</a></li>
-            <li><a href="#" className="hover:text-primary transition">Điều Khoản ZS-Economy</a></li>
-            <li><a href="#" className="hover:text-primary transition">Chính Sách Bảo Mật</a></li>
-            <li><a href="#" className="hover:text-primary transition">Chính Hãng</a></li>
-            <li><a href="#" className="hover:text-primary transition">Kênh Người Bán</a></li>
-          </ul>
-        </div>
-
-        {/* Column 3: Payment & Logistics */}
-        <div>
-          <h3 className="font-bold text-gray-800 mb-4 uppercase">Thanh Toán</h3>
-          <div className="grid grid-cols-3 gap-2 mb-6">
-            <div className="bg-white shadow p-2 border border-gray-200 text-center text-xs">Visa</div>
-            <div className="bg-white shadow p-2 border border-gray-200 text-center text-xs">JCB</div>
-            <div className="bg-white shadow p-2 border border-gray-200 text-center text-xs">COD</div>
+          <div className="text-xl font-black tracking-tight mb-2">
+            <span className="text-stone-100">Thế Giới </span>
+            <span className="text-[#d4b996]">iPhone</span>
           </div>
-          
-          <h3 className="font-bold text-gray-800 mb-4 uppercase">Đơn Vị Vận Chuyển</h3>
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-white shadow p-2 border border-gray-200 text-center text-xs">SPX</div>
-            <div className="bg-white shadow p-2 border border-gray-200 text-center text-xs">GHN</div>
-            <div className="bg-white shadow p-2 border border-gray-200 text-center text-xs">J&T</div>
+          <p className="text-xs text-stone-400 leading-relaxed mb-3">
+            Cửa hàng chuyên kinh doanh Điện Thoại iPhone Chính Hãng VN/A & iPhone Sưu Tầm nguyên zin từ iPhone 4s đến iPhone 18 Pro Max.
+          </p>
+          <div className="inline-block bg-[#2a2722] border border-[#c5a880]/40 text-[#e5c9a3] text-[11px] font-semibold px-3 py-1 rounded-lg">
+            🤖 Hỗ trợ bởi AI Thế Giới iPhone 24/7
           </div>
         </div>
 
-        {/* Column 4: Social Media */}
+        {/* Column 2: Chính sách bảo hành */}
         <div>
-          <h3 className="font-bold text-gray-800 mb-4 uppercase">Theo Dõi Chúng Tôi Trên</h3>
-          <ul className="space-y-2">
-            <li><a href="#" className="hover:text-primary transition flex items-center gap-2"><div className="w-4 h-4 bg-blue-600 rounded-full"></div> Facebook</a></li>
-            <li><a href="#" className="hover:text-primary transition flex items-center gap-2"><div className="w-4 h-4 bg-pink-500 rounded-full"></div> Instagram</a></li>
-            <li><a href="#" className="hover:text-primary transition flex items-center gap-2"><div className="w-4 h-4 bg-blue-400 rounded-full"></div> LinkedIn</a></li>
+          <h3 className="font-bold text-[#e5c9a3] mb-3 uppercase text-xs tracking-wider">Chính Sách Thế Giới iPhone</h3>
+          <ul className="space-y-2 text-xs text-stone-300">
+            <li>• Bảo hành chính hãng Apple VN/A 12 tháng</li>
+            <li>• Lỗi 1 đổi 1 trong 30 ngày đầu tiên</li>
+            <li>• Thu cũ lên đời iPhone 17 / 18 Pro Max trợ giá cao</li>
+            <li>• Miễn phí giao hàng hỏa tốc 2h nội thành</li>
           </ul>
         </div>
 
-        {/* Column 5: App Download */}
+        {/* Column 3: Các dòng máy chủ lực */}
         <div>
-          <h3 className="font-bold text-gray-800 mb-4 uppercase">Tải Ứng Dụng ZS-Economy</h3>
-          <div className="flex gap-4">
-            <div className="w-20 h-20 bg-white border border-gray-200 flex items-center justify-center text-xs text-gray-400">QR Code</div>
-            <div className="flex flex-col gap-2">
-              <div className="bg-white px-2 py-1 border border-gray-200 text-xs text-center">App Store</div>
-              <div className="bg-white px-2 py-1 border border-gray-200 text-xs text-center">Google Play</div>
-              <div className="bg-white px-2 py-1 border border-gray-200 text-xs text-center">AppGallery</div>
-            </div>
+          <h3 className="font-bold text-[#e5c9a3] mb-3 uppercase text-xs tracking-wider">Dòng iPhone Nổi Bật</h3>
+          <ul className="space-y-2 text-xs text-stone-300">
+            <li>• iPhone 18 Pro Max / 18 Pro (Flagship 2026)</li>
+            <li>• iPhone 17 Pro Max / iPhone 17 Air Siêu Mỏng</li>
+            <li>• iPhone 16 Pro Max / 15 Pro Max Khung Titan</li>
+            <li>• iPhone 4s / 8 Plus / XS Max Sưu Tầm Zin</li>
+          </ul>
+        </div>
+
+        {/* Column 4: Thanh Toán & Hỗ Trợ */}
+        <div>
+          <h3 className="font-bold text-[#e5c9a3] mb-3 uppercase text-xs tracking-wider">Thanh Toán & Giao Nhận</h3>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="bg-[#2a2722] border border-[#c5a880]/30 rounded p-2 text-center text-xs text-stone-200 font-semibold">VietQR</div>
+            <div className="bg-[#2a2722] border border-[#c5a880]/30 rounded p-2 text-center text-xs text-stone-200 font-semibold">Trả Góp 0%</div>
+            <div className="bg-[#2a2722] border border-[#c5a880]/30 rounded p-2 text-center text-xs text-stone-200 font-semibold">COD</div>
           </div>
+          <p className="text-xs text-stone-400">
+            Hotline Tư Vấn: <strong className="text-[#e5c9a3]">1900.6868</strong> (08:00 - 22:00)
+          </p>
         </div>
         
       </div>
       
-      <div className="border-t border-gray-200 pt-8 mt-4 text-center">
-        <p>© 2026 ZS-Economy. Tất cả các quyền được bảo lưu.</p>
-        <p className="mt-2">Quốc gia & Khu vực: Singapore | Indonesia | Đài Loan | Thái Lan | Malaysia | Việt Nam</p>
+      <div className="border-t border-white/10 pt-6 mt-2 text-center text-xs text-stone-400">
+        <p>© 2026 <strong className="text-[#e5c9a3]">Thế Giới iPhone</strong> — Chuyên Điện Thoại iPhone Chính Hãng & Trợ Lý AI Thế Giới iPhone.</p>
       </div>
     </footer>
   );

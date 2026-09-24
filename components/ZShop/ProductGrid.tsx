@@ -1,33 +1,93 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ProductCard, { ProductProps } from './ProductCard';
 import { SanPhamAdminService, matchSearchKeyword } from '../../services';
-import { Search, Sparkles, ArrowUpDown, ChevronDown, Layers, Check, ShoppingBag, X } from 'lucide-react';
+import { Search, Sparkles, ArrowUpDown, Layers, X, Smartphone } from 'lucide-react';
 
 interface ProductGridProps {
   onProductClick?: (id: string | number) => void;
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  'ALL': '🌟',
-  'iPhone 17 & 18 Series': '🚀',
-  'iPhone 16 Series': '🌟',
-  'iPhone 15 Series': '💎',
-  'iPhone 14 Series': '📱',
-  'iPhone 13 Series': '✨',
-  'iPhone 12 Series': '⚡',
-  'iPhone 11 Series': '🎯',
-  'iPhone Tràn Viền & Face ID': '👑',
-  'iPhone Cổ Điển & Sưu Tầm': '🕰️',
-  'Phụ Kiện Apple Chính Hãng': '🎧'
-};
+// Chuẩn hóa thứ tự & icon đúng 100% với tên Category trong constants.ts (Ưu tiên đời mới nhất 18 -> 4s)
+const CATEGORY_CONFIG: Array<{ key: string; label: string; icon: string }> = [
+  { key: 'ALL', label: 'Tất cả (25)', icon: '🌟' },
+  { key: 'iPhone 18 Series (Flagship 2026)', label: 'iPhone 18 Series', icon: '🔥' },
+  { key: 'iPhone 17 Series', label: 'iPhone 17 Series', icon: '🚀' },
+  { key: 'iPhone 16 Series', label: 'iPhone 16 Series', icon: '💎' },
+  { key: 'iPhone 15 Series', label: 'iPhone 15 Series', icon: '⚡' },
+  { key: 'iPhone 14 Series', label: 'iPhone 14 Series', icon: '👑' },
+  { key: 'iPhone 13 Series', label: 'iPhone 13 Series', icon: '✨' },
+  { key: 'iPhone 12 Series', label: 'iPhone 12 Series', icon: '💠' },
+  { key: 'iPhone 11 Series', label: 'iPhone 11 Series', icon: '🌿' },
+  { key: 'iPhone Cổ Điển & Sưu Tầm (4s - XS Max)', label: 'Cổ Điển (4s ➔ XS Max)', icon: '🕰️' }
+];
+
+// Bộ lọc nhanh theo Phân Loại Model (Cùng Loại Máy: Pro Max, Pro, Air/Plus, Tiêu Chuẩn)
+const MODEL_TYPE_FILTERS: Array<{
+  id: string;
+  label: string;
+  icon: string;
+  matcher: (p: any) => boolean;
+}> = [
+  {
+    id: 'ALL_TYPES',
+    label: 'Tất cả kiểu máy',
+    icon: '📱',
+    matcher: () => true
+  },
+  {
+    id: 'PRO_MAX',
+    label: 'Dòng Pro Max / Max (Màn lớn 3 Cam)',
+    icon: '👑',
+    matcher: (p) => /pro\s*max|xs\s*max/i.test(p.name)
+  },
+  {
+    id: 'PRO_COMPACT',
+    label: 'Dòng Pro Nhỏ Gọn (3 Cam 120Hz)',
+    icon: '💎',
+    matcher: (p) => /\bpro\b/i.test(p.name) && !/pro\s*max/i.test(p.name)
+  },
+  {
+    id: 'AIR_PLUS',
+    label: 'Dòng Air & Plus (Siêu mỏng / Pin trâu)',
+    icon: '🪶',
+    matcher: (p) => /\b(air|plus)\b/i.test(p.name)
+  },
+  {
+    id: 'STANDARD',
+    label: 'Dòng Tiêu Chuẩn (Nhỏ gọn trẻ trung)',
+    icon: '✨',
+    matcher: (p) => !/\b(pro|max|air|plus|4s)\b/i.test(p.name)
+  },
+  {
+    id: 'CLASSIC',
+    label: 'Dòng Sưu Tầm Huyền Thoại (4s ➔ XS Max)',
+    icon: '🕰️',
+    matcher: (p) => /\b(4s|8\s*plus|xs\s*max)\b/i.test(p.name)
+  }
+];
+
+const QUICK_MODEL_CHIPS = [
+  { label: 'Tất cả (25)', query: '', seriesKey: 'ALL', typeId: 'ALL_TYPES' },
+  { label: '18 Pro Max', query: 'iPhone 18 Pro Max', seriesKey: 'iPhone 18 Series (Flagship 2026)', typeId: 'PRO_MAX' },
+  { label: '18 Pro', query: 'iPhone 18 Pro', seriesKey: 'iPhone 18 Series (Flagship 2026)', typeId: 'PRO_COMPACT' },
+  { label: '17 Pro Max', query: 'iPhone 17 Pro Max', seriesKey: 'iPhone 17 Series', typeId: 'PRO_MAX' },
+  { label: '17 Pro', query: 'iPhone 17 Pro', seriesKey: 'iPhone 17 Series', typeId: 'PRO_COMPACT' },
+  { label: '17 Air', query: 'iPhone 17 Air', seriesKey: 'iPhone 17 Series', typeId: 'AIR_PLUS' },
+  { label: '16 Pro Max', query: 'iPhone 16 Pro Max', seriesKey: 'iPhone 16 Series', typeId: 'PRO_MAX' },
+  { label: '15 Pro Max', query: 'iPhone 15 Pro Max', seriesKey: 'iPhone 15 Series', typeId: 'PRO_MAX' },
+  { label: '14 Pro Max', query: 'iPhone 14 Pro Max', seriesKey: 'iPhone 14 Series', typeId: 'PRO_MAX' },
+  { label: '13 Pro Max', query: 'iPhone 13 Pro Max', seriesKey: 'iPhone 13 Series', typeId: 'PRO_MAX' },
+  { label: '8 Plus', query: 'iPhone 8 Plus', seriesKey: 'iPhone Cổ Điển & Sưu Tầm (4s - XS Max)', typeId: 'CLASSIC' },
+  { label: '4s Sưu Tầm', query: 'iPhone 4s', seriesKey: 'iPhone Cổ Điển & Sưu Tầm (4s - XS Max)', typeId: 'CLASSIC' }
+];
 
 const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
+  const [activeModelType, setActiveModelType] = useState<string>('ALL_TYPES');
   const [searchKeyword, setSearchKeyword] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'POPULAR' | 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC' | 'TOP_RATED'>('POPULAR');
-  const [visibleCount, setVisibleCount] = useState<number>(18);
+  const [sortBy, setSortBy] = useState<'POPULAR' | 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC' | 'TOP_RATED'>('NEWEST');
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -35,22 +95,29 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
       try {
         const dbProducts = await SanPhamAdminService.layTatCaSanPham();
         if (dbProducts && dbProducts.length > 0) {
-          const mapped: ProductProps[] = dbProducts.map((p: any) => {
-            const rawPrice = Number(p.price) || 0;
-            const originalPrice = Number(p.originalPrice) || Math.round(rawPrice * 1.25);
-            const discountPercent = originalPrice > rawPrice 
+          const mapped: any[] = dbProducts.map((p: any) => {
+            const rawPrice = Number(p.price) || Number(p.currentPrice) || 15990000;
+            const originalPrice = Number(p.originalPrice) || Math.round(rawPrice * 1.15);
+            const discountPercent = Number(p.discountRate) || (originalPrice > rawPrice 
               ? Math.round(((originalPrice - rawPrice) / originalPrice) * 100)
-              : 0;
+              : 0);
+            const primaryImg = (p.images && p.images[0]) || p.image_url || p.image || 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png';
 
             return {
+              ...p,
               id: p.id,
               name: p.name,
+              price: rawPrice,
               currentPrice: rawPrice,
               originalPrice: originalPrice,
-              image: p.image_url || (p.images && p.images[0]) || 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=600',
-              soldCount: Number(p.soldCount) || Math.floor(Math.random() * 500) + 50,
+              discountRate: discountPercent,
+              image: primaryImg,
+              images: (p.images && p.images.length > 0) ? p.images : [primaryImg],
+              colors: (p.colors && p.colors.length > 0) ? p.colors : ['Vàng Gold Titan'],
+              sizes: (p.sizes && p.sizes.length > 0) ? p.sizes : ['128GB', '256GB'],
+              soldCount: Number(p.soldCount) || 350,
               rating: Number(p.rating) || 4.9,
-              category: p.categoryName || p.category || 'iPhone 16 Series',
+              category: p.categoryName || p.category || 'iPhone 18 Series (Flagship 2026)',
               discountBadge: discountPercent > 0 ? `-${discountPercent}%` : undefined
             };
           });
@@ -69,337 +136,446 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
     const handleCustomSearch = (e: any) => {
       const keyword = e.detail?.keyword || '';
       setSearchKeyword(keyword);
-      if (keyword) {
-        setActiveCategory('ALL');
-        setVisibleCount(18);
-      }
+      setActiveCategory('ALL');
+      setActiveModelType('ALL_TYPES');
     };
 
     window.addEventListener('zshop:search', handleCustomSearch);
     return () => window.removeEventListener('zshop:search', handleCustomSearch);
   }, []);
 
-  // Danh mục động kèm số lượng sản phẩm
-  const categoryStats = useMemo(() => {
+  // Đếm số lượng máy theo từng Series
+  const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { ALL: products.length };
     products.forEach((p) => {
       const cat = p.category || 'Khác';
       counts[cat] = (counts[cat] || 0) + 1;
     });
-
-    const definedCats = [
-      'ALL',
-      'iPhone 17 & 18 Series',
-      'iPhone 16 Series',
-      'iPhone 15 Series',
-      'iPhone 14 Series',
-      'iPhone 13 Series',
-      'iPhone 12 Series',
-      'iPhone 11 Series',
-      'iPhone Tràn Viền & Face ID',
-      'iPhone Cổ Điển & Sưu Tầm',
-      'Phụ Kiện Apple Chính Hãng'
-    ];
-    const extraCats = Object.keys(counts).filter(c => !definedCats.includes(c));
-    return [...definedCats, ...extraCats].filter(c => counts[c] !== undefined);
+    return counts;
   }, [products]);
 
-  // Bộ lọc & sắp xếp sản phẩm
-  const filteredProducts = useMemo(() => {
+  // Đếm số lượng máy theo từng Phân Loại (Pro Max, Pro, Air/Plus, Thường, Cổ điển)
+  const modelTypeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    MODEL_TYPE_FILTERS.forEach(tf => {
+      counts[tf.id] = products.filter(tf.matcher).length;
+    });
+    return counts;
+  }, [products]);
+
+  // Danh sách sản phẩm chính + Danh sách sản phẩm tương ứng cùng loại (khi chọn 1 mã máy cụ thể)
+  const { primaryProducts, relatedSameTypeProducts, relatedTitle } = useMemo(() => {
     let result = [...products];
 
-    // Lọc theo Danh mục
+    // 1. Lọc theo Series (Danh mục)
     if (activeCategory !== 'ALL') {
       result = result.filter(p => p.category === activeCategory);
     }
 
-    // Lọc theo từ khóa tìm kiếm thông minh (có dấu / không dấu)
+    // 2. Lọc theo Kiểu Máy (Pro Max / Pro / Air & Plus / Tiêu chuẩn)
+    if (activeModelType !== 'ALL_TYPES') {
+      const tf = MODEL_TYPE_FILTERS.find(t => t.id === activeModelType);
+      if (tf) {
+        result = result.filter(tf.matcher);
+      }
+    }
+
+    // 3. Lọc theo từ khóa hoặc mã máy chọn nhanh
     if (searchKeyword.trim()) {
-      result = result.filter(p => 
-        matchSearchKeyword(p.name, searchKeyword) || 
+      result = result.filter(p =>
+        matchSearchKeyword(p.name, searchKeyword) ||
         (p.category && matchSearchKeyword(p.category, searchKeyword))
       );
     }
 
     // Sắp xếp
-    if (sortBy === 'PRICE_ASC') {
-      result.sort((a, b) => a.currentPrice - b.currentPrice);
-    } else if (sortBy === 'PRICE_DESC') {
-      result.sort((a, b) => b.currentPrice - a.currentPrice);
-    } else if (sortBy === 'TOP_RATED') {
-      result.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-    } else if (sortBy === 'NEWEST') {
-      result.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
-    } else {
-      // POPULAR: Bán chạy nhất
-      result.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
+    const sortFn = (list: ProductProps[]) => {
+      const copy = [...list];
+      if (sortBy === 'PRICE_ASC') copy.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
+      else if (sortBy === 'PRICE_DESC') copy.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
+      else if (sortBy === 'TOP_RATED') copy.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      else if (sortBy === 'POPULAR') copy.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
+      return copy;
+    };
+
+    const sortedPrimary = sortFn(result);
+
+    // Tìm các sản phẩm TƯƠNG ỨNG CÙNG LOẠI (Cùng Series hoặc Cùng Dòng Pro Max / Pro / Air) khi khách bấm vào 1 model
+    let related: ProductProps[] = [];
+    let relTitle = '';
+
+    if (sortedPrimary.length > 0 && sortedPrimary.length <= 3 && (searchKeyword.trim() || activeCategory !== 'ALL')) {
+      const refPhone = sortedPrimary[0];
+      const primaryIds = new Set(sortedPrimary.map(p => p.id));
+      const isProMax = /pro\s*max/i.test(refPhone.name);
+      const isPro = /\bpro\b/i.test(refPhone.name) && !isProMax;
+      const isAirOrPlus = /\b(air|plus)\b/i.test(refPhone.name);
+
+      // Lấy các máy cùng Series trước + các máy cùng phân khúc (VD: cùng dòng Pro Max hoặc cùng dòng Pro)
+      const sameSeries = products.filter(p => !primaryIds.has(p.id) && p.category === refPhone.category);
+      const sameType = products.filter(p => {
+        if (primaryIds.has(p.id) || sameSeries.some(s => s.id === p.id)) return false;
+        if (isProMax) return /pro\s*max/i.test(p.name);
+        if (isPro) return /\bpro\b/i.test(p.name) && !/pro\s*max/i.test(p.name);
+        if (isAirOrPlus) return /\b(air|plus)\b/i.test(p.name);
+        return true;
+      });
+
+      related = [...sameSeries, ...sameType].slice(0, 6);
+      relTitle = isProMax
+        ? `Các mẫu iPhone cùng dòng ${refPhone.category} & Phân khúc Pro Max tương ứng`
+        : isPro
+          ? `Các mẫu iPhone cùng dòng ${refPhone.category} & Phân khúc Pro nhỏ gọn tương ứng`
+          : `Các mẫu iPhone cùng dòng ${refPhone.category} & Phân khúc tương ứng`;
     }
 
-    return result;
-  }, [products, activeCategory, searchKeyword, sortBy]);
+    return {
+      primaryProducts: sortedPrimary,
+      relatedSameTypeProducts: related,
+      relatedTitle: relTitle
+    };
+  }, [products, activeCategory, activeModelType, searchKeyword, sortBy]);
 
-  const displayedProducts = useMemo(() => {
-    return filteredProducts.slice(0, visibleCount);
-  }, [filteredProducts, visibleCount]);
+  // Các mẫu máy con thuộc Series đang chọn (để hiện nút chọn nhanh từng máy trong Series đó)
+  const modelsInActiveCategory = useMemo(() => {
+    if (activeCategory === 'ALL') return [];
+    return products.filter(p => p.category === activeCategory);
+  }, [products, activeCategory]);
 
-  const handleLoadMore = () => {
-    setVisibleCount(prev => prev + 18);
+  const handleResetAllFilters = () => {
+    setSearchKeyword('');
+    setActiveCategory('ALL');
+    setActiveModelType('ALL_TYPES');
   };
 
   return (
-    <div className="container mx-auto px-4 mt-10 mb-16 select-none" id="all-products">
+    <div className="container mx-auto px-4 mt-6 mb-12 select-none" id="all-products">
       
-      {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="bg-brand-100 text-brand-700 text-xs font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-              <Sparkles size={12} className="text-brand-600" />
-              <span>Gợi Ý Dành Riêng Cho Bạn</span>
-            </span>
+      {/* Section Header & Quick Model Bar */}
+      <div className="bg-[#FAF7F2] border border-[#A39078] rounded-2xl p-4 sm:p-5 mb-5 shadow-sm">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5DEC9]">
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="bg-[#241F1A] text-[#E5C9A3] border border-[#C5A880]/50 text-[11px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5">
+                <Sparkles size={12} className="text-[#D4B996]" />
+                <span>Thế Giới iPhone — 25 Mã Máy • 25 Màu Độc Bản Không Trùng</span>
+              </span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-[#241F1A] tracking-tight uppercase flex flex-wrap items-center gap-2.5">
+              <span>Kệ Máy Thế Giới iPhone</span>
+              <span className="text-xs font-bold normal-case text-[#7D623C] bg-[#F2ECE1] border border-[#C5A880] px-3 py-0.5 rounded-full">
+                Đang hiển thị {primaryProducts.length} / {products.length} dòng iPhone
+              </span>
+            </h2>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight uppercase flex items-center gap-2">
-            <span>Tất Cả Sản Phẩm</span>
-            <span className="text-sm font-semibold normal-case text-gray-400 bg-gray-100 px-2.5 py-0.5 rounded-full">
-              {filteredProducts.length} sản phẩm
-            </span>
-          </h2>
+
+          {/* Ô tìm kiếm nhanh */}
+          <div className="w-full lg:w-96">
+            <div className="relative">
+              <div className="absolute left-3.5 top-2.5 text-[#7D623C]">
+                <Search size={16} />
+              </div>
+              <input
+                type="text"
+                value={searchKeyword}
+                onChange={(e) => {
+                  setSearchKeyword(e.target.value);
+                  if (e.target.value) {
+                    setActiveCategory('ALL');
+                    setActiveModelType('ALL_TYPES');
+                  }
+                }}
+                placeholder="Tìm mã máy: 18 Pro Max, 17 Pro, 17 Air, 16 Pro Max..."
+                className="w-full pl-10 pr-8 py-2 bg-white border border-[#C5A880] rounded-xl text-xs sm:text-sm text-[#241F1A] outline-none focus:border-[#7D623C] focus:ring-2 focus:ring-[#D4B996]/40 transition-all placeholder:text-stone-400 shadow-2xs"
+              />
+              {searchKeyword && (
+                <button 
+                  type="button"
+                  onClick={() => setSearchKeyword('')} 
+                  className="absolute right-2.5 top-2 text-xs text-stone-500 hover:text-stone-800 bg-stone-200 rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
-        {/* Quick Search within Catalog */}
-        <div className="w-full md:w-96 flex flex-col gap-2">
-          <div className="relative">
-            <div className="absolute left-3.5 top-3 text-gray-400">
-              <Search size={16} />
-            </div>
-            <input
-              type="text"
-              value={searchKeyword}
-              onChange={(e) => {
-                setSearchKeyword(e.target.value);
-                if (e.target.value) setActiveCategory('ALL');
-              }}
-              placeholder="Tìm kiếm thông minh: Gõ 'áo', 'giày', 'quần'..."
-              className="w-full pl-10 pr-8 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all placeholder:text-gray-400 shadow-sm"
-            />
-            {searchKeyword && (
-              <button 
-                type="button"
-                onClick={() => setSearchKeyword('')} 
-                className="absolute right-3 top-2.5 text-xs text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full w-4 h-4 flex items-center justify-center"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-          
-          {/* Quick Keywords Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar text-[11px] pb-1">
-            <span className="text-gray-400 text-[10px] shrink-0">Gợi ý:</span>
-            {[
-              { label: 'Tất cả', query: '' },
-              { label: 'Áo', query: 'áo' },
-              { label: 'Áo Khoác', query: 'áo khoác' },
-              { label: 'Quần', query: 'quần' },
-              { label: 'Giày', query: 'giày' },
-              { label: 'Túi Xách', query: 'túi' },
-              { label: 'Váy', query: 'váy' }
-            ].map(chip => (
+        {/* Hàng 1: Chọn nhanh Mã Máy Nổi Bật (Flex-wrap gọn đẹp, không thanh cuộn ngang xấu) */}
+        <div className="pt-3 flex flex-wrap items-center gap-1.5">
+          <span className="text-[#6E5A40] font-bold text-[11px] mr-1 flex items-center gap-1">
+            <Smartphone size={13} /> Chọn nhanh Model:
+          </span>
+          {QUICK_MODEL_CHIPS.map(chip => {
+            const isChipActive =
+              (chip.query === '' && searchKeyword === '' && activeCategory === 'ALL' && activeModelType === 'ALL_TYPES') ||
+              (chip.query !== '' && searchKeyword.toLowerCase() === chip.query.toLowerCase());
+
+            return (
               <button
                 key={chip.label}
                 type="button"
                 onClick={() => {
-                  setSearchKeyword(chip.query);
-                  setActiveCategory('ALL');
-                  setVisibleCount(18);
+                  if (chip.query === '') {
+                    handleResetAllFilters();
+                  } else {
+                    setSearchKeyword(chip.query);
+                    setActiveCategory('ALL');
+                    setActiveModelType('ALL_TYPES');
+                  }
                 }}
-                className={`px-2 py-0.5 rounded-md shrink-0 transition-colors ${
-                  searchKeyword === chip.query
-                    ? 'bg-brand-600 text-white font-bold'
-                    : 'bg-gray-100 text-gray-600 hover:bg-brand-50 hover:text-brand-600'
+                className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer border ${
+                  isChipActive
+                    ? 'bg-[#241F1A] text-[#E5C9A3] border-[#B89768] font-bold shadow-xs scale-[1.02]'
+                    : 'bg-white text-[#3D342B] border-[#D5C7B4] hover:border-[#8C6F46] hover:bg-[#F5EFE6] font-medium'
                 }`}
               >
                 {chip.label}
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      </div>
 
-      {/* Active Search Filter Banner */}
-      {searchKeyword && (
-        <div className="mb-4 bg-brand-50 border border-brand-200 rounded-xl p-3 flex items-center justify-between gap-2 text-xs shadow-sm animate-fadeIn">
-          <div className="flex items-center gap-2 text-brand-900">
-            <span className="bg-brand-600 text-white px-2 py-0.5 rounded font-bold text-[10px]">TÌM KIẾM</span>
-            <span>Kết quả cho từ khóa: <strong className="text-brand-700 font-bold">"{searchKeyword}"</strong> — Tìm thấy <strong>{filteredProducts.length}</strong> sản phẩm</span>
-          </div>
-          <button 
-            type="button"
-            onClick={() => setSearchKeyword('')}
-            className="text-gray-500 hover:text-red-600 font-semibold flex items-center gap-1 hover:underline text-xs"
-          >
-            <X size={14} /> Xóa tìm kiếm
-          </button>
-        </div>
-      )}
-
-      {/* Category Tabs Carousel */}
-      <div className="mb-6 overflow-x-auto custom-scrollbar pb-2">
-        <div className="flex gap-2 min-w-max">
-          {categoryStats.map(cat => {
-            const isActive = activeCategory === cat;
-            const icon = CATEGORY_ICONS[cat] || '🏷️';
+        {/* Hàng 2: Lọc theo Phân Loại Cùng Kiểu Máy (Pro Max, Pro, Air/Plus, Tiêu Chuẩn, Cổ Điển) */}
+        <div className="pt-2.5 mt-2.5 border-t border-[#EBE4D8] flex flex-wrap items-center gap-1.5">
+          <span className="text-[#6E5A40] font-bold text-[11px] mr-1 flex items-center gap-1">
+            <Layers size={13} /> Lọc cùng loại máy:
+          </span>
+          {MODEL_TYPE_FILTERS.map(tf => {
+            const isTypeActive = activeModelType === tf.id && !searchKeyword;
+            const count = modelTypeCounts[tf.id] || 0;
             return (
               <button
-                key={cat}
+                key={tf.id}
                 type="button"
                 onClick={() => {
-                  setActiveCategory(cat);
-                  setVisibleCount(18);
+                  setActiveModelType(tf.id);
+                  setSearchKeyword('');
+                  if (tf.id !== 'ALL_TYPES') {
+                    setActiveCategory('ALL');
+                  }
                 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all shadow-sm ${
-                  isActive
-                    ? 'bg-brand-600 text-white shadow-brand-500/25 shadow-md scale-[1.02]'
-                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200/80 hover:border-gray-300'
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs transition-all cursor-pointer border ${
+                  isTypeActive
+                    ? 'bg-gradient-to-r from-[#8C6F46] to-[#6E5634] text-white border-[#6E5634] font-bold shadow-xs'
+                    : 'bg-[#F3EDE2] text-[#4A3E31] border-[#D8CBB8] hover:border-[#8C6F46] font-semibold'
                 }`}
               >
-                <span>{icon}</span>
-                <span>{cat === 'ALL' ? 'Tất cả danh mục' : cat}</span>
+                <span>{tf.icon}</span>
+                <span>{tf.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isTypeActive ? 'bg-black/25 text-[#F5EBE0]' : 'bg-white text-[#7D623C]'}`}>
+                  {count}
+                </span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Filter & Sort Bar */}
-      <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex flex-wrap items-center gap-1.5 font-medium text-gray-600">
-          <span className="text-gray-400 mr-1 flex items-center gap-1">
-            <ArrowUpDown size={14} />
-            <span>Sắp xếp theo:</span>
-          </span>
+      {/* Hàng 3: Danh mục Thế Hệ iPhone (Từ iPhone 18 Series -> iPhone Cổ Điển, Flex-wrap không thanh cuộn) */}
+      <div className="mb-4">
+        <div className="flex flex-wrap gap-2">
+          {CATEGORY_CONFIG.map(cat => {
+            const count = categoryCounts[cat.key] || 0;
+            if (cat.key !== 'ALL' && count === 0) return null;
+            const isActive = activeCategory === cat.key && !searchKeyword;
 
-          <button
-            type="button"
-            onClick={() => setSortBy('POPULAR')}
-            className={`px-3 py-1.5 rounded-xl font-semibold transition-all ${
-              sortBy === 'POPULAR'
-                ? 'bg-brand-600 text-white shadow-sm'
-                : 'hover:bg-gray-100 text-gray-700'
-            }`}
-          >
-            🔥 Phổ biến
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setSortBy('NEWEST')}
-            className={`px-3 py-1.5 rounded-xl font-semibold transition-all ${
-              sortBy === 'NEWEST'
-                ? 'bg-brand-600 text-white shadow-sm'
-                : 'hover:bg-gray-100 text-gray-700'
-            }`}
-          >
-            Mới nhất
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setSortBy('TOP_RATED')}
-            className={`px-3 py-1.5 rounded-xl font-semibold transition-all ${
-              sortBy === 'TOP_RATED'
-                ? 'bg-brand-600 text-white shadow-sm'
-                : 'hover:bg-gray-100 text-gray-700'
-            }`}
-          >
-            Đánh giá cao ⭐
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setSortBy('PRICE_ASC')}
-            className={`px-3 py-1.5 rounded-xl font-semibold transition-all ${
-              sortBy === 'PRICE_ASC'
-                ? 'bg-brand-600 text-white shadow-sm'
-                : 'hover:bg-gray-100 text-gray-700'
-            }`}
-          >
-            Giá: Thấp đến Cao
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setSortBy('PRICE_DESC')}
-            className={`px-3 py-1.5 rounded-xl font-semibold transition-all ${
-              sortBy === 'PRICE_DESC'
-                ? 'bg-brand-600 text-white shadow-sm'
-                : 'hover:bg-gray-100 text-gray-700'
-            }`}
-          >
-            Giá: Cao đến Thấp
-          </button>
+            return (
+              <button
+                key={cat.key}
+                type="button"
+                onClick={() => {
+                  setActiveCategory(cat.key);
+                  setSearchKeyword('');
+                  setActiveModelType('ALL_TYPES');
+                }}
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border shadow-2xs ${
+                  isActive
+                    ? 'bg-[#241F1A] text-[#E5C9A3] border-[#C5A880] shadow-md scale-[1.02]'
+                    : 'bg-[#FAF7F2] text-[#362F27] hover:bg-white border-[#9E8C75] hover:border-[#6E5634]'
+                }`}
+              >
+                <span>{cat.icon}</span>
+                <span>{cat.label}</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-extrabold ${
+                  isActive ? 'bg-[#8C6F46] text-white' : 'bg-[#EAE2D3] text-[#5C4B37]'
+                }`}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="text-gray-400 font-medium hidden lg:block">
-          Hiển thị <strong className="text-gray-700">{displayedProducts.length}</strong> / {filteredProducts.length} sản phẩm
-        </div>
+        {/* Khi bấm vào 1 Series (VD: iPhone 17 Series), hiện ngay danh sách các Model con thuộc Series đó */}
+        {activeCategory !== 'ALL' && modelsInActiveCategory.length > 0 && (
+          <div className="mt-3 bg-[#241F1A] text-[#FAF7F2] p-3 rounded-xl border border-[#C5A880]/50 flex flex-wrap items-center justify-between gap-2 shadow-sm">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-bold text-[#E5C9A3] mr-1">
+                📱 Các mẫu trong {activeCategory} ({modelsInActiveCategory.length} máy):
+              </span>
+              <button
+                type="button"
+                onClick={() => setSearchKeyword('')}
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition ${
+                  !searchKeyword
+                    ? 'bg-[#C5A880] text-[#1C1B18]'
+                    : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                Hiện tất cả ({modelsInActiveCategory.length})
+              </button>
+              {modelsInActiveCategory.map(m => {
+                const shortName = m.name.replace('Chính Hãng VN/A', '').replace('Likenew 99%', '').trim();
+                const isSelected = searchKeyword === m.name;
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => setSearchKeyword(isSelected ? '' : m.name)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer transition flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-[#C5A880] text-[#1C1B18] font-bold'
+                        : 'bg-white/10 text-stone-200 hover:bg-white/20'
+                    }`}
+                  >
+                    <span>{shortName}</span>
+                    {m.colors && m.colors[0] && (
+                      <span className="text-[10px] opacity-80">({m.colors[0]})</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              type="button"
+              onClick={handleResetAllFilters}
+              className="text-[11px] text-[#E5C9A3] hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+            >
+              <X size={13} /> Xem toàn bộ 25 máy
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Product Grid */}
-      {displayedProducts.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
-          {displayedProducts.map((product) => (
-            <div key={product.id} className="h-full animate-fade-in">
-              <ProductCard product={product} onClick={onProductClick} />
+      {/* Thanh Sắp Xếp & Trạng Thái Bộ Lọc */}
+      <div className="bg-[#FAF7F2] px-4 py-2.5 rounded-xl border border-[#A39078] shadow-2xs mb-5 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5 font-medium text-[#4A3E31]">
+          <span className="text-[#7D623C] mr-1 flex items-center gap-1 font-bold">
+            <ArrowUpDown size={14} />
+            <span>Sắp xếp:</span>
+          </span>
+
+          {[
+            { key: 'NEWEST', label: '✨ Đời Mới Nhất (18 Pro Max ➔ 4s)' },
+            { key: 'POPULAR', label: '🔥 Bán Chạy Nhất' },
+            { key: 'TOP_RATED', label: '⭐ Đánh Giá Cao' },
+            { key: 'PRICE_ASC', label: 'Giá Thấp ➔ Cao' },
+            { key: 'PRICE_DESC', label: 'Giá Cao ➔ Thấp' }
+          ].map(s => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setSortBy(s.key as any)}
+              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
+                sortBy === s.key
+                  ? 'bg-[#241F1A] text-[#E5C9A3] shadow-2xs'
+                  : 'hover:bg-[#EAE2D3] text-[#4A3E31]'
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+
+        {(searchKeyword || activeCategory !== 'ALL' || activeModelType !== 'ALL_TYPES') && (
+          <button
+            type="button"
+            onClick={handleResetAllFilters}
+            className="px-3 py-1 bg-[#9A3412] text-white rounded-lg font-bold flex items-center gap-1 hover:brightness-110 transition cursor-pointer"
+          >
+            <X size={13} /> Đặt lại bộ lọc (Hiện đủ 25 máy)
+          </button>
+        )}
+      </div>
+
+      {/* Product Grid Chính */}
+      {isLoading ? (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {Array.from({ length: 10 }).map((_, index) => (
+            <div key={index} className="bg-[#FAF7F2] rounded-2xl p-3 border border-[#C5A880]/40 h-72 animate-pulse flex flex-col justify-between">
+              <div className="w-full h-44 bg-[#E5DEC9] rounded-xl" />
+              <div className="space-y-2">
+                <div className="h-3 bg-[#E5DEC9] rounded w-3/4" />
+                <div className="h-4 bg-[#E5DEC9] rounded w-1/2" />
+              </div>
             </div>
           ))}
         </div>
-      ) : !isLoading ? (
-        <div className="bg-white rounded-3xl border border-gray-100 p-12 text-center my-8 shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mx-auto mb-4">
-            <ShoppingBag size={28} />
-          </div>
-          <h3 className="text-base font-bold text-gray-800 mb-1">Không tìm thấy sản phẩm nào</h3>
-          <p className="text-xs text-gray-500 mb-4 max-w-sm mx-auto">
-            Không có sản phẩm nào phù hợp với danh mục hoặc từ khóa "{searchKeyword}". Hãy thử tìm với từ khóa khác!
+      ) : primaryProducts.length === 0 ? (
+        <div className="bg-[#FAF7F2] rounded-2xl p-10 text-center border border-[#A39078] shadow-sm">
+          <p className="text-base font-bold text-[#241F1A] mb-2">
+            Không tìm thấy mẫu iPhone khớp chính xác với từ khóa "{searchKeyword}"
+          </p>
+          <p className="text-xs text-[#6E5A40] mb-4">
+            Hệ thống Thế Giới iPhone có sẵn 25 mẫu từ iPhone 4s đến iPhone 18 Pro Max.
           </p>
           <button
-            onClick={() => {
-              setActiveCategory('ALL');
-              setSearchKeyword('');
-            }}
-            className="px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-xl hover:bg-brand-700 transition shadow-sm"
-          >
-            Xem lại tất cả sản phẩm
-          </button>
-        </div>
-      ) : null}
-
-      {/* Loading Spinner */}
-      {isLoading && (
-        <div className="flex justify-center items-center py-12">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-3 border-brand-200 border-t-brand-600 rounded-full animate-spin" />
-            <span className="text-xs text-gray-500 font-medium">Đang tải danh sách sản phẩm...</span>
-          </div>
-        </div>
-      )}
-
-      {/* Load More Button */}
-      {!isLoading && filteredProducts.length > visibleCount && (
-        <div className="flex flex-col items-center justify-center mt-10">
-          <button
             type="button"
-            onClick={handleLoadMore}
-            className="px-8 py-3 bg-white border-2 border-brand-600 text-brand-700 hover:bg-brand-600 hover:text-white font-bold text-sm rounded-2xl transition-all shadow-sm hover:shadow-lg flex items-center gap-2 group active:scale-[0.98]"
+            onClick={handleResetAllFilters}
+            className="px-5 py-2 bg-[#241F1A] text-[#E5C9A3] font-bold text-xs rounded-xl hover:brightness-110 transition cursor-pointer"
           >
-            <span>Xem thêm {Math.min(18, filteredProducts.length - visibleCount)} sản phẩm khác</span>
-            <ChevronDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
+            Hiển thị toàn bộ 25 dòng iPhone
           </button>
-          <span className="text-[11px] text-gray-400 mt-2 font-medium">
-            Đã hiển thị {displayedProducts.length} trong tổng số {filteredProducts.length} sản phẩm
-          </span>
         </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {primaryProducts.map((product) => (
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onClick={() => onProductClick && onProductClick(product.id)}
+              />
+            ))}
+          </div>
+
+          {/* Kệ Gợi Ý Sản Phẩm Tương Ứng Cùng Loại (Hiện tự động khi khách ấn vào 1 model cụ thể) */}
+          {relatedSameTypeProducts.length > 0 && (
+            <div className="mt-8 pt-6 border-t-2 border-[#9E8C75]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 bg-[#241F1A] text-[#FAF7F2] px-4 py-3 rounded-2xl border border-[#C5A880]/50">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={16} className="text-[#D4B996] shrink-0" />
+                  <div>
+                    <h3 className="text-sm sm:text-base font-black text-[#E5C9A3] uppercase tracking-wide">
+                      {relatedTitle}
+                    </h3>
+                    <p className="text-[11px] text-stone-300">
+                      So sánh nhanh các phiên bản cùng dòng máy & cùng phân khúc tại Thế Giới iPhone
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleResetAllFilters}
+                  className="px-3 py-1.5 bg-[#C5A880] text-[#1C1B18] font-extrabold text-xs rounded-xl hover:brightness-110 transition cursor-pointer shrink-0"
+                >
+                  Xem tất cả 25 máy
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3.5">
+                {relatedSameTypeProducts.map((relProduct) => (
+                  <ProductCard
+                    key={`rel-${relProduct.id}`}
+                    product={relProduct}
+                    onClick={() => onProductClick && onProductClick(relProduct.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

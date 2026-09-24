@@ -6,11 +6,14 @@ import {
   Award, Smartphone, ThumbsUp, HelpCircle
 } from 'lucide-react';
 import { PaymentMethodType, CartItem, UserRole, CustomerProfile } from '../types';
-import { DatHangService, ThanhToanService, AuthUserData } from '../services';
+import { DatHangService, ThanhToanService, AuthUserData, getProductVisualSync } from '../services';
+import { MOCK_PRODUCTS_LIST } from '../constants';
 import Header from './ZShop/Header';
 
 interface CheckoutPageProps {
   cartItems: CartItem[];
+  allCartItems?: CartItem[];
+  onToggleSelectItem?: (id: string) => void;
   onBack: () => void;
   onPaymentSuccess: (orderInfo?: any) => void;
   onOpenCart?: () => void;
@@ -38,6 +41,8 @@ const AVAILABLE_VOUCHERS = [
 
 export default function CheckoutPage({
   cartItems,
+  allCartItems,
+  onToggleSelectItem,
   onBack,
   onPaymentSuccess,
   onOpenCart,
@@ -366,74 +371,95 @@ export default function CheckoutPage({
               </div>
             </div>
 
-            {/* KHỐI 2: 🛍️ DANH SÁCH SẢN PHẨM TRONG ĐƠN */}
+            {/* KHỐI 2: 🛍️ DANH SÁCH SẢN PHẨM ĐÃ CHỌN TRONG ĐƠN */}
             <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-3">
+              <div className="flex flex-wrap items-center justify-between border-b border-slate-100 pb-3 mb-3 gap-2">
                 <div className="flex items-center gap-2 text-slate-900 font-extrabold text-sm sm:text-base">
-                  <div className="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-lg bg-[#faf6f0] border border-[#e5dfd3] text-[#8c6f46] flex items-center justify-center">
                     <ShoppingBag size={16} />
                   </div>
-                  <span>Sản Phẩm Trong Đơn ({cartItems.length})</span>
+                  <span>Sản Phẩm Đã Chọn Thanh Toán ({cartItems.length}{allCartItems && allCartItems.length > cartItems.length ? `/${allCartItems.length} món trong giỏ` : ''})</span>
                 </div>
-                <span className="text-xs text-slate-500">
-                  Tạm tính: <strong className="text-slate-900">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}</strong>
-                </span>
+                <div className="flex items-center gap-2">
+                  {allCartItems && allCartItems.length > cartItems.length && (
+                    <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">
+                      ✓ Giữ lại {allCartItems.length - cartItems.length} món chưa mua trong giỏ
+                    </span>
+                  )}
+                  <span className="text-xs text-slate-500">
+                    Tạm tính: <strong className="text-slate-900">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}</strong>
+                  </span>
+                </div>
               </div>
 
               <div className="divide-y divide-slate-100">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="py-3 first:pt-0 last:pb-0 flex items-center gap-3.5">
-                    <img 
-                      src={item.image} 
-                      alt={item.name} 
-                      className="w-16 h-16 object-cover rounded-xl bg-slate-100 border border-slate-100 shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate" title={item.name}>
-                        {item.name}
-                      </h4>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                          Size: {item.size}
-                        </span>
-                        <span className="text-xs font-bold text-slate-900">
-                          {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                        </span>
+                {cartItems.map((item) => {
+                  const visual = getProductVisualSync(item, MOCK_PRODUCTS_LIST);
+                  return (
+                    <div key={item.id} className="py-3 first:pt-0 last:pb-0 flex items-center gap-3.5">
+                      <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${visual.studioBg} p-1.5 border border-stone-300 shrink-0 relative flex items-center justify-center shadow-2xs`}>
+                        <div className="bg-white/95 rounded-lg w-full h-full flex items-center justify-center p-1">
+                          <img 
+                            src={visual.image} 
+                            alt={item.name} 
+                            style={{ filter: visual.imgFilter }}
+                            className="max-w-full max-h-full object-contain"
+                          />
+                        </div>
+                        <span
+                          className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full border border-white shadow-2xs"
+                          style={{ backgroundColor: visual.swatchHex }}
+                          title={visual.colorLabel}
+                        />
                       </div>
-                    </div>
-
-                    {/* Bộ điều khiển số lượng */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
-                        <button
-                          onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, item.quantity - 1)}
-                          className="p-1 hover:bg-slate-200 text-slate-600 transition-colors"
-                          title="Giảm số lượng"
-                        >
-                          <Minus size={12} />
-                        </button>
-                        <span className="px-2.5 text-xs font-bold text-slate-800">{item.quantity}</span>
-                        <button
-                          onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, item.quantity + 1)}
-                          className="p-1 hover:bg-slate-200 text-slate-600 transition-colors"
-                          title="Tăng số lượng"
-                        >
-                          <Plus size={12} />
-                        </button>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 truncate" title={item.name}>
+                          {item.name}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          <span className="text-[11px] font-bold text-stone-800 bg-[#faf6f0] border border-[#e5dfd3] px-2 py-0.5 rounded flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: visual.swatchHex }} />
+                            <span>Phân loại: {item.size}</span>
+                          </span>
+                          <span className="text-xs font-black text-rose-600 font-mono">
+                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                          </span>
+                        </div>
                       </div>
 
-                      {onRemoveFromCart && (
-                        <button
-                          onClick={() => onRemoveFromCart(item.id)}
-                          className="p-1.5 text-slate-400 hover:text-rose-600 transition-colors"
-                          title="Xóa món này"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      )}
+                      {/* Bộ điều khiển số lượng */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                          <button
+                            onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, item.quantity - 1)}
+                            className="p-1 hover:bg-slate-200 text-slate-600 transition-colors"
+                            title="Giảm số lượng"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="px-2.5 text-xs font-bold text-slate-800">{item.quantity}</span>
+                          <button
+                            onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, item.quantity + 1)}
+                            className="p-1 hover:bg-slate-200 text-slate-600 transition-colors"
+                            title="Tăng số lượng"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+
+                        {onRemoveFromCart && (
+                          <button
+                            onClick={() => onRemoveFromCart(item.id)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 transition-colors"
+                            title="Xóa món này"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

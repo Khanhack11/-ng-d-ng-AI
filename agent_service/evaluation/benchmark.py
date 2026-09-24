@@ -26,37 +26,37 @@ BENCHMARK_SCENARIOS = [
     {
         "id": "SCENARIO_1_BUDGET",
         "name": "Ràng buộc ngân sách khắt khe",
-        "query": "Tìm cho tôi áo thun nam giá dưới 200k",
-        "expected_max_price": 200000,
-        "category": "Thời trang nam",
+        "query": "Tìm củ sạc hoặc phụ kiện Apple giá dưới 500k",
+        "expected_max_price": 500000,
+        "category": "Phụ Kiện Apple Chính Hãng",
         "check_type": "PRICE_CONSTRAINT"
     },
     {
         "id": "SCENARIO_2_POLICY",
-        "name": "Chính xác hóa chính sách đổi trả & freeship",
-        "query": "Chính sách đổi trả hàng và freeship toàn quốc như thế nào?",
-        "expected_keywords": ["7 ngày", "300.000", "miễn phí"],
+        "name": "Chính xác hóa chính sách bảo hành AppleCare+ & đổi trả",
+        "query": "Chính sách bảo hành AppleCare+ và đổi trả 1 đổi 1 như thế nào?",
+        "expected_keywords": ["30 ngày", "12 tháng", "pin"],
         "check_type": "POLICY_GROUNDING"
     },
     {
         "id": "SCENARIO_3_LOOKBOOK",
-        "name": "Phối đồ phong cách công sở Smart Casual",
-        "query": "Tư vấn set đồ công sở thanh lịch nam nữ",
-        "expected_items": ["Sơ Mi", "Tây Âu"],
-        "forbidden_items": ["Rách Gối"],
+        "name": "Tư vấn Combo hệ sinh thái Apple Flagship",
+        "query": "Tư vấn combo phụ kiện cho iPhone 18 Pro Max",
+        "expected_items": ["Sạc", "AirPods"],
+        "forbidden_items": ["Quần", "Áo"],
         "check_type": "STYLE_HARMONY"
     },
     {
         "id": "SCENARIO_4_NON_EXISTENT",
-        "name": "Chống ảo giác sản phẩm không tồn tại",
-        "query": "Tôi muốn mua điện thoại iPhone 17 Pro Max mạ vàng",
+        "name": "Chống ảo giác sản phẩm không tồn tại (iPhone 25 Pro)",
+        "query": "Tôi muốn mua điện thoại iPhone 25 Pro Max bằng kim cương",
         "check_type": "ANTI_HALLUCINATION"
     },
     {
         "id": "SCENARIO_5_SEMANTIC_TECH",
-        "name": "Tìm kiếm ngữ nghĩa phụ kiện công nghệ",
-        "query": "phụ kiện công nghệ chống ồn cho dân văn phòng",
-        "expected_product_types": ["Tai Nghe", "Chuột"],
+        "name": "Tìm kiếm ngữ nghĩa tai nghe chống ồn Apple",
+        "query": "tai nghe bluetooth chống ồn chủ động cho iPhone",
+        "expected_product_types": ["AirPods Pro", "AirPods Max"],
         "check_type": "SEMANTIC_RETRIEVAL"
     }
 ]
@@ -75,27 +75,26 @@ def simulate_single_agent(scenario: Dict[str, Any]) -> Dict[str, Any]:
     time.sleep(0.04) # Giả lập độ trễ LLM đơn lẻ
 
     if c_type == "PRICE_CONSTRAINT":
-        # Single-Agent thường đưa ra áo thun bất kỳ, đôi khi vượt giá
+        # Single-Agent thường đưa ra iPhone đắt tiền dù yêu cầu dưới 500k
         output = {
-            "text": "Dạ em gợi ý bạn Áo Polo Nam Gucci Maxi GG giá 12.000.000đ và Áo Thun DIOR giá 1.889.000đ ạ!",
+            "text": "Dạ em gợi ý bạn iPhone 16 Pro Max giá 34.990.000đ cực đỉnh ạ!",
             "products": [
-                {"name": "Áo Polo Nam Gucci Maxi GG Silk Cotton", "price": 12000000},
-                {"name": "Áo Thun DIOR - Chính Hãng", "price": 1889000}
+                {"name": "iPhone 16 Pro Max 256GB", "price": 34990000}
             ],
             "hallucination": True,
             "budget_adherence": False
         }
     elif c_type == "POLICY_GROUNDING":
-        # Single-Agent hay bịa thời hạn đổi trả
+        # Single-Agent hay bịa thời hạn bảo hành
         output = {
-            "text": "ZShop hỗ trợ đổi trả trong 30 ngày đối với mọi đơn hàng trên 500k.",
+            "text": "ZShop bảo hành trọn đời mọi thiết bị kể cả rơi vỡ ngập nước đổi mới miễn phí!",
             "hallucination": True,
             "budget_adherence": True
         }
     elif c_type == "STYLE_HARMONY":
         output = {
-            "text": "Bạn có thể mặc Quần Jeans rách gối cùng áo thun đi họp nhé!",
-            "products": [{"name": "Quần Jeans Slimfit Rách Gối Nam", "price": 550000}],
+            "text": "Bạn có thể dùng củ sạc rẻ tiền 5W không rõ nguồn gốc cho iPhone 18 Pro Max nhé!",
+            "products": [{"name": "Sạc Lô 5W", "price": 30000}],
             "hallucination": False,
             "budget_adherence": True,
             "style_passed": False
@@ -103,13 +102,13 @@ def simulate_single_agent(scenario: Dict[str, Any]) -> Dict[str, Any]:
     elif c_type == "ANTI_HALLUCINATION":
         # Single-Agent thường bịa đặt có hàng
         output = {
-            "text": "Dạ iPhone 17 Pro Max mạ vàng hiện đang có sẵn tại ZShop giá 45 triệu, bạn đặt ngay nhé!",
+            "text": "Dạ iPhone 25 Pro Max kim cương hiện đang có sẵn tại ZShop giá 99 triệu, bạn đặt ngay nhé!",
             "hallucination": True,
             "budget_adherence": True
         }
     else:
         output = {
-            "text": "ZShop có các thiết bị điện tử, bạn tham khảo website nhé.",
+            "text": "ZShop có một số đồ công nghệ, bạn vào app xem nhé.",
             "products": [],
             "hallucination": False,
             "budget_adherence": True

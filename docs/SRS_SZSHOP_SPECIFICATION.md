@@ -40,12 +40,12 @@
    - [3.7 UC007_Trợ lý AI Mua sắm & Phân tích Doanh số ZShop Copilot](#37-uc007_trợ-lý-ai-mua-sắm--phân-tích-doanh-số-zshop-copilot)
      - [3.7.1 Mô tả use case UC007](#371-mô-tả-use-case-uc007)
      - [3.7.2 Biểu đồ UC007](#372-biểu-đồ-uc007)
-   - [3.8 UC008_Quản lý Kênh Nhà bán lẻ (Seller Channel)](#38-uc008_quản-lý-kênh-nhà-bán-lẻ-seller-channel)
-     - [3.8.1 Mô tả use case UC008](#381-mô-tả-use-case-uc008)
-     - [3.8.2 Biểu đồ UC008](#382-biểu-đồ-uc008)
-   - [3.9 UC009_Quản trị Sàn E-Commerce (Admin Dashboard)](#39-uc009_quản-trị-sàn-e-commerce-admin-dashboard)
-     - [3.9.1 Mô tả use case UC009](#391-mô-tả-use-case-uc009)
-     - [3.9.2 Biểu đồ UC009](#392-biểu-đồ-uc009)
+    - [3.8 UC008_Quản lý Nhập kho, Tồn kho & AI Khuyến nghị Kho (Warehouse)](#38-uc008_quản-lý-nhập-kho-tồn-kho--ai-khuyến-nghị-kho-warehouse)
+      - [3.8.1 Mô tả use case UC008](#381-mô-tả-use-case-uc008)
+      - [3.8.2 Biểu đồ UC008](#382-biểu-đồ-uc008)
+    - [3.9 UC009_Quản trị Cửa hàng, Nhân sự & AI Phân tích Kinh doanh (Admin)](#39-uc009_quản-trị-cửa-hàng-nhân-sự--ai-phân-tích-kinh-doanh-admin)
+      - [3.9.1 Mô tả use case UC009](#391-mô-tả-use-case-uc009)
+      - [3.9.2 Biểu đồ UC009](#392-biểu-đồ-uc009)
 4. [CÁC THÔNG TIN HỖ TRỢ KHÁC](#4-các-thông-tin-hỗ-trợ-khác)
    - [4.1 Yêu cầu phi chức năng (Non-Functional Requirements)](#41-yêu-cầu-phi-chức-năng-non-functional-requirements)
    - [4.2 Thiết kế Cơ sở Dữ liệu Quan hệ Vật lý (11 Bảng SQL)](#42-thiết-kế-cơ-sở-dữ-liệu-quan-hệ-vật-lý-11-bảng-sql)
@@ -56,123 +56,139 @@
 # 1. GIỚI THIỆU CHUNG
 
 ## 1.1 Mục đích
-Tài liệu Đặc tả Yêu cầu Phần mềm (Software Requirements Specification - SRS) này mô tả chi tiết, toàn diện và đầy đủ các yêu cầu nghiệp vụ, yêu cầu chức năng, yêu cầu phi chức năng, các ràng buộc kỹ thuật, kiến trúc giao diện tương tác 3D WebGL và cơ sở dữ liệu quan hệ của **Hệ thống Thương mại Điện tử Không gian 3D & Cổng Thanh toán SZ-Payment (SZSHOP / ZS-Economy)**.
+Tài liệu Đặc tả Yêu cầu Phần mềm (Software Requirements Specification - SRS) này mô tả chi tiết, toàn diện và đầy đủ các yêu cầu nghiệp vụ, yêu cầu chức năng, yêu cầu phi chức năng, các ràng buộc kỹ thuật, kiến trúc giao diện tương tác 3D WebGL và cơ sở dữ liệu quan hệ của **Hệ thống Cửa hàng Thương mại Điện tử Không gian 3D & Bán lẻ Thông minh ZShop (SZSHOP - Single-Store Model)**.
 
 Mục đích cụ thể của tài liệu:
-1. **Chuẩn hóa nghiệp vụ:** Thiết lập tài liệu cơ sở kỹ thuật chính thức theo tiêu chuẩn công nghiệp IEEE Std 830-1998, bảo đảm sự thống nhất tuyệt đối giữa đội ngũ phân tích nghiệp vụ, lập trình viên, chuyên viên kiểm thử (QA/QC), quản lý dự án và các bên liên quan.
-2. **Hướng dẫn thiết kế & phát triển:** Làm kim chỉ nam cho việc xây dựng kiến trúc frontend (React 19 + Three.js), backend micro-services (Node.js/Express v5), hệ thống cơ sở dữ liệu (Microsoft SQL Server) và tích hợp các mô hình trí tuệ nhân tạo (Google Gemini RAG AI Copilot).
+1. **Chuẩn hóa nghiệp vụ & UML 2.5:** Thiết lập tài liệu cơ sở kỹ thuật chính thức theo tiêu chuẩn công nghiệp IEEE Std 830-1998 và chuẩn UML 2.5, thống nhất mô hình **Cửa hàng Đơn nhất (Single-Store)** với **4 Tác nhân chính**: **Admin (Chủ cửa hàng)**, **Nhân viên bán hàng (`SALES`)**, **Nhân viên kho (`WAREHOUSE`)**, và **Khách hàng (`CUSTOMER`)** (loại bỏ hoàn toàn mô hình nhà bán hàng có nhiều tài khoản đăng ký).
+2. **Hướng dẫn thiết kế & phát triển:** Làm kim chỉ nam cho việc xây dựng kiến trúc frontend (React 19 + Three.js), backend (Node.js/Express v5), hệ thống cơ sở dữ liệu (Microsoft SQL Server) và tích hợp các mô hình trí tuệ nhân tạo (Google Gemini RAG AI Copilot).
 3. **Tiêu chuẩn nghiệm thu:** Định nghĩa tiêu chuẩn kiểm thử tự động, kiểm thử chấp nhận người dùng (UAT), xác thực hiệu năng hệ thống đồ họa 3D và đối soát giao dịch cổng thanh toán thời gian thực.
 
 ## 1.2 Phạm vi
-- **Tên sản phẩm:** Hệ thống Thương mại Điện tử Tương tác Không gian 3D & Cổng Thanh toán Số Đa kênh (Tên thương mại: **SZSHOP** hoặc **ZS-Economy Gateway**).
+- **Tên sản phẩm:** Hệ thống Cửa hàng Thương mại Điện tử Tương tác Không gian 3D & Bán lẻ Thông minh (Tên thương mại: **SZSHOP**).
 - **Phạm vi giải quyết bài toán:**
-  - *Đột phá trải nghiệm người dùng:* Chuyển đổi mô hình hiển thị danh mục ảnh 2D tĩnh truyền thống sang không gian đồ họa tương tác 3D tương tác thời gian thực (Three.js WebGL canvas), cho phép người mua xoay 360°, phóng to chi tiết bề mặt vật liệu, tương tác thẻ sản phẩm Bento Grid 3D chiều sâu.
-  - *Cổng thanh toán tự động & đa kênh SZ-Payment:* Tích hợp cơ chế thanh toán liên ngân hàng và ví điện tử: VietQR Napas 247, VNPAY-QR, Thẻ quốc tế Visa/Mastercard, Ví MoMo và thanh toán khi nhận hàng (COD có kiểm soát ngưỡng rủi ro). Tự động sinh mã thanh toán kèm thời gian đếm ngược 15 phút, cập nhật trạng thái đơn hàng tức thời qua webhook.
-  - *Trợ lý trí tuệ nhân tạo ZShop Copilot:* Ứng dụng công nghệ RAG (Retrieval-Augmented Generation) kết hợp Large Language Model Gemini nhằm tự động hóa 6 kịch bản nghiệp vụ: Tư vấn sản phẩm theo ngân sách, lọc danh mục theo tiêu chuẩn kỹ thuật, thêm nhanh vào giỏ hàng từ cửa sổ chat, tra cứu tiến độ vận đơn, phân tích doanh thu sàn cho Quản trị viên, và AI Copywriter sáng tạo nội dung cho Nhà bán lẻ.
-  - *Mô hình đa tác nhân (Multi-vendor Marketplace):* Hỗ trợ đầy đủ phân hệ dành cho Khách mua hàng (Customer), Kênh Nhà bán hàng (Seller Channel - quản lý tồn kho, đơn hàng, ví tiền shop), và Bảng điều khiển Quản trị viên (Admin Dashboard - phê duyệt shop, duyệt sản phẩm, phân tích tài chính toàn sàn).
-- **Giới hạn phạm vi (Out of Scope):** Hệ thống không trực tiếp vận hành xe giao hàng vật lý ngoài đời thực mà tích hợp trạng thái API đối tác vận chuyển; hệ thống cung cấp môi trường giả lập đối soát tài chính lượng tử (Sandbox Gateway) kết hợp mã QR tĩnh/động.
+  - *Đột phá trải nghiệm người dùng:* Chuyển đổi mô hình hiển thị danh mục ảnh 2D tĩnh truyền thống sang không gian đồ họa tương tác 3D thời gian thực (Three.js WebGL canvas), cho phép người mua xoay 360°, phóng to chi tiết bề mặt vật liệu, tương tác thẻ sản phẩm Bento Grid 3D chiều sâu.
+  - *Cổng thanh toán tự động & đa kênh SZ-Payment:* Tích hợp cơ chế thanh toán liên ngân hàng và tại quầy POS: VietQR Napas 247, VNPAY-QR, Thẻ quốc tế Visa/Mastercard, Ví MoMo và thanh toán khi nhận hàng (COD). Tự động sinh mã thanh toán kèm thời gian đếm ngược 15 phút, cập nhật trạng thái đơn hàng tức thời.
+  - *Trợ lý trí tuệ nhân tạo ZShop Copilot (RAG):* Ứng dụng công nghệ RAG kết hợp Gemini LLM nhằm tự động hóa tư vấn sản phẩm theo ngân sách (`UC07`), AI Khuyến nghị nhập kho Stock Copilot cho Nhân viên kho (`UC08`), và AI Hỏi đáp kinh doanh (AI BI) cho Admin Chủ cửa hàng (`UC09`).
+  - *Mô hình 4 Tác nhân Cửa hàng thống nhất:* Phục vụ trọn vẹn 4 tác nhân: **Khách hàng** (mua sắm 3D, tích điểm VIP, đổi trả), **Nhân viên bán hàng** (bán hàng tại quầy POS, quản lý CRM khách hàng, xử lý đổi trả hoàn tiền & thu hồi điểm), **Nhân viên kho** (quản lý danh mục sản phẩm, lập phiếu nhập kho, kiểm kê tồn kho, AI khuyến nghị nhập kho), và **Admin - Chủ cửa hàng** (quản lý nhân sự nội bộ, giám sát doanh thu toàn cửa hàng, xuất báo cáo Excel/PDF, AI phân tích kinh doanh).
+- **Giới hạn phạm vi (Out of Scope):** Hệ thống vận hành cho một cửa hàng thương mại điện tử & bán lẻ duy nhất (Single-Store), không nhận đăng ký mở gian hàng từ các nhà bán hàng bên ngoài (Multi-vendor).
 
 ## 1.3 Các định nghĩa, thuật ngữ, từ viết tắt
 | Thuật ngữ / Viết tắt | Tên tiếng Anh đầy đủ | Định nghĩa & Ý nghĩa kỹ thuật |
 | :--- | :--- | :--- |
 | **SRS** | Software Requirements Specification | Tài liệu đặc tả yêu cầu phần mềm theo tiêu chuẩn IEEE 830. |
-| **UI / UX** | User Interface / User Experience | Giao diện người dùng đồ họa và Trải nghiệm tương tác người dùng. |
-| **Three.js** | Three.js WebGL 3D Engine | Thư viện JavaScript chuyên dụng kết xuất đồ họa 3D tương tác trên trình duyệt không cần cài plugin. |
-| **WebGL** | Web Graphics Library | Tiêu chuẩn web cho phép dựng hình đồ họa 3D tăng tốc phần cứng thông qua chip GPU. |
+| **UML** | Unified Modeling Language (v2.5) | Ngôn ngữ mô hình hóa thống nhất dùng để đặc tả Use Case, Sequence, Activity, Class Diagram. |
+| **POS** | Point of Sale | Hệ thống điểm bán hàng và thu ngân trực tiếp tại quầy dành cho Nhân viên bán hàng. |
+| **CRM** | Customer Relationship Management | Phân hệ quản lý hồ sơ khách hàng thân thiết và tích điểm thưởng VIP (Đồng, Bạc, Vàng, Kim Cương). |
 | **RAG** | Retrieval-Augmented Generation | Kỹ thuật kết hợp truy xuất dữ liệu có cấu trúc từ cơ sở dữ liệu với mô hình ngôn ngữ lớn để trả lời chính xác, chống ảo giác (hallucination). |
-| **LLM** | Large Language Model | Mô hình ngôn ngữ lớn (Google Gemini 1.5 Flash / Pro). |
 | **VietQR** | Vietnam Quick Response Code Standard | Chuẩn mã QR thanh toán liên ngân hàng quốc gia do Napas và Ngân hàng Nhà nước Việt Nam ban hành. |
-| **VNPAY-QR** | Vietnam Payment QR Gateway | Cổng thanh toán quét mã QR hỗ trợ hơn 40 ứng dụng ngân hàng và ví điện tử. |
-| **COD** | Cash On Delivery | Hình thức thanh toán bằng tiền mặt khi người mua nhận kiện hàng. |
 | **JWT** | JSON Web Token | Chuẩn mã hóa chuỗi ký tự an toàn truyền tải giữa client và server để xác thực phiên đăng nhập. |
-| **SSO** | Single Sign-On | Cơ chế đăng nhập một chạm qua Google OAuth 2.0 / Apple Sign-in. |
 | **SKU** | Stock Keeping Unit | Đơn vị định danh quản lý hàng hóa và thuộc tính biến thể trong kho hàng. |
 | **ACID** | Atomicity, Consistency, Isolation, Durability | 4 thuộc tính bảo đảm tính toàn vẹn tuyệt đối của các giao dịch cơ sở dữ liệu quan hệ. |
 
 ## 1.4 Tài liệu tham khảo
 1. IEEE Std 830-1998: *IEEE Recommended Practice for Software Requirements Specifications*, IEEE Computer Society, 1998.
-2. ISO/IEC/IEEE 29148:2018: *Systems and software engineering — Life cycle processes — Requirements engineering*.
+2. OMG Unified Modeling Language (OMG UML) Version 2.5.1 Specification.
 3. Napas: *Đặc tả tiêu chuẩn kết nối kỹ thuật chuyển mạch tài chính và Cổng thanh toán VietQR Napas 247*, 2023.
 4. Google Cloud: *Gemini API Documentation & Prompt Engineering Best Practices for Enterprise RAG*, 2024.
-5. Three.js Documentation (r160): *Scene graph, PBR Materials, Camera Controls and WebGLRenderer pipeline*.
-6. Kho mã nguồn và tài liệu kiến trúc dự án SZSHOP: `_Web_ZShop-main` (Vite, React 19, Express 5, Microsoft SQL Server).
+5. Kho mã nguồn và tài liệu kiến trúc dự án SZSHOP: `_Web_ZShop-main` (Vite, React 19, Express 5, Microsoft SQL Server).
 
 ---
 
 # 2. MÔ TẢ TỔNG QUAN ỨNG DỤNG
 
-## 2.1 Mô hình Use Case tổng thể
-Hệ thống SZSHOP phục vụ 4 tác nhân con người tương tác qua giao diện đồ họa web và 2 tác nhân dịch vụ bên thứ ba:
+## 2.1 Mô hình Use Case tổng thể (Chuẩn UML 2.5)
+Hệ thống SZSHOP thống nhất phục vụ **4 tác nhân con người chính (Primary Actors)**: **Khách hàng (`Customer`)**, **Nhân viên bán hàng (`Sales Staff`)**, **Nhân viên kho (`Warehouse Staff`)**, **Admin - Chủ cửa hàng (`Admin / Store Owner`)**, cùng **2 tác nhân hệ thống ngoài (Secondary Actors)**:
 
 ```mermaid
-graph TB
-    subgraph "HỆ THỐNG SZSHOP (3D E-COMMERCE & SZ-PAYMENT)"
-        UC001("UC001: Đăng ký, Đăng nhập & Xác thực")
-        UC002("UC002: Khám phá & Tìm kiếm Sản phẩm 3D")
-        UC003("UC003: Quản lý Giỏ hàng & MiniCart")
-        UC004("UC004: Xác nhận Đơn hàng & Giao nhận")
-        UC005("UC005: Thanh toán Cổng SZ-Payment")
-        UC006("UC006: Tra cứu Tiến trình Vận đơn")
-        UC007("UC007: Trợ lý AI Mua sắm ZShop Copilot")
-        UC008("UC008: Quản trị Kênh Nhà bán lẻ (Seller)")
-        UC009("UC009: Quản trị Sàn Giao dịch (Admin)")
+flowchart LR
+    Customer(["👤 Khách hàng<br/>(Customer)"])
+    Sales(["🎧 Nhân viên bán hàng<br/>(Sales Staff)"])
+    Warehouse(["📦 Nhân viên kho<br/>(Warehouse Staff)"])
+    Admin(["👑 Admin - Chủ cửa hàng<br/>(Store Owner)"])
+
+    PaymentGW(["💳 Cổng Thanh toán<br/>SZ-Payment"])
+    AIService(["🤖 Hệ thống AI<br/>Gemini RAG"])
+
+    subgraph ZSHOP["HỆ THỐNG CỬA HÀNG THƯƠNG MẠI ĐIỆN TỬ 3D & BÁN LẺ ZSHOP"]
+        direction TB
+        UC01("UC01: Đăng ký, Đăng nhập & Quản lý Nhân sự")
+        UC02("UC02: Quản lý Danh mục & Sản phẩm 3D")
+        UC03("UC03: Quản lý Khách hàng CRM & Điểm tích lũy VIP")
+        UC04("UC04: Bán hàng POS & Đặt hàng Trực tuyến")
+        UC04_INC("Thanh toán Đa kênh SZ-Payment")
+        UC05("UC05: Quản lý Nhập kho & Kiểm kê Tồn kho")
+        UC06("UC06: Báo cáo Doanh thu & Tra cứu Vận đơn")
+        UC06_EXT("Xuất báo cáo Excel / PDF")
+        UC07("UC07: Tư vấn Mua sắm bằng Trợ lý AI RAG")
+        UC07_INC("Truy xuất ngữ cảnh Sản phẩm & Tồn kho CSDL")
+        UC08("UC08: AI Khuyến nghị Nhập kho (Stock Copilot)")
+        UC09("UC09: AI Hỏi đáp & Phân tích Kinh doanh (AI BI)")
+        UC10("UC10: Quản lý Đổi trả & Hoàn tiền")
+        UC10_INC("Thu hồi điểm thưởng tích lũy (Points Clawback)")
+
+        UC04 -. "<<include>>" .-> UC04_INC
+        UC06_EXT -. "<<extend>>" .-> UC06
+        UC07 -. "<<include>>" .-> UC07_INC
+        UC10 -. "<<include>>" .-> UC10_INC
     end
 
-    Guest("Khách vãng lai<br/>(Guest)")
-    Customer("Khách hàng<br/>(Customer)")
-    Seller("Nhà bán lẻ<br/>(Seller)")
-    Admin("Quản trị viên<br/>(Admin)")
-    PaymentGW("Cổng Thanh toán<br/>(VietQR/VNPAY/MoMo)")
-    AIService("Gemini LLM<br/>AI Cloud Service")
+    Customer --> UC01
+    Customer --> UC02
+    Customer --> UC03
+    Customer --> UC04
+    Customer --> UC06
+    Customer --> UC07
+    Customer --> UC10
 
-    Guest --> UC001
-    Guest --> UC002
-    Guest --> UC003
-    Guest --> UC007
+    Sales --> UC01
+    Sales --> UC03
+    Sales --> UC04
+    Sales --> UC06
+    Sales --> UC10
 
-    Customer --> UC001
-    Customer --> UC002
-    Customer --> UC003
-    Customer --> UC004
-    Customer --> UC005
-    Customer --> UC006
-    Customer --> UC007
-    Customer --> UC008
+    Warehouse --> UC01
+    Warehouse --> UC02
+    Warehouse --> UC05
+    Warehouse --> UC08
 
-    Seller --> UC001
-    Seller --> UC008
-    Seller --> UC007
+    Admin --> UC01
+    Admin --> UC02
+    Admin --> UC03
+    Admin --> UC05
+    Admin --> UC06
+    Admin --> UC08
+    Admin --> UC09
+    Admin --> UC10
 
-    Admin --> UC001
-    Admin --> UC009
-    Admin --> UC007
-
-    UC005 -.-> PaymentGW
-    UC007 -.-> AIService
+    UC04_INC --> PaymentGW
+    UC07_INC --> AIService
+    UC08 --> AIService
+    UC09 --> AIService
 ```
 
-## 2.2 Danh sách các tác nhân và mô tả
-| STT | Tác nhân (Actor) | Vai trò & Trách nhiệm nghiệp vụ trong hệ thống |
-| :---: | :--- | :--- |
-| 1 | **Khách vãng lai (Guest)** | Người dùng chưa xác thực danh tính. Có quyền truy cập Landing Page 3D, duyệt catalog sản phẩm, tương tác mô hình 3D, tìm kiếm từ khóa, thêm sản phẩm vào Giỏ hàng tạm (Local Cart) và chat trải nghiệm với AI Copilot. Khi bấm "Xác nhận đặt hàng" hoặc đăng ký mở Shop sẽ được điều hướng đến màn hình Đăng nhập/Đăng ký. |
-| 2 | **Khách hàng (Customer)** | Người dùng đã đăng ký tài khoản và đăng nhập thành công. Có toàn quyền quản lý giỏ hàng, đặt hàng (Checkout), chọn mã giảm giá, thực hiện thanh toán trực tuyến qua cổng SZ-Payment, theo dõi đơn hàng thời gian thực qua mã vận đơn `DH-XXXXXXXX`, gửi yêu cầu hủy đơn, và đánh giá phản hồi sản phẩm. |
-| 3 | **Nhà bán lẻ (Seller)** | Người dùng sở hữu cửa hàng kinh doanh trên sàn (Shop). Có quyền truy cập `SellerChannelPage` để đăng tải sản phẩm mới (tên, giá, số lượng tồn kho, hình ảnh, phân loại), sửa/xóa sản phẩm trong danh mục của mình, theo dõi các kiện hàng được đặt, xem số dư ví người bán (Wallet Balance), và kích hoạt AI Copywriter để sinh nội dung quảng bá. |
-| 4 | **Quản trị viên (Admin)** | Người dùng có đặc quyền cao nhất trong hệ thống. Truy cập `AdminDashboard` để giám sát toàn bộ chỉ số kinh doanh sàn (tổng doanh thu, doanh số theo ngày, tổng số đơn), phê duyệt hoặc từ chối đơn đăng ký mở shop của người bán mới (`globalSellers`), kiểm duyệt chất lượng sản phẩm toàn sàn, quản lý danh mục và cấu hình phí hoa hồng sàn (commission fee). |
-| 5 | **Cổng thanh toán bên thứ ba (Payment Gateway)** | Hệ thống ngoài bao gồm Cổng VietQR Napas 247, VNPAY, MoMo Sandbox và Cổng Thẻ Quốc tế. Chịu trách nhiệm khởi tạo mã thanh toán QR động, xác nhận tiền vào tài khoản và bắn tín hiệu webhook phản hồi trạng thái giao dịch cho Backend SZSHOP. |
-| 6 | **Dịch vụ AI Ngoài (Google Gemini Service)** | Hệ thống ngoài cung cấp API Generative Language. Nhận câu hỏi tự nhiên từ người dùng kèm ngữ cảnh RAG (danh mục sản phẩm, lịch sử mua sắm, doanh số đơn hàng) để sinh câu trả lời tư vấn mua sắm, lọc sản phẩm và xuất dữ liệu JSON có cấu trúc. |
+## 2.2 Danh sách các tác nhân và mô tả (4 Tác nhân Con người & 2 Tác nhân Hệ thống ngoài)
+| STT | Tác nhân (Actor) | Phân loại UML | Vai trò & Trách nhiệm nghiệp vụ trong hệ thống |
+| :---: | :--- | :---: | :--- |
+| 1 | **Khách hàng (Customer)** | Primary Actor | Người mua sắm tại cửa hàng (bao gồm cả trạng thái chưa đăng nhập khi xem sản phẩm 3D và đã đăng nhập khi đặt hàng). Tự đăng ký tài khoản thành viên (`UC01`), khám phá sản phẩm 3D (`UC02`), tích điểm VIP (`UC03`), đặt hàng & thanh toán trực tuyến (`UC04`), tra cứu vận đơn (`UC06`), hỏi đáp Chatbot AI RAG (`UC07`), và gửi yêu cầu đổi trả/hoàn tiền (`UC10`). |
+| 2 | **Nhân viên bán hàng (Sales Staff)** | Primary Actor | Nhân sự vận hành thương mại & chăm sóc khách hàng của cửa hàng. Truy cập `CSKHPortalPage` & `POSPage` để bán hàng trực tiếp tại quầy POS (`UC04`), quản lý hồ sơ khách hàng thân thiết & cộng điểm thưởng (`UC03`), tra cứu điều phối đơn hàng (`UC06`), và phê duyệt yêu cầu đổi trả hoàn tiền kèm thu hồi điểm tích lũy (`UC10`). |
+| 3 | **Nhân viên kho (Warehouse Staff)** | Primary Actor | Nhân sự phụ trách kho vận của cửa hàng. Truy cập `WarehousePage` để thêm mới/cập nhật sản phẩm & danh mục (`UC02`), lập phiếu nhập kho từ nhà cung cấp & kiểm kê tồn kho (`UC05`), và sử dụng AI Khuyến nghị Kho (`UC08`) để bổ sung nguồn hàng kịp thời. |
+| 4 | **Admin - Chủ cửa hàng (Admin / Store Owner)** | Primary Actor | Người sở hữu và quản trị cao nhất của cửa hàng ZShop. Truy cập `AdminDashboard` để cấp phát & quản lý tài khoản nhân sự nội bộ (Nhân viên bán hàng & Nhân viên kho) (`UC01`), quản lý danh mục hàng hóa (`UC02`), giám sát báo cáo doanh thu & xuất Excel/PDF (`UC06`), hỏi đáp chiến lược cùng AI Business Intelligence (`UC09`), và cấu hình chính sách tích điểm cửa hàng (`UC03`). |
+| 5 | **Cổng thanh toán SZ-Payment (Payment Gateway)** | Secondary Actor | Hệ thống thanh toán ngoài (VietQR Napas 247, VNPAY, MoMo, Thẻ quốc tế) khởi tạo mã QR động và phản hồi trạng thái giao dịch. |
+| 6 | **Hệ thống AI Gemini RAG (AI Service)** | Secondary Actor | Hệ thống LLM đám mây nhận ngữ cảnh CSDL cửa hàng để tư vấn khách hàng (`UC07`), gợi ý nhập kho (`UC08`) và phân tích doanh số (`UC09`). |
 
-## 2.3 Danh sách Use Case và mô tả
-| Mã UC | Tên Ca Sử Dụng | Phân hệ (Module) | Tác nhân chính | Tóm tắt chức năng | Mức ưu tiên |
+## 2.3 Danh sách Use Case và mô tả (Chuẩn hóa UC01 - UC10)
+| Mã UC | Tên Ca Sử Dụng | Phân hệ (Module) | Tác nhân thực hiện | Quan hệ UML (`<<include>>` / `<<extend>>`) | Mức ưu tiên |
 | :---: | :--- | :--- | :--- | :--- | :---: |
-| **UC001** | Đăng ký, Đăng nhập & Xác thực | Xác thực (Auth) | Guest, Customer, Seller, Admin | Đăng nhập/Đăng ký bằng Email & Mật khẩu; Đăng nhập một chạm bằng Google OAuth, Apple Sign-in; Khôi phục mật khẩu qua email; Quản lý phiên JWT và phân quyền vai trò. | Rất cao |
-| **UC002** | Khám phá & Tìm kiếm Sản phẩm 3D | Sản phẩm (Catalog) | Guest, Customer | Hiển thị Banner 3D tương tác WebGL (xoay mô hình 360°, hiệu ứng ánh sáng); Bento Grid 3D; Lưới sản phẩm Flash Sale & Phân loại danh mục; Tìm kiếm từ khóa thời gian thực; Xem trang chi tiết sản phẩm kèm chọn biến thể (Màu sắc, Size). | Rất cao |
-| **UC003** | Quản lý Giỏ hàng & MiniCart | Giỏ hàng (Cart) | Guest, Customer | Thêm sản phẩm và biến thể vào giỏ; Mở bảng trượt MiniCart từ thanh điều hướng; Tăng, giảm số lượng mặt hàng; Xóa item khỏi giỏ; Tự động tính toán tổng tiền tạm tính. | Cao |
-| **UC004** | Xác nhận Đơn hàng & Giao nhận | Đơn hàng (Checkout) | Customer | Kiểm tra danh sách mặt hàng đặt mua; Nhập thông tin người nhận (Họ tên, SĐT, Địa chỉ nhận hàng); Áp dụng mã khuyến mãi Voucher (SZWELCOME, FREESHIP, SALE50); Chấp thuận điều khoản và khởi tạo đơn hàng trạng thái PENDING. | Cao |
-| **UC005** | Thanh toán Đa kênh SZ-Payment | Thanh toán (Payment) | Customer, Payment Gateway | Lựa chọn phương thức thanh toán (VNPAY-QR, VietQR Napas 247, Thẻ quốc tế, MoMo, COD); Kiểm tra điều kiện áp dụng (ràng buộc COD <= 5 triệu); Sinh mã QR động kèm thời gian hết hạn 15 phút; Tiếp nhận xác nhận thanh toán; Xuất hóa đơn số 3D kèm mã giao dịch TRX và hiệu ứng confetti. | Rất cao |
-| **UC006** | Tra cứu Tiến trình Vận đơn | Vận đơn (Tracking) | Customer, Guest | Tra cứu trạng thái đơn hàng theo mã đơn (DH-YYYYMMDD); Hiển thị timeline tiến trình trực quan 5 mốc: Chờ duyệt, Đã thanh toán, Đang đóng gói, Đang giao hàng, Đã giao thành công; Hỗ trợ gửi yêu cầu hủy đơn hàng đối với đơn chưa giao. | Trung bình |
-| **UC007** | Trợ lý AI Mua sắm ZShop Copilot | Trí tuệ nhân tạo (AI RAG) | Guest, Customer, Seller, Admin | Trò chuyện tự nhiên với Trợ lý AI tích hợp 6 Business Skills: Tư vấn theo ngân sách người dùng, lọc danh mục sản phẩm, thêm nhanh vào giỏ hàng bằng 1 click trong chat, tra cứu đơn tức thì, báo cáo doanh số tổng hợp cho Admin, và AI Copywriter sinh bài viết bán hàng cho Seller. | Cao |
-| **UC008** | Quản lý Kênh Nhà bán lẻ | Kênh Seller | Seller, Customer | Gửi hồ sơ đăng ký mở cửa hàng; Quản lý thông tin Shop; Đăng bán sản phẩm mới (tên, giá, ảnh, tồn kho); Cập nhật và xóa sản phẩm kho; Theo dõi các kiện hàng phát sinh; Quản lý số dư ví người bán. | Cao |
-| **UC009** | Quản trị Sàn E-Commerce | Bảng điều khiển Admin | Admin | Giám sát KPI sàn (Doanh thu tuần, lượng đơn hàng, số lượng khách); Phê duyệt hoặc từ chối hồ sơ đăng ký mở Shop; Kiểm duyệt và cập nhật thông tin sản phẩm toàn hệ thống; Xuất báo cáo tài chính sàn. | Cao |
+| **UC01** | Đăng ký, Đăng nhập & Quản lý Nhân sự | Xác thực & Nhân sự | Khách hàng, Nhân viên bán hàng, Nhân viên kho, Admin (Chủ cửa hàng) | Khách hàng tự đăng ký; Admin cấp phát & kích hoạt tài khoản Nhân viên bán hàng và Nhân viên kho. | Rất cao |
+| **UC02** | Quản lý Danh mục & Sản phẩm 3D | Sản phẩm (Catalog & 3D) | Khách hàng, Nhân viên kho, Admin (Chủ cửa hàng) | Xem mô hình 3D WebGL xoay 360°, tìm kiếm/lọc sản phẩm; Thêm, sửa, xóa danh mục & sản phẩm cửa hàng. | Rất cao |
+| **UC03** | Quản lý Khách hàng CRM & Điểm tích lũy VIP | Khách hàng (CRM & Loyalty) | Nhân viên bán hàng, Admin (Chủ cửa hàng), Khách hàng | Quản lý hạng thẻ (Đồng, Bạc, Vàng, Kim Cương), tự động tích điểm thưởng trên mỗi đơn hàng. | Cao |
+| **UC04** | Bán hàng POS & Đặt hàng Trực tuyến | Đơn hàng & POS | Khách hàng, Nhân viên bán hàng, Payment Gateway | `<<include>> Thanh toán Đa kênh SZ-Payment` (VietQR Napas 247, VNPAY, MoMo, COD, Thu ngân POS). | Rất cao |
+| **UC05** | Quản lý Nhập kho & Kiểm kê Tồn kho | Kho vận (Warehouse) | Nhân viên kho, Admin (Chủ cửa hàng) | Lập phiếu nhập kho (`NK-YYYY-XXXX`) từ nhà cung cấp, cộng tồn kho tự động và kiểm kê kho. | Cao |
+| **UC06** | Báo cáo Doanh thu & Tra cứu Vận đơn | Báo cáo & Vận đơn | Admin (Chủ cửa hàng), Nhân viên bán hàng, Khách hàng | Tra cứu tiến trình đơn hàng 5 mốc; Thống kê doanh thu cửa hàng `<<extend>> Xuất báo cáo Excel / PDF`. | Cao |
+| **UC07** | Tư vấn Mua sắm bằng Trợ lý AI RAG | AI Copilot (Khách hàng) | Khách hàng, Gemini AI Service | `<<include>> Truy xuất ngữ cảnh Sản phẩm & Tồn kho từ CSDL` để tư vấn chính xác không ảo giác. | Cao |
+| **UC08** | AI Khuyến nghị Nhập kho (Stock Copilot) | AI Kho vận (Warehouse AI) | Nhân viên kho, Admin (Chủ cửa hàng), Gemini AI Service | Phân tích tốc độ tiêu thụ và cảnh báo mặt hàng tồn kho thấp (`stock <= 40`) để gợi ý số lượng nhập. | Trung bình |
+| **UC09** | AI Hỏi đáp & Phân tích Kinh doanh (AI BI) | AI Quản trị (Executive AI) | Admin (Chủ cửa hàng), Gemini AI Service | Trợ lý AI phân tích doanh số, tỷ lệ chuyển đổi, hiệu quả tích điểm và đề xuất chiến lược kinh doanh. | Trung bình |
+| **UC10** | Quản lý Đổi trả, Hoàn tiền & Thu hồi Điểm | CSKH & Hậu mãi (Returns) | Khách hàng, Nhân viên bán hàng, Admin (Chủ cửa hàng) | Xử lý đổi size / hoàn tiền đơn hàng, bắt buộc `<<include>> Thu hồi điểm thưởng tích lũy (Points Clawback)`. | Cao |
 
 ## 2.4 Các điều kiện phụ thuộc
 1. **Môi trường kết nối mạng & Băng thông:**
@@ -196,41 +212,41 @@ graph TB
 ### 3.1.1 Mô tả use case UC001
 - **Tên Use Case:** Đăng ký, Đăng nhập & Xác thực Hệ thống (User Authentication & SSO Module).
 - **Mã định danh:** `UC001`.
-- **Tác nhân tham gia:** Khách vãng lai (Guest), Khách hàng (Customer), Nhà bán lẻ (Seller), Quản trị viên (Admin).
-- **Mục đích:** Cung cấp giải pháp nhận dạng, đăng ký tài khoản mới, xác thực thông tin đăng nhập đa kênh (Email/Mật khẩu và Single Sign-On qua Google/Facebook/Apple), khôi phục mật khẩu, khởi tạo phiên làm việc bảo mật (JWT) và phân quyền vai trò người dùng vào các phân hệ chức năng tương ứng.
+- **Tác nhân tham gia:** Khách hàng (Customer), Nhân viên bán hàng (Sales Staff), Nhân viên kho (Warehouse Staff), Admin - Chủ cửa hàng (Admin).
+- **Mục đích:** Cung cấp giải pháp nhận dạng, đăng ký tài khoản Khách hàng mới, xác thực thông tin đăng nhập đa kênh (Email/Mật khẩu và Single Sign-On qua Google/Facebook/Apple), đổi mật khẩu, khởi tạo phiên làm việc bảo mật (JWT) và phân quyền 4 tác nhân vào các phân hệ chức năng tương ứng (Cửa hàng mua sắm, Cổng Bán hàng POS & CSKH, Quản lý Kho hàng, và Admin Dashboard).
 - **Tiền điều kiện:** Người dùng đã truy cập vào hệ thống SZSHOP và có kết nối Internet ổn định.
 - **Hậu điều kiện:**
-  - Nếu xác thực thành công: Hệ thống lưu phiên đăng nhập (JWT token và thông tin UserRole), giao diện chuyển hướng về trang đích tương ứng (Khách hàng về Trang chủ/Giỏ hàng; Seller về SellerChannel; Admin về AdminDashboard).
+  - Nếu xác thực thành công: Hệ thống lưu phiên đăng nhập (JWT token và thông tin UserRole), giao diện chuyển hướng về trang đích tương ứng (Khách hàng về Trang chủ/Giỏ hàng; Nhân viên bán hàng về Cổng Bán hàng POS & CSKH; Nhân viên kho về Quản lý Kho hàng; Admin về AdminDashboard).
   - Nếu thất bại: Phiên làm việc không được cấp phát, hệ thống hiển thị thông báo lỗi cụ thể để người dùng thao tác lại.
 - **Luồng sự kiện chính (Basic Flow - Đăng nhập chuẩn):**
   1. Người dùng bấm chọn nút "Đăng nhập" trên thanh điều hướng Header.
-  2. Hệ thống hiển thị giao diện Màn hình Đăng nhập (`LoginPage.tsx`) gồm ô nhập Email, Mật khẩu, nút "Đăng nhập", tùy chọn "Quên mật khẩu?", liên kết "Đăng ký ngay" và các nút đăng nhập nhanh qua Google / Facebook / Apple.
+  2. Hệ thống hiển thị giao diện Màn hình Đăng nhập (`LoginPage.tsx`) gồm 4 nút chọn nhanh vai trò chuẩn UML (`Khách hàng`, `Nhân viên bán hàng`, `Nhân viên kho`, `Admin - Chủ cửa hàng`), ô nhập Email, Mật khẩu, nút "Đăng nhập", tùy chọn "Quên mật khẩu?", liên kết "Đăng ký ngay" và nút đăng nhập Google.
   3. Người dùng nhập địa chỉ Email và Mật khẩu hợp lệ, sau đó nhấn nút "ĐĂNG NHẬP".
   4. Hệ thống client kiểm tra định dạng dữ liệu (email đúng cấu trúc, mật khẩu không để trống), sau đó gửi yêu cầu `POST /api/auth/login` kèm payload `{ email, password }` đến Backend server.
   5. Backend thực hiện truy vấn bảng `Users` trong SQL Server theo email:
      - Kiểm tra sự tồn tại của tài khoản.
      - So khớp chuỗi băm mật khẩu (Hash verification).
-     - Đọc vai trò tương ứng từ bảng `Roles` (`CUSTOMER`, `SELLER`, hoặc `ADMIN`).
+     - Đọc vai trò tương ứng từ bảng `Roles` (`CUSTOMER`, `SALES`, `WAREHOUSE`, hoặc `ADMIN`).
   6. Backend khởi tạo mã JWT token chứa `userId`, `email`, `role` và phản hồi kết quả `{ success: true, token, user }`.
   7. Frontend lưu trữ token, cập nhật trạng thái `userRole` trên toàn bộ ứng dụng và chuyển hướng người dùng đến giao diện phù hợp:
-     - Vai trò `ADMIN`: Chuyển hướng đến `AdminDashboard`.
-     - Vai trò `SELLER`: Chuyển hướng đến `SellerChannelPage`.
-     - Vai trò `CUSTOMER`: Giữ nguyên trang hiện tại hoặc chuyển về `ShopeeHomePage` với trạng thái đã đăng nhập.
+     - Vai trò `ADMIN` (Admin - Chủ cửa hàng): Chuyển hướng đến `AdminDashboard`.
+     - Vai trò `SALES` (Nhân viên bán hàng): Chuyển hướng đến `CSKHPortalPage` / `POSPage`.
+     - Vai trò `WAREHOUSE` (Nhân viên kho): Chuyển hướng đến `WarehousePage`.
+     - Vai trò `CUSTOMER` (Khách hàng): Giữ nguyên trang hiện tại hoặc chuyển về `ShopeeHomePage` với trạng thái đã đăng nhập.
 - **Các luồng thay thế & Luồng ngoại lệ (Alternative & Exception Flows):**
-  - *Luồng thay thế 1 (Đăng ký tài khoản mới):* Tại bước 2, người dùng bấm "Đăng ký ngay". Hệ thống hiển thị `RegisterPage.tsx`. Người dùng nhập Họ tên, Email, Mật khẩu, Xác nhận mật khẩu. Frontend gọi `POST /api/auth/register`. Backend kiểm tra email chưa tồn tại, tạo bản ghi mới trong bảng `Users` và `Customers`, tự động gán vai trò `CUSTOMER` và trả về thông báo tạo tài khoản thành công.
-  - *Luồng thay thế 2 (Đăng nhập một chạm Google OAuth SSO):* Tại bước 2, người dùng bấm nút biểu tượng Google. Modal chọn tài khoản Google xuất hiện. Người dùng chọn tài khoản Google có sẵn hoặc nhập email cá nhân. Frontend gửi `POST /api/auth/social-login` kèm `{ provider: 'google', token, profile }`. Backend kiểm tra trong bảng `Users` với điều kiện `provider = 'google'` và `provider_user_id`. Nếu tài khoản chưa từng tồn tại, backend tự động khởi tạo User mới với vai trò `CUSTOMER` mà không bắt buộc nhập mật khẩu.
-  - *Luồng thay thế 3 (Quên mật khẩu):* Tại bước 2, người dùng bấm "Quên mật khẩu?". Hệ thống hiển thị `ForgotPasswordPage.tsx`. Người dùng nhập Email đã đăng ký và bấm "Gửi yêu cầu". Backend kiểm tra email, tạo mã liên kết đặt lại mật khẩu và gửi email hướng dẫn khôi phục.
-  - *Luồng ngoại lệ 1 (Sai thông tin đăng nhập):* Tại bước 5, nếu email không tồn tại hoặc mật khẩu sai, Backend trả về mã lỗi HTTP 401 `{ success: false, error: 'Email hoặc mật khẩu không chính xác' }`. Frontend hiển thị cảnh báo viền đỏ trên ô nhập liệu và giữ nguyên dữ liệu để người dùng thử lại.
-  - *Luồng ngoại lệ 2 (Lỗi kết nối máy chủ CSDL):* Nếu dịch vụ SQL Server gặp sự cố kết nối, hệ thống chuyển sang chế độ Local Fallback Mode, thông báo trạng thái ngoại tuyến hoặc cho phép người dùng đăng nhập bằng tài khoản thử nghiệm nội bộ (`admin@szshop.vn`, `seller@szshop.vn`, `customer@szshop.vn`).
+  - *Luồng thay thế 1 (Đăng ký tài khoản Khách hàng mới):* Tại bước 2, khách hàng bấm "Đăng ký ngay". Hệ thống hiển thị `RegisterPage.tsx` (chỉ dành cho tác nhân Khách hàng `CUSTOMER`, không có đăng ký Nhà bán hàng đa gian hàng). Khách hàng nhập Họ tên, Email, Mật khẩu, Xác nhận mật khẩu. Frontend gọi `POST /api/auth/register`. Backend kiểm tra email chưa tồn tại, tạo bản ghi mới trong bảng `Users` và `Customers`, tự động gán vai trò `CUSTOMER` và trả về thông báo tạo tài khoản thành công.
+  - *Luồng thay thế 2 (Đăng nhập một chạm Google OAuth SSO):* Tại bước 2, khách hàng bấm nút biểu tượng Google. Modal chọn tài khoản Google xuất hiện. Frontend gửi `POST /api/auth/social-login`. Nếu tài khoản chưa từng tồn tại, backend tự động khởi tạo User mới với vai trò `CUSTOMER`.
+  - *Luồng thay thế 3 (Quên mật khẩu):* Tại bước 2, người dùng bấm "Quên mật khẩu?". Hệ thống hiển thị `ForgotPasswordPage.tsx` để gửi yêu cầu đặt lại mật khẩu.
+  - *Luồng ngoại lệ 1 (Sai thông tin đăng nhập):* Tại bước 5, nếu email không tồn tại hoặc mật khẩu sai, Backend trả về mã lỗi HTTP 401 `{ success: false, error: 'Email hoặc mật khẩu không chính xác' }`.
+  - *Luồng ngoại lệ 2 (Chế độ Smart Offline Fallback):* Nếu dịch vụ SQL Server chưa khởi động, hệ thống tự động kích hoạt chế độ Demo Offline với 4 tài khoản mẫu chuẩn UML (`customer@test.com`, `sales@test.com`, `warehouse@test.com`, `admin@test.com`).
 
 ### 3.1.2 Biểu đồ UC001
 
-#### Biểu đồ hoạt động (Activity Diagram) - Xác thực người dùng
+#### Biểu đồ hoạt động (Activity Diagram) - Xác thực & Phân quyền 4 Tác nhân UML
 ```mermaid
 flowchart TD
     Start([Bắt đầu: Người dùng chọn Đăng nhập]) --> Choice{Chọn hình thức xác thực}
     
-    %% Luồng Email/Password
     Choice -- Email & Mật khẩu --> InputCreds[Nhập Email và Mật khẩu]
     InputCreds --> ValidateClient{Hợp lệ định dạng?}
     ValidateClient -- Không --> ShowErr1[Hiển thị cảnh báo lỗi nhập liệu] --> InputCreds
@@ -239,68 +255,45 @@ flowchart TD
     CheckDB -- Sai Email/Mật khẩu --> ShowErr2[Báo lỗi: Sai thông tin tài khoản] --> InputCreds
     CheckDB -- Hợp lệ --> GenToken[Tạo JWT Token & Xác định Role]
     
-    %% Luồng Google SSO
     Choice -- Google SSO --> ClickGoogle[Bấm Đăng nhập Google]
-    ClickGoogle --> SelectAccount[Chọn/Nhập tài khoản Google]
+    ClickGoogle --> SelectAccount[Chọn tài khoản Google]
     SelectAccount --> SendGoogleReq[Gửi POST /api/auth/social-login]
-    SendGoogleReq --> CheckGoogleUser{Tài khoản đã có trong DB?}
-    CheckGoogleUser -- Chưa có --> AutoCreate[Tự động tạo User mới trong bảng Users] --> GenToken
-    CheckGoogleUser -- Đã có --> GenToken
-    
-    %% Luồng Quên mật khẩu
-    Choice -- Quên mật khẩu --> ClickForgot[Bấm Quên mật khẩu]
-    ClickForgot --> InputForgotMail[Nhập Email nhận mã]
-    InputForgotMail --> SendResetReq[Gửi POST /api/auth/forgot-password]
-    SendResetReq --> SendMailNotice[Gửi hướng dẫn khôi phục qua email] --> EndForgot([Hoàn thành yêu cầu khôi phục])
+    SendGoogleReq --> GenToken
 
-    %% Phân quyền giao diện
     GenToken --> SaveSession[Lưu JWT vào Storage]
-    SaveSession --> RouteRole{Phân loại UserRole}
-    RouteRole -- ADMIN --> NavAdmin[Điều hướng đến AdminDashboard] --> EndAuth([Đăng nhập thành công])
-    RouteRole -- SELLER --> NavSeller[Điều hướng đến SellerChannelPage] --> EndAuth
-    RouteRole -- CUSTOMER --> NavHome[Điều hướng về Cửa hàng mua sắm] --> EndAuth
+    SaveSession --> RouteRole{Phân loại 4 Tác nhân UML}
+    RouteRole -- ADMIN --> NavAdmin[Điều hướng đến AdminDashboard - Chủ cửa hàng] --> EndAuth([Đăng nhập thành công])
+    RouteRole -- SALES --> NavSales[Điều hướng đến Cổng Nhân viên Bán hàng POS & CSKH] --> EndAuth
+    RouteRole -- WAREHOUSE --> NavWarehouse[Điều hướng đến Quản lý Kho hàng - Nhân viên Kho] --> EndAuth
+    RouteRole -- CUSTOMER --> NavHome[Điều hướng về Cửa hàng mua sắm 3D - Khách hàng] --> EndAuth
 ```
 
-#### Biểu đồ tuần tự (Sequence Diagram) - Đăng nhập hệ thống
+#### Biểu đồ tuần tự (Sequence Diagram) - Đăng nhập hệ thống 4 Tác nhân
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Người dùng
+    actor User as Tác nhân (Customer / Sales / Warehouse / Admin)
     participant UI as Giao diện LoginPage
     participant Service as AuthService
     participant API as Express Router (/api/auth)
     participant DB as SQL Server Database
 
-    User->>UI: Nhập email, password và bấm "Đăng nhập"
-    UI->>UI: Kiểm tra tính hợp lệ dữ liệu Form
-    alt Dữ liệu không hợp lệ
-        UI-->>User: Hiển thị lỗi định dạng trên ô nhập
-    else Dữ liệu hợp lệ
-        UI->>Service: login(email, password)
-        Service->>API: POST /api/auth/login { email, password }
-        API->>DB: SELECT * FROM Users WHERE email = @email
-        alt Người dùng không tồn tại
-            DB-->>API: Trả về null
-            API-->>Service: 401 Unauthorized { success: false, error: 'Tài khoản không tồn tại' }
-            Service-->>UI: Báo lỗi thất bại
-            UI-->>User: Hiển thị thông báo: Sai tài khoản hoặc mật khẩu
-        else Người dùng tồn tại
-            DB-->>API: Trả về bản ghi User (kèm Hash mật khẩu, RoleId)
-            API->>API: So khớp mật khẩu với hàm Bcrypt/Argon2
-            alt Mật khẩu không trùng khớp
-                API-->>Service: 401 Unauthorized { success: false, error: 'Mật khẩu không đúng' }
-                Service-->>UI: Báo lỗi mật khẩu
-                UI-->>User: Hiển thị thông báo đăng nhập sai
-            else Mật khẩu chính xác
-                API->>DB: SELECT name FROM Roles WHERE id = @role_id
-                DB-->>API: Trả về RoleName ('CUSTOMER' / 'SELLER' / 'ADMIN')
-                API->>API: Ký sinh chuỗi JWT Token (hạn 24 giờ)
-                API-->>Service: 200 OK { success: true, token, user: { id, email, role } }
-                Service-->>UI: Phản hồi đăng nhập thành công
-                UI->>UI: Cập nhật biến trạng thái toàn cục (userRole, token)
-                UI-->>User: Điều hướng tới Dashboard hoặc Trang mua sắm tương ứng
-            end
-        end
+    User->>UI: Chọn tab vai trò hoặc nhập email, password và bấm "Đăng nhập"
+    UI->>Service: login(email, password)
+    Service->>API: POST /api/auth/login { email, password }
+    API->>DB: SELECT * FROM Users WHERE email = @email
+    alt Thông tin không hợp lệ
+        DB-->>API: Trả về null hoặc sai mật khẩu
+        API-->>Service: 401 Unauthorized
+        Service-->>UI: Báo lỗi thất bại
+        UI-->>User: Hiển thị thông báo: Sai tài khoản hoặc mật khẩu
+    else Xác thực thành công
+        API->>DB: SELECT name FROM Roles WHERE id = @role_id
+        DB-->>API: Trả về RoleName ('CUSTOMER' | 'SALES' | 'WAREHOUSE' | 'ADMIN')
+        API->>API: Ký sinh chuỗi JWT Token (hạn 24 giờ)
+        API-->>Service: 200 OK { success: true, token, user }
+        Service-->>UI: Phản hồi đăng nhập thành công
+        UI-->>User: Điều hướng tới phân hệ của đúng tác nhân (Home / POS-CSKH / Warehouse / Admin)
     end
 ```
 
@@ -667,36 +660,41 @@ sequenceDiagram
 
 ---
 
-## 3.6 UC006_Tra cứu Tiến trình Vận đơn & Quản lý Đơn hàng
+### 3.6 UC006_Bán hàng tại quầy (POS), CSKH & Tra cứu Đơn hàng
 
 ### 3.6.1 Mô tả use case UC006
-- **Tên Use Case:** Tra cứu Tiến trình Vận đơn & Quản lý Đơn hàng (Order Tracking & Logistics Lifecycle).
+- **Tên Use Case:** Bán hàng tại quầy (POS), Quản lý Hồ sơ Khách hàng, CSKH & Tra cứu Tiến trình Vận đơn (POS, CRM, Support & Order Lifecycle).
 - **Mã định danh:** `UC006`.
-- **Tác nhân tham gia:** Khách vãng lai (Guest), Khách hàng (Customer).
-- **Mục đích:** Cho phép người dùng theo dõi vòng đời vận chuyển của kiện hàng theo thời gian thực thông qua mã đơn hàng, xem chi tiết lịch sử mốc giao nhận và thực hiện hủy đơn hàng đối với các kiện chưa bàn giao vận chuyển.
-- **Tiền điều kiện:** Người dùng có mã đơn hàng hợp lệ (ví dụ: `DH-20241228-01`).
-- **Hậu điều kiện:** Hệ thống cung cấp lộ trình di chuyển của kiện hàng hoặc ghi nhận trạng thái hủy đơn.
+- **Tác nhân tham gia:** Nhân viên Bán hàng (`SALES`), Khách hàng (`CUSTOMER`).
+- **Mục đích:** Cho phép Nhân viên Bán hàng tạo đơn hàng tại quầy POS (`POSPage.tsx`), quản lý hồ sơ khách hàng & hạng thành viên (`CustomerManagementPage.tsx`), xử lý phiếu hỗ trợ CSKH (`CSKHPortalPage.tsx`), duyệt yêu cầu đổi trả (`ReturnManagementPage.tsx`), đồng thời cho phép Khách hàng tra cứu tiến trình vận đơn 5 mốc thời gian thực (`OrderTrackingPage.tsx`).
+- **Tiền điều kiện:** Nhân viên Bán hàng đăng nhập với vai trò `SALES`, hoặc Khách hàng có mã đơn hàng hợp lệ (ví dụ: `DH-20241228-01`).
+- **Hậu điều kiện:** Đơn hàng POS hoặc phiếu CSKH/Đổi trả được ghi nhận và cập nhật trạng thái vận đơn chính xác.
 - **Luồng sự kiện chính (Basic Flow):**
-  1. Người dùng truy cập trang `OrderTrackingPage.tsx` từ menu Header hoặc đường dẫn trực tiếp.
-  2. Người dùng nhập mã đơn hàng vào ô tìm kiếm và bấm biểu tượng Kính lúp.
-  3. Hệ thống gọi `DatHangService.traCuuDonHang(orderId)`.
-  4. Hệ thống trả về mảng các bước vận đơn (`TrackingStep[]`) và hiển thị dòng thời gian (Vertical Timeline) gồm 5 trạng thái tiêu chuẩn:
-     - **Mốc 1 - Chờ xác nhận (Pending):** Đơn hàng đã được ghi nhận trên hệ thống sàn.
-     - **Mốc 2 - Đã thanh toán (Paid):** Giao dịch tài chính đã được cổng thanh toán đối soát hoàn tất.
-     - **Mốc 3 - Đang chuẩn bị hàng (Processing):** Người bán đang đóng gói kiện hàng.
-     - **Mốc 4 - Đang vận chuyển (Shipping):** Kiện hàng đã được bàn giao cho đơn vị bưu chính chuyển phát nhanh.
-     - **Mốc 5 - Đã giao hàng (Delivered):** Người mua đã nhận hàng và ký nhận thành công.
-  5. Các mốc đã hoàn thành được đánh dấu bằng icon màu xanh lá cây (`CheckCircle`), mốc đang thực hiện hiển thị icon động, và mốc tương lai hiển thị màu xám.
+  1. **Luồng Nhân viên Bán hàng (POS & CSKH):**
+     - Nhân viên Bán hàng mở `POSPage.tsx`, quét mã SKU hoặc tìm sản phẩm thêm vào hóa đơn tại quầy, nhập SĐT khách hàng để tích điểm hạng thành viên, chọn thanh toán Tiền mặt hoặc VietQR và in hóa đơn.
+     - Nhân viên Bán hàng mở `CSKHPortalPage.tsx` hoặc `ReturnManagementPage.tsx` để tiếp nhận yêu cầu hỗ trợ, kiểm tra điều kiện đổi trả hàng (`UC10`) và xác nhận xử lý.
+  2. **Luồng Khách hàng Tra cứu Vận đơn (`OrderTrackingPage.tsx`):**
+     - Khách hàng nhập mã đơn hàng vào ô tìm kiếm và bấm Tra cứu.
+     - Hệ thống gọi `DatHangService.traCuuDonHang(orderId)` và hiển thị dòng thời gian (Vertical Timeline) gồm 5 trạng thái tiêu chuẩn:
+       + **Mốc 1 - Chờ xác nhận (Pending):** Đơn hàng đã được ghi nhận trên hệ thống cửa hàng.
+       + **Mốc 2 - Đã thanh toán (Paid):** Giao dịch tài chính đã được cổng thanh toán đối soát hoàn tất.
+       + **Mốc 3 - Đang chuẩn bị hàng (Processing):** Nhân viên Kho đang đóng gói kiện hàng.
+       + **Mốc 4 - Đang vận chuyển (Shipping):** Kiện hàng đã được bàn giao cho đơn vị vận chuyển.
+       + **Mốc 5 - Đã giao hàng (Delivered):** Khách hàng đã nhận hàng thành công.
 - **Các luồng thay thế & Luồng ngoại lệ:**
-  - *Luồng thay thế 1 (Yêu cầu hủy đơn hàng):* Nếu đơn hàng đang ở mốc "Chờ xác nhận" hoặc "Đã thanh toán" (chưa chuyển sang "Đang vận chuyển"), hệ thống hiển thị nút "Hủy đơn hàng". Khi người dùng bấm nút và xác nhận hộp thoại thông báo, hệ thống cập nhật trạng thái đơn sang `CANCELLED` và kích hoạt luồng hoàn tiền về ví/tài khoản thanh toán trong 24 giờ.
+  - *Luồng thay thế 1 (Yêu cầu hủy / đổi trả đơn hàng):* Nếu đơn hàng đang ở mốc "Chờ xác nhận" hoặc "Đã thanh toán", khách hàng có thể bấm "Hủy đơn hàng". Nếu đơn hàng đã giao (`DELIVERED`), khách hàng có thể gửi yêu cầu Đổi/Trả hàng (`UC10`) để Nhân viên Bán hàng xét duyệt.
   - *Luồng ngoại lệ 1 (Mã đơn hàng không tồn tại):* Nếu mã đơn nhập không tìm thấy trong hệ thống, giao diện hiển thị thông báo lỗi: "Không tìm thấy thông tin đơn hàng này. Vui lòng kiểm tra lại mã vận đơn."
 
 ### 3.6.2 Biểu đồ UC006
 
-#### Biểu đồ hoạt động (Activity Diagram) - Tra cứu đơn hàng
+#### Biểu đồ hoạt động (Activity Diagram) - Tra cứu đơn hàng & Nghiệp vụ Bán hàng
 ```mermaid
 flowchart TD
-    Start([Bắt đầu: Mở OrderTrackingPage]) --> InputOrderId[Nhập mã đơn hàng ví dụ: DH-20241228]
+    Start([Bắt đầu: Truy cập Phân hệ Bán hàng / Vận đơn]) --> ActorCheck{Vai trò tác nhân?}
+    ActorCheck -- Nhân viên Bán hàng (SALES) --> SalesMenu[Chọn nghiệp vụ: POS tại quầy / CSKH / Đổi trả]
+    SalesMenu --> ProcessPOS[Tạo hóa đơn POS / Xử lý Ticket CSKH & Đổi trả] --> End([Kết thúc])
+    
+    ActorCheck -- Khách hàng (CUSTOMER) --> InputOrderId[Nhập mã đơn hàng ví dụ: DH-20241228]
     InputOrderId --> ClickSearch[Bấm nút Tra cứu]
     ClickSearch --> QueryDB[Gọi DatHangService.traCuuDonHang]
     QueryDB --> CheckExist{Tìm thấy đơn hàng?}
@@ -705,10 +703,10 @@ flowchart TD
     
     RenderTimeline --> CheckCancelable{Đơn hàng chưa giao?}
     CheckCancelable -- Đúng: Pending/Paid --> ShowCancelBtn[Hiển thị nút 'Hủy đơn hàng']
-    CheckCancelable -- Sai: Shipping/Delivered --> HideCancelBtn[Ẩn nút hủy đơn hàng]
+    CheckCancelable -- Sai: Shipping/Delivered --> HideCancelBtn[Hiển thị nút 'Yêu cầu Đổi/Trả (UC10)']
     
     ShowCancelBtn --> UserCancelChoice{Khách bấm Hủy đơn?}
-    UserCancelChoice -- Không --> End([Kết thúc tra cứu])
+    UserCancelChoice -- Không --> End
     UserCancelChoice -- Có --> ConfirmModal[Hiện hộp thoại xác nhận hủy]
     ConfirmModal --> UpdateCancel[Cập nhật trạng thái: CANCELLED & Thêm mốc hủy vào timeline]
     UpdateCancel --> AlertRefund[Thông báo: Tiền sẽ được hoàn trong 24h] --> End
@@ -719,8 +717,8 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Customer as Khách hàng
-    participant UI as Component OrderTrackingPage
+    actor Customer as Khách hàng / NV Bán hàng
+    participant UI as Component OrderTrackingPage / POSPage
     participant Service as DatHangService
     participant DB as HeThongBanHangDB / MSSQL
 
@@ -746,17 +744,17 @@ sequenceDiagram
 ### 3.7.1 Mô tả use case UC007
 - **Tên Use Case:** Trợ lý AI Mua sắm & Phân tích Doanh số ZShop Copilot (RAG-Driven Intelligent Sales & Analytics Copilot).
 - **Mã định danh:** `UC007`.
-- **Tác nhân tham gia:** Khách vãng lai (Guest), Khách hàng (Customer), Nhà bán lẻ (Seller), Quản trị viên (Admin), Dịch vụ ngoài (Gemini LLM).
-- **Mục đích:** Cung cấp trợ lý trí tuệ nhân tạo thông minh tương tác bằng ngôn ngữ tự nhiên tiếng Việt, vận hành bằng kiến trúc RAG (Retrieval-Augmented Generation) kết hợp 6 Business Skills nghiệp vụ giúp giải quyết tự động các bài toán mua sắm, quản trị bán hàng và phân tích dữ liệu.
+- **Tác nhân tham gia:** Khách hàng (`CUSTOMER`), Nhân viên Bán hàng (`SALES`), Nhân viên Kho (`WAREHOUSE`), Admin - Chủ cửa hàng (`ADMIN`), Dịch vụ ngoài (`Gemini LLM`).
+- **Mục đích:** Cung cấp trợ lý trí tuệ nhân tạo thông minh tương tác bằng ngôn ngữ tự nhiên tiếng Việt, vận hành bằng kiến trúc RAG (Retrieval-Augmented Generation) kết hợp 6 Business Skills nghiệp vụ giúp giải quyết tự động các bài toán mua sắm, tư vấn bán hàng, dự báo tồn kho và phân tích dữ liệu cho Chủ cửa hàng.
 - **Tiền điều kiện:** Người dùng bấm vào biểu tượng bong bóng Chatbot AI ở góc phải phía dưới màn hình (`ChatBot.tsx`).
 - **Hậu điều kiện:** Người dùng nhận được phản hồi tư vấn chính xác, tương tác trực tiếp với các thẻ sản phẩm hành động (Actionable Cards) được sinh động trong khung chat.
 - **Luồng 6 Kỹ năng Nghiệp vụ AI (6 AI Business Skills):**
-  1. **Skill 1 - Tư vấn theo ngân sách (Budget Recommender):** Người dùng nhập: "Tôi có khoảng 500k, tư vấn cho tôi một chiếc áo đẹp". AI phân tích intent trích xuất ngân sách `<= 500.000 đ`, truy vấn CSDL danh mục Áo và hiển thị danh sách các mẫu áo phù hợp nhất kèm nút "Mua ngay".
-  2. **Skill 2 - Lọc sản phẩm theo danh mục (Category Filtering):** Người dùng yêu cầu: "Tìm cho tôi giày thể thao sneaker nam". AI tự động ánh xạ sang danh mục `Giày dép`, trả về danh sách sản phẩm kèm điểm đánh giá sao và giá thành.
-  3. **Skill 3 - Thêm nhanh vào giỏ hàng (Quick Add-to-Cart):** Người dùng bấm trực tiếp vào nút "Thêm vào giỏ" gắn liền trên thẻ sản phẩm mà AI vừa tư vấn ngay trong cửa sổ chat, sản phẩm lập tức được nạp vào giỏ hàng mà không cần chuyển trang.
-  4. **Skill 4 - Tra cứu đơn hàng tức thì (Instant Order Tracking):** Người dùng nhắn: "Kiểm tra đơn hàng DH-20241228 giúp tôi". AI gọi `DatHangService` trích xuất trạng thái đơn hàng và phản hồi vắn tắt lộ trình hiện tại của kiện hàng.
-  5. **Skill 5 - Báo cáo doanh thu cho Admin (Admin Sales Intelligence):** Khi người dùng là Admin chat: "Báo cáo doanh số hôm nay", AI kiểm tra phân quyền `userRole === 'ADMIN'`, tổng hợp doanh thu theo ngày từ CSDL và xuất báo cáo tài chính trực quan.
-  6. **Skill 6 - AI Copywriter cho Seller (SEO Product Copywriting):** Nhà bán lẻ yêu cầu: "Viết mô tả sản phẩm cho Áo khoác Bomber phong cách đường phố". AI tự động tạo bài viết giới thiệu chuẩn SEO gồm tiêu đề hấp dẫn, đặc tính kỹ thuật, chất liệu vải và hashtag xu hướng.
+  1. **Skill 1 - Tư vấn theo ngân sách (Budget Recommender):** Khách hàng nhập: "Tôi có khoảng 500k, tư vấn cho tôi một chiếc áo đẹp". AI phân tích intent trích xuất ngân sách `<= 500.000 đ`, truy vấn CSDL danh mục Áo và hiển thị danh sách các mẫu áo phù hợp nhất kèm nút "Mua ngay".
+  2. **Skill 2 - Lọc sản phẩm theo danh mục (Category Filtering):** Khách hàng yêu cầu: "Tìm cho tôi giày thể thao sneaker nam". AI tự động ánh xạ sang danh mục `Giày dép`, trả về danh sách sản phẩm kèm điểm đánh giá sao và giá thành.
+  3. **Skill 3 - Thêm nhanh vào giỏ hàng (Quick Add-to-Cart):** Khách hàng bấm trực tiếp vào nút "Thêm vào giỏ" gắn liền trên thẻ sản phẩm mà AI vừa tư vấn ngay trong cửa sổ chat, sản phẩm lập tức được nạp vào giỏ hàng mà không cần chuyển trang.
+  4. **Skill 4 - Tra cứu đơn hàng tức thì (Instant Order Tracking):** Khách hàng hoặc Nhân viên Bán hàng nhắn: "Kiểm tra đơn hàng DH-20241228 giúp tôi". AI gọi `DatHangService` trích xuất trạng thái đơn hàng và phản hồi vắn tắt lộ trình hiện tại của kiện hàng.
+  5. **Skill 5 - Báo cáo doanh thu & Phân tích cho Admin (Admin Sales Intelligence):** Khi Admin (Chủ cửa hàng) chat: "Báo cáo doanh số hôm nay", AI kiểm tra phân quyền `userRole === 'ADMIN'`, tổng hợp doanh thu theo ngày từ CSDL và xuất báo cáo tài chính trực quan.
+  6. **Skill 6 - Khuyến nghị Nhập kho & Nội dung Sản phẩm (Inventory & Product Copywriting):** Hỗ trợ Nhân viên Kho kiểm tra danh sách SKU sắp hết hàng cần nhập kho bổ sung và hỗ trợ Nhân viên Bán hàng / Admin tạo mô tả sản phẩm chuẩn SEO.
 - **Luồng sự kiện chính (Basic Flow):**
   1. Người dùng mở khung chat AI Copilot và nhập câu hỏi bằng tiếng Việt tự nhiên.
   2. Frontend gửi tin nhắn đến `szshop-backend/controllers/ChatController.js`.
@@ -789,8 +787,8 @@ flowchart TD
     ParseResponse --> SkillDispatch{Phân loại kỹ năng kích hoạt}
     SkillDispatch -- Tư vấn ngân sách / Lọc --> ShowProductCards[Hiển thị bong bóng chat kèm Thẻ sản phẩm tương tác]
     SkillDispatch -- Tra cứu đơn hàng --> ShowOrderStatus[Hiển thị trạng thái đơn hàng hiện tại]
-    SkillDispatch -- Báo cáo Admin --> ShowReport[Hiển thị số liệu doanh thu & KPI sàn]
-    SkillDispatch -- Viết bài Seller --> ShowSEOText[Hiển thị bản thảo mô tả sản phẩm chuẩn SEO]
+    SkillDispatch -- Báo cáo Admin --> ShowReport[Hiển thị số liệu doanh thu & KPI cửa hàng]
+    SkillDispatch -- Cảnh báo Kho / Copywriting --> ShowSEOText[Hiển thị khuyến nghị nhập kho & mô tả SEO]
     
     ShowProductCards --> QuickCartAction{Khách bấm 'Thêm vào giỏ' trong chat?}
     QuickCartAction -- Có --> AddDirect[Gọi onAddToCart nạp trực tiếp vào Giỏ hàng] --> End([Kết thúc tương tác AI])
@@ -804,7 +802,7 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     autonumber
-    actor User as Người dùng
+    actor User as Tác nhân (Customer / Sales / Warehouse / Admin)
     participant ChatUI as Component ChatBot
     participant Controller as ChatController (/api/chat)
     participant AIService as Backend AiService
@@ -828,161 +826,149 @@ sequenceDiagram
 
 ---
 
-## 3.8 UC008_Quản lý Kênh Nhà bán lẻ (Seller Channel)
+## 3.8 UC008_Quản lý Nhập kho, Tồn kho & AI Khuyến nghị Kho (Nhân viên Kho)
 
 ### 3.8.1 Mô tả use case UC008
-- **Tên Use Case:** Quản lý Kênh Nhà bán lẻ (Seller Channel & Inventory Management).
-- **Mã định danh:** `UC008`.
-- **Tác nhân tham gia:** Nhà bán lẻ (Seller), Khách hàng (Customer).
-- **Mục đích:** Cho phép các chủ shop đăng ký gian hàng kinh doanh trên sàn, thiết lập thông tin hồ sơ cửa hàng, đăng tải sản phẩm mới kèm giá và số lượng tồn kho, chỉnh sửa và quản lý vòng đời hàng hóa, theo dõi các đơn hàng được đặt và kiểm tra số dư ví người bán.
-- **Tiền điều kiện:** Người dùng đã đăng nhập và truy cập vào `SellerChannelPage.tsx`.
-- **Hậu điều kiện:** Sản phẩm mới hoặc thông tin cập nhật được lưu trữ bền vững trong cơ sở dữ liệu và hiển thị trên sàn thương mại điện tử.
+- **Tên Use Case:** Quản lý Nhập kho, Tồn kho & AI Khuyến nghị Kho (Warehouse Inventory, Stock Import & AI Replenishment).
+- **Mã định danh:** `UC008` (ánh xạ chuẩn `UC05` & `UC08` của Nhân viên Kho).
+- **Tác nhân tham gia:** Nhân viên Kho (`WAREHOUSE`), Admin - Chủ cửa hàng (`ADMIN`).
+- **Mục đích:** Cho phép Nhân viên Kho quản lý danh mục hàng hóa trong kho của cửa hàng, lập phiếu nhập kho (`StockImportTickets`), kiểm kê điều chỉnh số lượng tồn kho thực tế, đóng gói bàn giao vận đơn (`SHIPPING`) và sử dụng AI Khuyến nghị Nhập kho (`UC08`) để phát hiện sớm các mặt hàng sắp đứt gãy tồn kho (`stock < min_threshold`).
+- **Tiền điều kiện:** Người dùng đã đăng nhập với vai trò `WAREHOUSE` hoặc `ADMIN` và truy cập vào `WarehousePage.tsx`.
+- **Hậu điều kiện:** Phiếu nhập kho được lưu vào bảng `StockImportTickets`, số lượng tồn kho trong bảng `Products` được cộng dồn chính xác và trạng thái đóng gói đơn hàng được cập nhật.
 - **Luồng sự kiện chính (Basic Flow):**
-  1. Người dùng chọn menu "Kênh Người Bán" trên thanh Header.
-  2. Nếu tài khoản chưa phải là Seller: Hệ thống hiển thị tab "Đăng ký mở gian hàng" (`profile`), cho phép điền Tên cửa hàng, Mô tả, Số điện thoại, Địa chỉ kho hàng và gửi yêu cầu phê duyệt tới Admin.
-  3. Khi tài khoản đã được phê duyệt làm Seller, giao diện hiển thị 4 tab quản trị:
-     - **Tổng quan (Overview):** Hiển thị các chỉ số nhanh gồm Tổng doanh thu bán hàng, Số đơn hàng mới, Số sản phẩm đang bày bán và Số dư ví tiền (`wallet_balance`).
-     - **Quản lý sản phẩm (Products):** Danh sách toàn bộ sản phẩm của Shop kèm hình ảnh, đơn giá, số lượng tồn kho, nút "Chỉnh sửa" và "Xóa".
-     - **Đơn hàng (Orders):** Danh sách các kiện hàng do khách đặt mua từ shop, kèm trạng thái vận chuyển.
-     - **Hồ sơ shop (Profile):** Cập nhật logo, tên shop và thông tin liên hệ.
-  4. Người dùng bấm nút "+ Thêm sản phẩm mới" tại tab Sản phẩm.
-  5. Modal nhập liệu xuất hiện: Người dùng nhập Tên sản phẩm, Đơn giá, Số lượng tồn kho ban đầu, Chọn danh mục (Thời trang, Giày dép, Phụ kiện), và Tải lên URL ảnh sản phẩm.
-  6. Người dùng nhấn nút "Lưu sản phẩm".
-  7. Hệ thống gọi API `POST /api/products` để ghi bản ghi mới vào bảng `Products` (với `seller_id` của shop). Danh sách sản phẩm của shop lập tức được làm mới.
+  1. Nhân viên Kho đăng nhập hệ thống và được điều hướng tới phân hệ `WarehousePage.tsx`.
+  2. Hệ thống hiển thị 4 phân mục nghiệp vụ kho:
+     - **Tổng quan Tồn kho & Cảnh báo (Inventory Overview):** Hiển thị tổng số SKU, tổng số lượng tồn kho thực tế, và danh sách mặt hàng chạm ngưỡng cảnh báo đỏ (`stock <= 10`).
+     - **Lập Phiếu Nhập Kho (`UC05 - Stock Import`):** Cho phép chọn nhà cung cấp (Supplier), chọn sản phẩm, nhập số lượng nhập mới và đơn giá nhập.
+     - **Đóng gói & Xuất kho Vận đơn (`Order Fulfillment`):** Danh sách các đơn hàng đã thanh toán (`PAID`) hoặc xác nhận (`PROCESSING`) cần đóng gói xuất kho.
+     - **AI Khuyến nghị Nhập kho (`UC08 - AI Warehouse Advisor`):** Bảng phân tích tốc độ tiêu thụ hàng hóa và đề xuất số lượng nhập kho tối ưu cho từng SKU.
+  3. Nhân viên Kho bấm nút "+ Tạo Phiếu Nhập Kho".
+  4. Nhập thông tin nhà cung cấp, chọn mặt hàng và số lượng nhập, sau đó nhấn "Xác nhận Nhập kho".
+  5. Hệ thống ghi bản ghi mới vào bảng `StockImportTickets` và tự động cộng dồn `Products.stock = Products.stock + quantity`.
 - **Các luồng thay thế & Luồng ngoại lệ:**
-  - *Luồng thay thế 1 (Chỉnh sửa / Xóa sản phẩm):* Tại danh sách sản phẩm, Seller bấm nút "Sửa" để thay đổi giá hoặc số lượng tồn kho; bấm nút "Xóa" kèm xác nhận để xóa sản phẩm khỏi kho hàng.
-  - *Luồng ngoại lệ 1 (Shop chưa được duyệt):* Nếu Seller gửi hồ sơ nhưng Admin chưa phê duyệt, giao diện hiển thị trạng thái "Đang chờ Admin phê duyệt hồ sơ" và tạm thời khóa tính năng đăng bán sản phẩm.
+  - *Luồng thay thế 1 (Kiểm kê điều chỉnh tồn kho):* Khi kiểm kê phát hiện chênh lệch, Nhân viên Kho cập nhật lại số lượng tồn thực tế và ghi chú lý do kiểm kê.
+  - *Luồng ngoại lệ 1 (Số lượng nhập không hợp lệ):* Nếu số lượng nhập `<= 0`, hệ thống báo lỗi yêu cầu nhập số nguyên dương hợp lệ.
 
 ### 3.8.2 Biểu đồ UC008
 
-#### Biểu đồ hoạt động (Activity Diagram) - Quản lý Kênh Người bán
+#### Biểu đồ hoạt động (Activity Diagram) - Quản lý Kho & Nhập hàng (Nhân viên Kho)
 ```mermaid
 flowchart TD
-    Start([Bắt đầu: Vào SellerChannelPage]) --> CheckRole{Đã là Seller chính thức?}
-    CheckRole -- Chưa --> ShowRegForm[Hiển thị Form Đăng ký mở Gian hàng]
-    ShowRegForm --> SubmitReg[Gửi hồ sơ đăng ký shop tới Admin]
-    SubmitReg --> PendingNotice[Thông báo: Đang chờ phê duyệt từ Admin] --> End([Tạm dừng])
+    Start([Bắt đầu: Đăng nhập vai trò Nhân viên Kho]) --> OpenWarehouse[Truy cập giao diện WarehousePage]
+    OpenWarehouse --> SelectTask{Chọn nghiệp vụ Kho}
     
-    CheckRole -- Đã duyệt --> ShowDashboard[Hiển thị Dashboard Kênh Người Bán]
-    ShowDashboard --> SelectTab{Chọn phân hệ quản lý}
+    SelectTask -- Nhập kho hàng mới (UC05) --> InputTicket[Nhập Nhà cung cấp, chọn SKU & Số lượng nhập]
+    InputTicket --> ValidateQty{Số lượng > 0?}
+    ValidateQty -- Không --> AlertInvalid[Báo lỗi: Số lượng nhập phải > 0] --> InputTicket
+    ValidateQty -- Hợp lệ --> SaveTicket[Lưu bảng StockImportTickets & Cộng dồn Products.stock]
     
-    SelectTab -- Tab Sản phẩm --> ProductAction{Thao tác sản phẩm}
-    ProductAction -- Thêm mới --> OpenModal[Mở Modal: Nhập tên, giá, kho, ảnh, danh mục]
-    OpenModal --> SaveProduct[Bấm Lưu: Gọi API ghi vào bảng Products] --> RefreshList[Cập nhật lại danh mục shop]
-    ProductAction -- Chỉnh sửa --> EditModal[Sửa giá/tồn kho] --> SaveProduct
-    ProductAction -- Xóa --> ConfirmDel[Xác nhận xóa] --> DeleteDB[Xóa bản ghi] --> RefreshList
+    SelectTask -- AI Khuyến nghị Kho (UC08) --> RunAIStock[Phân tích các SKU có stock <= 10 & tốc độ bán]
+    RunAIStock --> SuggestOrder[Đề xuất danh sách & số lượng cần nhập bổ sung] --> InputTicket
     
-    SelectTab -- Tab Đơn hàng --> ViewShopOrders[Xem các kiện hàng khách đã đặt của Shop]
-    SelectTab -- Tab Tổng quan --> ViewWallet[Xem số dư Ví người bán & Doanh thu lũy kế]
+    SelectTask -- Đóng gói xuất kho --> PackOrder[Kiểm tra kiện hàng & Cập nhật trạng thái SHIPPING]
     
-    RefreshList --> End
-    ViewShopOrders --> End
-    ViewWallet --> End
+    SaveTicket --> RefreshStock[Làm mới số liệu tồn kho toàn cửa hàng] --> End([Hoàn tất])
+    PackOrder --> RefreshStock
 ```
 
-#### Biểu đồ tuần tự (Sequence Diagram) - Đăng bán sản phẩm mới của Seller
+#### Biểu đồ tuần tự (Sequence Diagram) - Nhân viên Kho lập phiếu nhập hàng & AI Khuyến nghị
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Seller as Nhà bán lẻ
-    participant UI as SellerChannelPage
+    actor Warehouse as Nhân viên Kho (WAREHOUSE)
+    participant UI as WarehousePage
     participant Controller as ProductController (/api/products)
     participant DB as SQL Server Database
 
-    Seller->>UI: Nhấn "+ Thêm sản phẩm mới"
-    UI-->>Seller: Mở modal nhập thông tin (Tên, Giá, Tồn kho, Danh mục, Ảnh)
-    Seller->>UI: Điền đầy đủ thông tin và nhấn "Lưu sản phẩm"
-    UI->>Controller: POST /api/products { seller_id, name, price, stock, category_id, image }
-    Controller->>DB: INSERT INTO Products (seller_id, name, price, stock, category_id) VALUES (...)
-    DB-->>Controller: Ghi nhận bản ghi thành công (Trả về productId mới)
-    Controller-->>UI: 201 Created { success: true, product }
-    UI->>UI: Cập nhật state danh sách sản phẩm & đóng modal
-    UI-->>Seller: Hiển thị thông báo "Thêm sản phẩm thành công!" trên màn hình
+    Warehouse->>UI: Mở tab "AI Khuyến nghị Kho (UC08)"
+    UI->>Controller: GET /api/products/low-stock
+    Controller->>DB: SELECT * FROM Products WHERE stock <= 15
+    DB-->>Controller: Danh sách SKU sắp hết hàng
+    Controller-->>UI: Trả về danh sách cảnh báo & số lượng gợi ý nhập
+    Warehouse->>UI: Nhấn "+ Tạo Phiếu Nhập Kho (UC05)" và xác nhận số lượng nhập
+    UI->>Controller: POST /api/warehouse/import { staff_id, supplier_name, product_id, quantity, unit_cost }
+    Controller->>DB: INSERT INTO StockImportTickets (...)
+    Controller->>DB: UPDATE Products SET stock = stock + @quantity WHERE id = @product_id
+    DB-->>Controller: Cập nhật thành công
+    Controller-->>UI: 201 Created { success: true }
+    UI-->>Warehouse: Hiển thị thông báo "Nhập kho thành công & đã cập nhật tồn kho!"
 ```
 
 ---
 
-## 3.9 UC009_Quản trị Sàn E-Commerce (Admin Dashboard)
+## 3.9 UC009_Quản trị Cửa hàng, Nhân sự Nội bộ & AI Phân tích Kinh doanh (Admin - Chủ cửa hàng)
 
 ### 3.9.1 Mô tả use case UC009
-- **Tên Use Case:** Quản trị Sàn E-Commerce (Admin Dashboard & Store Governance).
-- **Mã định danh:** `UC009`.
-- **Tác nhân tham gia:** Quản trị viên (Admin).
-- **Mục đích:** Cung cấp trung tâm điều hành toàn diện cho Quản trị viên sàn để theo dõi chỉ số hiệu suất kinh doanh (KPI, doanh thu tuần/tháng, tổng đơn hàng, người dùng mới), phê duyệt hồ sơ người bán, kiểm duyệt sản phẩm toàn sàn và phân tích tài chính.
+- **Tên Use Case:** Quản trị Cửa hàng, Nhân sự Nội bộ & AI Phân tích Kinh doanh (Store Owner Governance, HR Staff Management & AI Business Intelligence).
+- **Mã định danh:** `UC009` (ánh xạ chuẩn `UC01`, `UC02`, `UC09` của Admin - Chủ cửa hàng).
+- **Tác nhân tham gia:** Admin - Chủ cửa hàng (`ADMIN`).
+- **Mục đích:** Cung cấp trung tâm điều hành toàn diện cho Chủ cửa hàng để theo dõi chỉ số hiệu suất kinh doanh (KPI, doanh thu tuần/tháng, lợi nhuận ròng, tổng đơn hàng), quản lý đội ngũ nhân sự nội bộ (`Nhân viên Bán hàng` & `Nhân viên Kho`), quản lý danh mục sản phẩm & giá bán của cửa hàng, cấu hình chính sách tích điểm VIP và xem báo cáo AI Phân tích Kinh doanh (`UC09`).
 - **Tiền điều kiện:** Người dùng đã đăng nhập với vai trò `ADMIN` (`userRole === 'ADMIN'`).
-- **Hậu điều kiện:** Các thao tác phê duyệt, cập nhật hoặc xóa dữ liệu được áp dụng tức thì trên toàn bộ hệ thống.
+- **Hậu điều kiện:** Các thao tác cấp quyền nhân viên, cập nhật sản phẩm, cấu hình khuyến mãi hoặc xuất báo cáo được áp dụng tức thì trên toàn hệ thống cửa hàng.
 - **Luồng sự kiện chính (Basic Flow):**
-  1. Admin đăng nhập vào hệ thống và được điều hướng tới `AdminDashboard.tsx`.
-  2. Hệ thống tải dữ liệu tổng thể và hiển thị các khối KPI chính:
-     - **Thẻ Doanh thu tổng:** Tổng doanh thu toàn sàn đạt được.
-     - **Thẻ Đơn hàng:** Tổng số đơn hàng phát sinh kèm phân loại trạng thái (Đã thanh toán, Đang vận chuyển, Hoàn tất, Đã hủy).
-     - **Thẻ Tăng trưởng:** Tỷ lệ tăng trưởng người dùng mới.
-     - **Biểu đồ cột Doanh thu tuần:** Thể hiện trực quan doanh số từ Thứ 2 đến Chủ nhật.
-  3. Admin chọn tab "Phê duyệt Người bán" (`Sellers`):
-     - Hiển thị danh sách các hồ sơ đăng ký mở gian hàng đang chờ duyệt.
-     - Admin xem xét thông tin shop và bấm nút "Phê duyệt" hoặc "Từ chối".
-     - Khi bấm "Phê duyệt", hệ thống cập nhật trạng thái `APPROVED` cho Shop trong bảng `Sellers` và cấp quyền bán hàng cho tài khoản tương ứng.
-  4. Admin chọn tab "Quản lý Sản phẩm toàn sàn" (`Products`):
-     - Xem toàn bộ danh mục sản phẩm của tất cả các nhà bán lẻ.
-     - Cho phép Admin lọc theo ngành hàng, sửa thông tin kiểm duyệt hoặc gỡ bỏ các sản phẩm vi phạm chính sách sàn.
-  5. Admin chọn tab "Quản lý Đơn hàng" (`Orders`):
-     - Xem danh sách toàn bộ các giao dịch thanh toán và đơn hàng phát sinh trên toàn hệ thống.
+  1. Admin (Chủ cửa hàng) đăng nhập vào hệ thống và được điều hướng tới `AdminDashboard.tsx`.
+  2. Hệ thống tải dữ liệu tổng thể của cửa hàng và hiển thị các khối KPI chính:
+     - **Thẻ Doanh thu & Lợi nhuận:** Tổng doanh thu cửa hàng và lợi nhuận ròng (40% biên lợi nhuận).
+     - **Thẻ Đơn hàng:** Tổng số đơn hàng phát sinh kèm phân loại trạng thái (Chờ xử lý, Đang giao, Hoàn tất, Đã hủy).
+     - **Biểu đồ cột Doanh thu tuần & Phân bổ thanh toán:** Thể hiện trực quan doanh số từ Thứ 2 đến Chủ nhật và tỷ trọng VNPAY/VietQR/MoMo/COD.
+  3. Admin chọn tab **"Nhân sự (NV)" (`STAFF - UC01`)**:
+     - Xem danh sách nhân sự nội bộ của cửa hàng (`Nhân viên Bán hàng - SALES` và `Nhân viên Kho - WAREHOUSE`).
+     - Cấp tài khoản nhân viên mới, phân ca làm việc hoặc khóa/mở khóa quyền truy cập hệ thống của nhân viên trong bảng `Staffs`.
+  4. Admin chọn tab **"Sản phẩm" (`PRODUCTS - UC02`)**:
+     - Thêm sản phẩm mới vào cửa hàng, chỉnh sửa giá niêm yết, cập nhật danh mục hoặc ngừng kinh doanh sản phẩm.
+  5. Admin chọn tab **"Báo cáo AI" (`REPORTS - UC09`)**:
+     - Xem phân tích AI về xu hướng doanh thu, top mặt hàng bán chạy và xuất báo cáo CSV/Excel.
 - **Các luồng thay thế & Luồng ngoại lệ:**
-  - *Luồng ngoại lệ 1 (Truy cập trái phép):* Nếu một người dùng có vai trò `CUSTOMER` hoặc `GUEST` cố tình truy cập vào đường dẫn Admin, hệ thống tự động chặn và hiển thị màn hình từ chối quyền truy cập (Access Denied / 403 Forbidden).
+  - *Luồng ngoại lệ 1 (Truy cập trái phép):* Nếu người dùng không có vai trò `ADMIN` cố tình truy cập vào bảng điều khiển của Chủ cửa hàng, hệ thống tự động chặn và hiển thị thông báo từ chối quyền truy cập (Access Denied / 403 Forbidden).
 
 ### 3.9.2 Biểu đồ UC009
 
-#### Biểu đồ hoạt động (Activity Diagram) - Quản trị Hệ thống Sàn
+#### Biểu đồ hoạt động (Activity Diagram) - Quản trị Cửa hàng (Admin - Chủ cửa hàng)
 ```mermaid
 flowchart TD
-    Start([Bắt đầu: Đăng nhập vai trò Admin]) --> CheckAdminAuth{Đúng quyền ADMIN?}
+    Start([Bắt đầu: Đăng nhập vai trò Admin - Chủ cửa hàng]) --> CheckAdminAuth{Đúng quyền ADMIN?}
     CheckAdminAuth -- Không --> BlockAccess[Chặn truy cập & Báo lỗi 403 Forbidden] --> End([Dừng])
     CheckAdminAuth -- Đúng --> LoadDashboard[Tải dữ liệu AdminDashboard]
     
-    LoadDashboard --> RenderKPI[Hiển thị thẻ KPI: Tổng doanh thu, Đơn hàng, Biểu đồ tuần]
-    RenderKPI --> AdminChoice{Admin chọn nghiệp vụ}
+    LoadDashboard --> RenderKPI[Hiển thị thẻ KPI: Doanh thu, Lợi nhuận ròng, Đơn hàng, Biểu đồ tuần]
+    RenderKPI --> AdminChoice{Chủ cửa hàng chọn phân hệ}
     
-    AdminChoice -- Quản lý duyệt Shop --> ViewPendingSellers[Xem danh sách hồ sơ đăng ký mở Shop]
-    ViewPendingSellers --> SellerDecision{Phê duyệt hay từ chối?}
-    SellerDecision -- Duyệt --> ApproveShop[Cập nhật status = APPROVED & Cấp quyền Seller] --> NoticeSeller[Gửi thông báo thành công]
-    SellerDecision -- Từ chối --> RejectShop[Cập nhật status = REJECTED] --> NoticeSeller
+    AdminChoice -- Quản lý Nhân sự Nội bộ (UC01) --> ViewStaffList[Xem danh sách NV Bán hàng & NV Kho]
+    ViewStaffList --> StaffAction{Cấp mới hay Khóa/Mở khóa NV?}
+    StaffAction -- Cấp mới --> CreateStaff[Tạo tài khoản SALES / WAREHOUSE trong bảng Staffs]
+    StaffAction -- Khóa/Mở khóa --> ToggleStaff[Cập nhật trạng thái ACTIVE / LOCKED]
     
-    AdminChoice -- Quản lý sản phẩm sàn --> ViewAllProducts[Xem danh sách sản phẩm toàn sàn]
-    ViewAllProducts --> ModAction{Thao tác sản phẩm}
-    ModAction -- Duyệt/Cập nhật --> UpdateProd[Cập nhật thông tin]
-    ModAction -- Xóa vi phạm --> DelProd[Xóa sản phẩm vi phạm chính sách]
+    AdminChoice -- Quản lý Sản phẩm Cửa hàng (UC02) --> ViewAllProducts[Thêm/Sửa giá/Xóa sản phẩm của cửa hàng]
     
-    AdminChoice -- Báo cáo doanh số --> ViewFinanceReport[Xem biểu đồ doanh thu chi tiết theo ngày/tháng]
+    AdminChoice -- AI Phân tích Kinh doanh (UC09) --> ViewFinanceReport[Xem dự báo doanh số AI & Xuất báo cáo CSV]
     
-    NoticeSeller --> End
-    UpdateProd --> End
-    DelProd --> End
+    CreateStaff --> End
+    ToggleStaff --> End
+    ViewAllProducts --> End
     ViewFinanceReport --> End
 ```
 
-#### Biểu đồ tuần tự (Sequence Diagram) - Admin phê duyệt hồ sơ Người bán
+#### Biểu đồ tuần tự (Sequence Diagram) - Admin quản lý Nhân sự Nội bộ & Sản phẩm
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Admin as Quản trị viên sàn
+    actor Admin as Admin (Chủ cửa hàng)
     participant Dashboard as AdminDashboard
     participant Controller as AdminController (/api/admin)
     participant DB as SQL Server Database
 
-    Admin->>Dashboard: Mở tab "Quản lý Người bán"
-    Dashboard->>Controller: GET /api/admin/sellers/pending
-    Controller->>DB: SELECT * FROM Sellers WHERE status = 'PENDING'
-    DB-->>Controller: Trả về danh sách các shop đang chờ duyệt
-    Controller-->>Dashboard: Dữ liệu danh sách shop chờ duyệt
-    Dashboard-->>Admin: Hiển thị thông tin hồ sơ: Tên shop, mô tả, ngày gửi
-    Admin->>Dashboard: Nhấn nút "Phê duyệt" cửa hàng
-    Dashboard->>Controller: POST /api/admin/sellers/approve { sellerId: 12 }
-    Controller->>DB: UPDATE Sellers SET status = 'APPROVED' WHERE id = 12
-    Controller->>DB: UPDATE Users SET role_id = (SELECT id FROM Roles WHERE name = 'SELLER') WHERE id = @userId
-    DB-->>Controller: Cập nhật thành công 2 bảng
+    Admin->>Dashboard: Mở tab "Nhân sự Nội bộ (NV Bán hàng & NV Kho)"
+    Dashboard->>Controller: GET /api/admin/staffs
+    Controller->>DB: SELECT * FROM Staffs JOIN Users ON Staffs.user_id = Users.id
+    DB-->>Controller: Danh sách Nhân viên Bán hàng (SALES) & Nhân viên Kho (WAREHOUSE)
+    Controller-->>Dashboard: Trả về danh sách nhân sự
+    Dashboard-->>Admin: Hiển thị Mã NV, Họ tên, Vai trò, Ca trực, Trạng thái
+    Admin->>Dashboard: Nhấn "+ Cấp tài khoản Nhân viên" hoặc "Khóa/Mở khóa"
+    Dashboard->>Controller: POST /api/admin/staffs/status { staffId, status: 'ACTIVE' }
+    Controller->>DB: UPDATE Staffs SET status = 'ACTIVE' WHERE id = @staffId
+    DB-->>Controller: Cập nhật thành công
     Controller-->>Dashboard: 200 OK { success: true }
-    Dashboard->>Dashboard: Cập nhật lại danh sách (Chuyển shop sang tab Đã duyệt)
-    Dashboard-->>Admin: Thông báo "Đã phê duyệt thành công gian hàng!"
+    Dashboard-->>Admin: Thông báo "Đã cập nhật trạng thái nhân sự thành công!"
 ```
 
 ---
@@ -995,32 +981,32 @@ Các yêu cầu phi chức năng thiết lập các chỉ tiêu chất lượng 
 | Nhóm Yêu cầu | Tiêu chí kỹ thuật cụ thể | Phương pháp kiểm chứng & Chỉ số đo lường |
 | :--- | :--- | :--- |
 | **1. Hiệu năng (Performance)** | - Tốc độ dựng khung hình đồ họa 3D Three.js đạt tối thiểu 60 FPS trên các dòng máy tính phổ thông có GPU onboard.<br/>- Thời gian tải trang ban đầu (Time to Interactive - TTI) < 2.0 giây trên đường truyền 4G/Wifi tiêu chuẩn.<br/>- Thời gian phản hồi của các API nghiệp vụ cốt lõi (sản phẩm, giỏ hàng, đặt hàng) < 300ms.<br/>- Thời gian phản hồi luồng trợ lý AI Copilot bắt đầu xuất hiện ký tự đầu tiên (Time to First Token) < 1.5 giây. | Đo kiểm bằng công cụ Google Lighthouse, Chrome DevTools Performance Profiler và Apache JMeter với tải 1.000 người dùng đồng thời. |
-| **2. Bảo mật (Security)** | - Toàn bộ thông tin mật khẩu tài khoản người dùng bắt buộc được băm bằng thuật toán an toàn tiêu chuẩn ngành (BCrypt với salt rounds >= 10 hoặc Argon2id). Không lưu trữ mật khẩu dạng rõ (plaintext).<br/>- Cơ chế xác thực sử dụng JSON Web Token (JWT) có chữ ký bí mật, thời hạn hết hạn (TTL) tối đa 24 giờ.<br/>- Mọi giao tiếp dữ liệu Client - Server bắt buộc mã hóa qua giao thức HTTPS / TLS 1.3.<br/>- Ngăn chặn triệt để các lỗ hổng OWASP Top 10: SQL Injection bằng Parameterized Queries, Cross-Site Scripting (XSS) bằng Data Sanitization, và Cross-Site Request Forgery (CSRF). | Kiểm tra mã nguồn định kỳ (Static Code Analysis) bằng SonarQube và công cụ kiểm thử bảo mật chuyên dụng. |
+| **2. Bảo mật (Security)** | - Toàn bộ thông tin mật khẩu tài khoản người dùng bắt buộc được băm bằng thuật toán an toàn tiêu chuẩn ngành (BCrypt với salt rounds >= 10 hoặc Argon2id). Không lưu trữ mật khẩu dạng rõ (plaintext).<br/>- Cơ chế xác thực sử dụng JSON Web Token (JWT) có chữ ký bí mật, thời hạn hết hạn (TTL) tối đa 24 giờ, kiểm soát chặt chẽ 4 vai trò (`CUSTOMER`, `SALES`, `WAREHOUSE`, `ADMIN`).<br/>- Mọi giao tiếp dữ liệu Client - Server bắt buộc mã hóa qua giao thức HTTPS / TLS 1.3.<br/>- Ngăn chặn triệt để các lỗ hổng OWASP Top 10: SQL Injection bằng Parameterized Queries, Cross-Site Scripting (XSS) bằng Data Sanitization, và Cross-Site Request Forgery (CSRF). | Kiểm tra mã nguồn định kỳ (Static Code Analysis) bằng SonarQube và công cụ kiểm thử bảo mật chuyên dụng. |
 | **3. Độ tin cậy & Sẵn sàng (Reliability & Availability)** | - Hệ thống duy trì mức độ sẵn sàng dịch vụ tối thiểu 99.9% thời gian trong năm (High Availability).<br/>- Tích hợp cơ chế tự phục hồi kết nối CSDL (Auto-reconnect) và Fallback thông minh sang In-Memory Database khi mạng doanh nghiệp gặp sự cố ngắt kết nối cục bộ.<br/>- Bảo toàn tính toàn vẹn giao dịch tài chính theo nguyên lý ACID: Không xảy ra tình trạng trừ tiền nhưng không ghi nhận đơn hàng. | Kiểm thử kịch bản ngắt mạng máy chủ CSDL đột ngột và đánh giá cơ chế chuyển mạch dự phòng tự động. |
 | **4. Tính khả dụng & Tương thích (Usability & Portability)** | - Giao diện thiết kế theo triết lý Mobile-First & Responsive Design: Tương thích hoàn hảo trên các độ phân giải màn hình từ 360px (Smartphone), 768px (Tablet), 1024px (Laptop) đến 1920px (Desktop Full HD).<br/>- Hỗ trợ thao tác cảm ứng tự nhiên (Touch Gestures): Vuốt để xoay mô hình 3D, kéo thả giỏ hàng, chạm thanh toán.<br/>- Màu sắc thương hiệu và độ tương phản tuân thủ tiêu chuẩn tiếp cận Web Accessibility (WCAG 2.1 Level AA). | Kiểm thử chéo trên các hệ điều hành (Windows 11, macOS, iOS, Android) và các trình duyệt (Chrome, Safari, Edge, Firefox). |
 
-## 4.2 Thiết kế Cơ sở Dữ liệu Quan hệ Vật lý (11 Bảng SQL)
-Cơ sở dữ liệu hệ thống SZSHOP được thiết kế chuẩn hóa mức 3NF (Third Normal Form) trên hệ quản trị Microsoft SQL Server, bao gồm 11 bảng quan hệ logic phản ánh trọn vẹn mô hình sàn thương mại điện tử đa người bán:
+## 4.2 Thiết kế Cơ sở Dữ liệu Quan hệ Vật lý (11 Bảng SQL Chuẩn Mô hình 1 Cửa hàng & 4 Tác nhân)
+Cơ sở dữ liệu hệ thống SZSHOP được thiết kế chuẩn hóa mức 3NF (Third Normal Form) trên hệ quản trị Microsoft SQL Server, bao gồm 11 bảng quan hệ logic phản ánh trọn vẹn mô hình cửa hàng bán lẻ trực tuyến & tại quầy với 4 tác nhân (`ADMIN`, `SALES`, `WAREHOUSE`, `CUSTOMER`):
 
 ```mermaid
 erDiagram
-    Roles ||--o{ Users : "phân quyền"
-    Users ||--o| Customers : "hồ sơ khách"
-    Users ||--o| Sellers : "hồ sơ người bán"
-    Sellers ||--o{ Products : "đăng bán"
+    Roles ||--o{ Users : "phân quyền 4 tác nhân"
+    Users ||--o| Customers : "hồ sơ khách hàng"
+    Users ||--o| Staffs : "hồ sơ nhân sự nội bộ"
     Categories ||--o{ Products : "phân loại"
+    Staffs ||--o{ StockImportTickets : "nhập kho (UC05)"
+    Products ||--o{ StockImportTickets : "cập nhật tồn"
     Customers ||--o{ Carts : "sở hữu"
     Carts ||--o{ CartItems : "chứa"
     Products ||--o{ CartItems : "được thêm"
     Customers ||--o{ Orders : "đặt mua"
     Orders ||--o{ OrderItems : "bao gồm"
-    Sellers ||--o{ OrderItems : "cung cấp"
     Products ||--o{ OrderItems : "chi tiết"
     Orders ||--o{ Payments : "lịch sử thanh toán"
 
     Roles {
         int id PK
-        varchar name UK
+        varchar name UK "ADMIN | SALES | WAREHOUSE | CUSTOMER"
     }
     Users {
         int id PK
@@ -1035,12 +1021,15 @@ erDiagram
         int user_id FK
         nvarchar address
         varchar phone
+        int loyalty_points
     }
-    Sellers {
+    Staffs {
         int id PK
         int user_id FK
-        nvarchar shop_name
-        decimal wallet_balance
+        varchar staff_code UK
+        nvarchar full_name
+        varchar department "SALES | WAREHOUSE"
+        varchar status "ACTIVE | LOCKED"
     }
     Categories {
         int id PK
@@ -1048,11 +1037,19 @@ erDiagram
     }
     Products {
         int id PK
-        int seller_id FK
         int category_id FK
         nvarchar name
         decimal price
         int stock
+    }
+    StockImportTickets {
+        int id PK
+        int staff_id FK
+        int product_id FK
+        nvarchar supplier_name
+        int quantity
+        decimal unit_cost
+        datetime imported_at
     }
     Carts {
         int id PK
@@ -1069,6 +1066,7 @@ erDiagram
     Orders {
         int id PK
         int customer_id FK
+        int handled_by_staff_id FK
         decimal total_amount
         varchar status
         datetime created_at
@@ -1076,12 +1074,10 @@ erDiagram
     OrderItems {
         int id PK
         int order_id FK
-        int seller_id FK
         int product_id FK
         int quantity
         decimal unit_price
         varchar shipping_status
-        decimal commission_fee
     }
     Payments {
         int id PK
@@ -1095,61 +1091,60 @@ erDiagram
 ```
 
 ### Bảng đặc tả chi tiết 11 bảng Cơ sở dữ liệu:
-1. **Bảng `Roles` (Phân quyền người dùng):**
+1. **Bảng `Roles` (Phân quyền 4 tác nhân chuẩn UML):**
    - `id` (INT, Primary Key, Identity): Mã định danh quyền hạn.
-   - `name` (VARCHAR(50), Unique, Not Null): Tên quyền (`ADMIN`, `SELLER`, `CUSTOMER`).
-2. **Bảng `Users` (Người dùng tổng thể):**
+   - `name` (VARCHAR(50), Unique, Not Null): Tên quyền (`ADMIN`, `SALES`, `WAREHOUSE`, `CUSTOMER`).
+2. **Bảng `Users` (Tài khoản người dùng tổng thể):**
    - `id` (INT, Primary Key, Identity): Mã định danh tài khoản.
    - `role_id` (INT, Foreign Key -> `Roles.id`, Not Null): Quyền hạn tài khoản.
    - `email` (VARCHAR(255), Unique, Not Null): Địa chỉ email đăng nhập.
    - `password` (VARCHAR(255), Not Null): Chuỗi băm mật khẩu bảo mật.
    - `provider` (VARCHAR(50), Null): Nguồn đăng nhập một chạm (`google`, `facebook`, `apple`).
    - `provider_user_id` (VARCHAR(255), Null): Định danh tài khoản từ nhà cung cấp OAuth.
-3. **Bảng `Customers` (Hồ sơ khách hàng):**
+3. **Bảng `Customers` (Hồ sơ Khách hàng - `CUSTOMER`):**
    - `id` (INT, Primary Key, Identity): Mã hồ sơ khách hàng.
    - `user_id` (INT, Foreign Key -> `Users.id`, Unique, Not Null): Khóa ngoại liên kết bảng Users.
    - `address` (NVARCHAR(255), Null): Địa chỉ giao nhận mặc định.
    - `phone` (VARCHAR(20), Null): Số điện thoại liên lạc.
-4. **Bảng `Sellers` (Hồ sơ nhà bán lẻ):**
-   - `id` (INT, Primary Key, Identity): Mã nhà bán hàng.
+   - `loyalty_points` (INT, Default 0): Điểm tích lũy thành viên VIP (`UC03`).
+4. **Bảng `Staffs` (Hồ sơ Nhân sự Nội bộ - `SALES` & `WAREHOUSE`):**
+   - `id` (INT, Primary Key, Identity): Mã nhân viên nội bộ.
    - `user_id` (INT, Foreign Key -> `Users.id`, Unique, Not Null): Khóa ngoại liên kết bảng Users.
-   - `shop_name` (NVARCHAR(150), Not Null): Tên thương hiệu gian hàng.
-   - `wallet_balance` (DECIMAL(18,2), Default 0): Số dư tài khoản ví người bán để nhận tiền sau khi đơn giao thành công.
+   - `staff_code` (VARCHAR(50), Unique, Not Null): Mã nhân viên (`NV-SALE-01`, `NV-KHO-01`).
+   - `full_name` (NVARCHAR(150), Not Null): Họ và tên nhân viên.
+   - `department` (VARCHAR(50), Not Null): Bộ phận công tác (`SALES` - Bán hàng & CSKH, `WAREHOUSE` - Kho vận).
+   - `status` (VARCHAR(30), Default `'ACTIVE'`): Trạng thái công tác (`ACTIVE`, `LOCKED`).
 5. **Bảng `Categories` (Danh mục ngành hàng):**
    - `id` (INT, Primary Key, Identity): Mã danh mục sản phẩm.
    - `name` (NVARCHAR(100), Not Null): Tên danh mục (Thời trang nam, Thời trang nữ, Giày dép, Phụ kiện công nghệ).
-6. **Bảng `Products` (Sản phẩm kinh doanh):**
+6. **Bảng `Products` (Sản phẩm kinh doanh của Cửa hàng):**
    - `id` (INT, Primary Key, Identity): Mã sản phẩm.
-   - `seller_id` (INT, Foreign Key -> `Sellers.id`, Not Null): Shop đăng bán sản phẩm.
    - `category_id` (INT, Foreign Key -> `Categories.id`, Null): Ngành hàng tương ứng.
    - `name` (NVARCHAR(255), Not Null): Tên gọi sản phẩm.
-   - `price` (DECIMAL(18,2), Not Null): Đơn giá niêm yết.
-   - `stock` (INT, Default 0): Số lượng sản phẩm còn tồn kho.
-7. **Bảng `Carts` (Giỏ hàng người dùng):**
-   - `id` (INT, Primary Key, Identity): Mã giỏ hàng.
-   - `customer_id` (INT, Foreign Key -> `Customers.id`, Not Null): Chủ sở hữu giỏ hàng.
-   - `created_at` (DATETIME, Default GETDATE()): Thời gian khởi tạo giỏ hàng.
-8. **Bảng `CartItems` (Chi tiết mặt hàng trong giỏ):**
-   - `id` (INT, Primary Key, Identity): Mã dòng giỏ hàng.
-   - `cart_id` (INT, Foreign Key -> `Carts.id`, Not Null): Thuộc giỏ hàng nào.
-   - `product_id` (INT, Foreign Key -> `Products.id`, Not Null): Sản phẩm được chọn.
-   - `quantity` (INT, Default 1): Số lượng chọn mua.
-   - `added_at` (DATETIME, Default GETDATE()): Thời điểm thêm vào giỏ.
-9. **Bảng `Orders` (Đơn hàng gốc):**
+   - `price` (DECIMAL(18,2), Not Null): Đơn giá niêm yết của cửa hàng.
+   - `stock` (INT, Default 0): Số lượng sản phẩm còn tồn trong kho cửa hàng.
+7. **Bảng `StockImportTickets` (Phiếu nhập kho hàng hóa - `UC05`):**
+   - `id` (INT, Primary Key, Identity): Mã phiếu nhập kho.
+   - `staff_id` (INT, Foreign Key -> `Staffs.id`, Not Null): Nhân viên Kho lập phiếu.
+   - `product_id` (INT, Foreign Key -> `Products.id`, Not Null): Sản phẩm được nhập kho.
+   - `supplier_name` (NVARCHAR(150), Not Null): Tên nhà cung cấp hàng hóa.
+   - `quantity` (INT, Not Null): Số lượng nhập mới.
+   - `unit_cost` (DECIMAL(18,2), Not Null): Giá vốn nhập kho trên mỗi đơn vị.
+8. **Bảng `Carts` & `CartItems` (Giỏ hàng người dùng):**
+   - Lưu trữ giỏ hàng (`Carts`) và chi tiết các sản phẩm chọn mua (`CartItems`: `cart_id`, `product_id`, `quantity`).
+9. **Bảng `Orders` (Đơn hàng Online & Tại quầy POS):**
    - `id` (INT, Primary Key, Identity): Mã đơn hàng định danh.
-   - `customer_id` (INT, Foreign Key -> `Customers.id`, Not Null): Người đặt mua đơn hàng.
+   - `customer_id` (INT, Foreign Key -> `Customers.id`, Not Null): Khách hàng đặt mua.
+   - `handled_by_staff_id` (INT, Foreign Key -> `Staffs.id`, Null): Nhân viên Bán hàng/Kho phụ trách.
    - `total_amount` (DECIMAL(18,2), Not Null): Tổng giá trị thanh toán của đơn hàng.
    - `status` (VARCHAR(50), Not Null): Trạng thái đơn (`Pending`, `Paid`, `Shipping`, `Delivered`, `Cancelled`).
-   - `created_at` (DATETIME, Default GETDATE()): Thời gian khởi tạo đơn hàng.
-10. **Bảng `OrderItems` (Kiện hàng phân bổ cho từng Seller):**
-    - `id` (INT, Primary Key, Identity): Mã chi tiết kiện hàng.
+10. **Bảng `OrderItems` (Chi tiết mặt hàng trong đơn):**
+    - `id` (INT, Primary Key, Identity): Mã chi tiết dòng đơn hàng.
     - `order_id` (INT, Foreign Key -> `Orders.id`, Not Null): Thuộc đơn hàng gốc nào.
-    - `seller_id` (INT, Foreign Key -> `Sellers.id`, Not Null): Shop chịu trách nhiệm giao hàng.
-    - `product_id` (INT, Foreign Key -> `Products.id`, Not Null): Sản phẩm trong kiện.
+    - `product_id` (INT, Foreign Key -> `Products.id`, Not Null): Sản phẩm đặt mua.
     - `quantity` (INT, Not Null): Số lượng mặt hàng.
     - `unit_price` (DECIMAL(18,2), Not Null): Đơn giá tại thời điểm đặt mua.
-    - `shipping_status` (VARCHAR(50), Not Null): Trạng thái vận chuyển của Shop.
-    - `commission_fee` (DECIMAL(18,2), Null): Phí hoa hồng sàn thu từ đơn này.
+    - `shipping_status` (VARCHAR(50), Not Null): Trạng thái đóng gói/vận chuyển từ kho cửa hàng.
 11. **Bảng `Payments` (Lịch sử giao dịch thanh toán):**
     - `id` (INT, Primary Key, Identity): Mã định danh giao dịch.
     - `order_id` (INT, Foreign Key -> `Orders.id`, Not Null): Đơn hàng được thanh toán.
@@ -1171,4 +1166,4 @@ erDiagram
   - Backend chạy dưới dạng dịch vụ Node.js microservice (`node szshop-backend/server.js`), lắng nghe cổng nội bộ 5000, hỗ trợ đóng gói Docker container độc lập phục vụ horizontal scaling khi lượng truy cập tăng đột biến.
 
 ---
-*Tài liệu Đặc tả Yêu cầu Phần mềm (SRS) cho Hệ thống SZSHOP được hoàn thiện đầy đủ, chuẩn hóa theo mẫu quy định và sẵn sàng cho các giai đoạn lập trình chi tiết, kiểm thử phần mềm và nghiệm thu dự án.*
+*Tài liệu Đặc tả Yêu cầu Phần mềm (SRS) cho Hệ thống SZSHOP được hoàn thiện đầy đủ, chuẩn hóa theo mẫu quy định UML 2.5 (4 Tác nhân) và sẵn sàng cho các giai đoạn lập trình chi tiết, kiểm thử phần mềm và nghiệm thu dự án.*

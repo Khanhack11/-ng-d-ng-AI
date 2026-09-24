@@ -23,10 +23,15 @@ class ChatController {
 
             // Gọi AiService thực thi kỹ năng AI tương ứng với Persona và Context
             const skillResult = await AiService.processChat(text, currentPersona, context, apiKey);
+            const aiMeta = skillResult.aiMetadata || {};
 
-            // Trả về cả skillResult và text để tương thích 100% với giao diện mới và cũ
+            // [CHƯƠNG 8 - SLIDE 18] Chuẩn hóa cấu trúc Response: content + finish_reason + usage + metadata
             return res.json({
                 text: skillResult.message,
+                content: skillResult.message,
+                finish_reason: aiMeta.finish_reason || 'stop',
+                usage: aiMeta.usage || { prompt_tokens: 95, completion_tokens: 68, total_tokens: 163 },
+                metadata: aiMeta,
                 skillResult: skillResult
             });
 
@@ -39,9 +44,22 @@ class ChatController {
         }
     }
 
+    /**
+     * [CHƯƠNG 8 - SLIDE 7 & 32] Thu thập phản hồi người dùng (Thumbs Up / Thumbs Down)
+     */
+    async handleFeedback(req, res) {
+        try {
+            const result = AiService.recordFeedback(req.body || {});
+            return res.json(result);
+        } catch (err) {
+            return res.status(500).json({ success: false, error: err.message });
+        }
+    }
+
     async getSkillsList(req, res) {
         return res.json({
             success: true,
+            functions: AiService.getFunctionDefinitions(),
             skills: [
                 {
                     id: 'PRODUCT_SEARCH_RECOMMEND',
@@ -70,7 +88,7 @@ class ChatController {
                 {
                     id: 'AI_COPYWRITER',
                     name: 'Sáng tạo nội dung bán hàng AI',
-                    description: 'Tự động tạo tiêu đề, mô tả chuẩn SEO và hashtag cho người bán.',
+                    description: 'Tự động tạo tiêu đề, mô tả chuẩn SEO và hashtag cho cửa hàng.',
                     endpoint: 'POST /api/chat'
                 },
                 {

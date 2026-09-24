@@ -1,24 +1,25 @@
-# Đặc tả Yêu cầu Hệ thống (System Requirements Specification)
+# Đặc tả Yêu cầu Hệ thống (System Requirements Specification - Chuẩn UML)
 
-## 1. Yêu cầu Chức năng (Functional Requirements)
+## 1. Yêu cầu Chức năng (Functional Requirements - Đồng bộ 10 Use Case UML)
 
-| Mã FR | Tên chức năng | Mô tả chi tiết | Tác nhân |
-| :--- | :--- | :--- | :--- |
-| **FR-001** | Đăng ký & Đăng nhập | Cho phép người dùng đăng ký, đăng nhập bằng email/mật khẩu hoặc tài khoản mạng xã hội (Google, Facebook, Apple). | Khách hàng, Seller, Admin |
-| **FR-002** | Xem & Lọc Sản phẩm | Hiển thị danh mục sản phẩm, bộ lọc khoảng giá, phân loại theo ngành hàng. | Khách hàng |
-| **FR-003** | Quản lý Giỏ hàng | Thêm, sửa số lượng, xóa sản phẩm khỏi giỏ hàng, đồng bộ với CSDL. | Khách hàng |
-| **FR-004** | Đặt hàng & Thanh toán | Khởi tạo đơn hàng, chọn cổng thanh toán SZ-Payment (VietQR Napas 247, MoMo, Visa/Mastercard). | Khách hàng |
-| **FR-005** | Tra cứu Đơn hàng | Tra cứu trạng thái đơn hàng (Pending -> Paid -> Processing -> Shipping -> Delivered) theo mã đơn. | Khách hàng |
-| **FR-006** | Trợ lý Chatbot AI RAG | Chatbot phân tích câu hỏi tự nhiên tiếng Việt, trích xuất intent và truy vấn CSDL để tư vấn sản phẩm chính xác. | Khách hàng, Seller |
-| **FR-007** | Quản lý Sản phẩm (Seller) | Thêm sản phẩm mới, cập nhật giá và số lượng kho hàng. | Seller |
-| **FR-008** | Duyệt Sản phẩm (Admin) | Phê duyệt hoặc từ chối sản phẩm do Seller gửi lên sàn. | Admin |
-| **FR-009** | Báo cáo & Phân tích Doanh thu | Thống kê doanh số bán hàng, đơn hàng trong ngày, cảnh báo hàng tồn kho thấp (`stock <= 40`). | Admin, Seller |
+| Mã FR | Mã UC | Tên chức năng | Mô tả chi tiết & Quan hệ UML | Tác nhân thực hiện |
+| :--- | :---: | :--- | :--- | :--- |
+| **FR-001** | **UC01** | Đăng ký, Đăng nhập & Quản lý Nhân sự | Khách hàng tự đăng ký tài khoản mua sắm. Cả 4 tác nhân đăng nhập & đổi mật khẩu. Admin (Chủ cửa hàng) cấp phát & quản lý tài khoản Nhân viên bán hàng và Nhân viên kho. | Khách hàng, Nhân viên bán hàng, Nhân viên kho, Admin (Chủ cửa hàng) |
+| **FR-002** | **UC02** | Quản lý Danh mục & Sản phẩm 3D | Khách hàng khám phá không gian 3D WebGL, tìm kiếm & lọc sản phẩm. Admin và Nhân viên kho thêm, sửa, xóa danh mục và sản phẩm của cửa hàng. | Khách hàng, Nhân viên kho, Admin (Chủ cửa hàng) |
+| **FR-003** | **UC03** | Quản lý Khách hàng (CRM) & Tích điểm VIP | Quản lý hồ sơ khách hàng, hạng thẻ (Đồng, Bạc, Vàng, Kim Cương), tự động tích điểm thưởng khi mua sắm và tra cứu lịch sử điểm. | Nhân viên bán hàng, Admin (Chủ cửa hàng), Khách hàng |
+| **FR-004** | **UC04** | Bán hàng POS & Đặt hàng Thanh toán SZ-Payment | Khách hàng quản lý giỏ hàng & đặt mua trực tuyến; Nhân viên bán hàng tạo đơn tại quầy (POS). Bao gồm quan hệ bắt buộc `<<include>> Thanh toán Đa kênh SZ-Payment` (VietQR, VNPAY, MoMo, COD). | Khách hàng, Nhân viên bán hàng |
+| **FR-005** | **UC05** | Quản lý Nhập kho & Kiểm kê Tồn kho | Lập phiếu nhập kho (`NK-YYYY-XXXX`) từ nhà cung cấp, cập nhật số lượng tồn kho thực tế và theo dõi lịch sử nhập hàng. | Nhân viên kho, Admin (Chủ cửa hàng) |
+| **FR-006** | **UC06** | Báo cáo Doanh thu & Tra cứu Vận đơn | Khách hàng và Nhân viên bán hàng tra cứu tiến trình vận đơn 5 bước. Admin xem biểu đồ doanh thu cửa hàng, mở rộng `<<extend>> Xuất báo cáo Excel/PDF`. | Admin (Chủ cửa hàng), Nhân viên bán hàng, Khách hàng |
+| **FR-007** | **UC07** | Tư vấn Mua sắm bằng Trợ lý AI RAG | Chatbot AI phân tích câu hỏi tự nhiên, `<<include>> Truy xuất ngữ cảnh sản phẩm & tồn kho từ CSDL` để tư vấn chính xác 100% không bịa đặt. | Khách hàng |
+| **FR-008** | **UC08** | AI Khuyến nghị Nhập kho (Stock Copilot) | AI phân tích tốc độ bán và tồn kho hiện tại (`stock <= 40`) để đề xuất danh mục và số lượng cần nhập hàng cho kho. | Nhân viên kho, Admin (Chủ cửa hàng) |
+| **FR-009** | **UC09** | AI Hỏi đáp & Phân tích Kinh doanh (AI BI) | Trợ lý AI dành riêng cho Chủ cửa hàng hỏi đáp số liệu doanh thu, tỷ lệ chuyển đổi, hiệu quả tích điểm VIP và chiến lược kinh doanh. | Admin (Chủ cửa hàng) |
+| **FR-010** | **UC10** | Quản lý Đổi trả, Hoàn tiền & Thu hồi Điểm | Khách hàng gửi yêu cầu đổi size/trả hàng. Nhân viên bán hàng và Admin phê duyệt hoàn tiền, bắt buộc `<<include>> Thu hồi điểm tích lũy (Points Clawback)`. | Khách hàng, Nhân viên bán hàng, Admin (Chủ cửa hàng) |
 
 ## 2. Yêu cầu Phi chức năng (Non-Functional Requirements)
 
 | Mã NFR | Tiêu chí | Mô tả |
 | :--- | :--- | :--- |
-| **NFR-001** | Hiệu năng (Performance) | Thời gian phản hồi API < 1000ms. Phản hồi chatbot AI < 2000ms. |
-| **NFR-002** | Bảo mật (Security) | Mật khẩu băm an toàn (bcrypt). Mọi câu truy vấn SQL đều phải dùng Parameterized Query để phòng chống SQL Injection. |
-| **NFR-003** | Khả năng mở rộng (Scalability) | Thiết kế kiến trúc phân tầng rời (Frontend SPA + REST Backend API + RDBMS). |
-| **NFR-004** | Giao diện người dùng (Usability) | Tương thích đa thiết bị (Responsive), hỗ trợ tương tác 3D WebGL và Glassmorphism hiện đại. |
+| **NFR-001** | Hiệu năng (Performance) | Thời gian phản hồi API < 1000ms. Phản hồi Chatbot AI RAG < 2000ms. Hiển thị đồ họa 3D đạt 60 FPS. |
+| **NFR-002** | Bảo mật & Phân quyền (RBAC) | Mật khẩu băm an toàn. Kiểm soát phân quyền chặt chẽ theo đúng 4 vai trò UML (`ADMIN`, `SALES`, `WAREHOUSE`, `CUSTOMER`). Mọi truy vấn SQL dùng Parameterized Query. |
+| **NFR-003** | Tính nhất quán (Consistency) | Mô hình Cửa hàng Đơn nhất (Single-Store) đồng bộ tồn kho tức thời giữa Kênh bán Online, Quầy POS và Kho tổng. |
+| **NFR-004** | Khả năng sẵn sàng (Availability) | Cơ chế Smart Hybrid (SQL Server + Local Fallback) đảm bảo hệ thống vận hành liên tục 100%. |

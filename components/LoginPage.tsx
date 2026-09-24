@@ -3,7 +3,7 @@ import { User, Lock, ArrowLeft, Eye, EyeOff, ShoppingBag, X, CheckCircle2, Shiel
 import { AuthService } from '../services';
 
 interface LoginPageProps {
-  onLoginSuccess: (role: 'CUSTOMER' | 'ADMIN' | 'SELLER' | 'SALES' | 'WAREHOUSE') => void;
+  onLoginSuccess: (role: 'CUSTOMER' | 'ADMIN' | 'SALES' | 'WAREHOUSE') => void;
   onBack: () => void;
   onGoToRegister: () => void;
   onGoToForgotPassword: () => void;
@@ -30,7 +30,7 @@ const AppleIcon = () => (
   </svg>
 );
 
-type TargetRole = 'CUSTOMER' | 'SALES' | 'WAREHOUSE' | 'ADMIN' | 'SELLER';
+type TargetRole = 'CUSTOMER' | 'SALES' | 'WAREHOUSE' | 'ADMIN';
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToRegister, onGoToForgotPassword }) => {
   const [email, setEmail] = useState('');
@@ -64,7 +64,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToReg
     });
   }, []);
 
-  // Đổi Role Tab tự động điền thông tin tài khoản mẫu
+  // Đổi Role Tab tự động điền thông tin tài khoản mẫu theo 4 Tác nhân UML
   const handleSelectRoleTab = (role: TargetRole) => {
     setActiveTab(role);
     setErrorMsg('');
@@ -76,9 +76,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToReg
       setPassword('123');
     } else if (role === 'WAREHOUSE') {
       setEmail('warehouse@test.com');
-      setPassword('123');
-    } else if (role === 'SELLER') {
-      setEmail('seller@test.com');
       setPassword('123');
     } else if (role === 'ADMIN') {
       setEmail('admin@test.com');
@@ -101,7 +98,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToReg
 
       const data = await AuthService.login(email.trim(), password);
       if (data.success) {
-        const roleName = data.role === 'ADMIN' ? 'Quản trị viên' : data.role === 'SELLER' ? 'Nhà bán hàng' : 'Khách hàng';
+        const roleName =
+          data.role === 'ADMIN'
+            ? 'Admin (Chủ cửa hàng)'
+            : data.role === 'SALES'
+            ? 'Nhân viên Bán hàng'
+            : data.role === 'WAREHOUSE'
+            ? 'Nhân viên Kho'
+            : 'Khách hàng';
         const offlineNotice = data.isOffline ? ' (Chế độ Ngoại tuyến)' : ' (Đã kết nối CSDL)';
         setSuccessMsg(`Đăng nhập thành công với vai trò ${roleName}${offlineNotice}! Đang chuyển hướng...`);
         setTimeout(() => {
@@ -148,112 +152,98 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToReg
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-[#1e1d1a] via-[#2a251f] to-[#171614] flex items-center justify-center p-4 relative overflow-hidden font-sans">
       {/* Background Decorative Blobs */}
-      <div className="absolute top-1/4 -left-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 -left-20 w-80 h-80 bg-[#d4b996]/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-[#8c6f46]/20 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 relative z-10 border border-white/20 backdrop-blur-md">
+      <div className="w-full max-w-xl bg-[#faf8f5] rounded-3xl shadow-2xl p-6 sm:p-8 relative z-10 border border-[#d4b996]/60 backdrop-blur-md">
         
         {/* Top Back button & Brand */}
         <div className="flex items-center justify-between mb-5">
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-gray-800 transition-colors p-1.5 rounded-lg hover:bg-gray-100"
+            className="flex items-center gap-1.5 text-xs font-bold text-stone-600 hover:text-stone-900 transition-colors p-1.5 rounded-lg hover:bg-stone-200/60"
           >
             <ArrowLeft size={16} />
-            <span>Trang chủ</span>
+            <span>Về Showroom</span>
           </button>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-              Hệ thống Bán hàng & AI (UC01)
+            <span className="text-[11px] font-black text-[#1e1d1a] bg-[#e5c9a3] px-2.5 py-0.5 rounded-md border border-[#c5a880]">
+              Mô hình 4 Tác Nhân Cửa Hàng Nhỏ
             </span>
           </div>
         </div>
 
         {/* Title */}
         <div className="text-center mb-5">
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight">Đăng Nhập Hệ Thống</h2>
-          <p className="text-gray-500 text-xs sm:text-sm mt-0.5">Chọn vai trò đăng nhập theo sơ đồ Use Case</p>
+          <h2 className="text-2xl font-black text-stone-900 tracking-tight">Đăng Nhập Thế Giới iPhone</h2>
+          <p className="text-stone-500 text-xs sm:text-sm mt-0.5">Chọn 1 trong 4 tác nhân vận hành cửa hàng bán lẻ iPhone chính hãng VN/A</p>
         </div>
 
-        {/* Role Switcher Tabs (5 Roles theo Sơ đồ Use Case) */}
+        {/* Role Switcher Tabs (4 Tác nhân chuẩn Cửa hàng nhỏ) */}
         <div className="mb-5">
-          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Vai trò theo Sơ đồ Use Case:</span>
-            <span className="text-brand-600 font-bold">1-Click Đăng nhập mẫu</span>
+          <div className="text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+            <span>4 Tác Nhân Phục Vụ Cửa Hàng Nhỏ:</span>
+            <span className="text-[#8c6f46] font-black">1-Click Điền Tài Khoản Mẫu</span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 p-1.5 bg-gray-100/90 rounded-2xl border border-gray-200/80">
+          <div className="grid grid-cols-2 gap-2 p-1.5 bg-stone-200/70 rounded-2xl border border-stone-300">
             
-            {/* 1. Customer */}
+            {/* 1. Customer (Khách hàng) */}
             <button
               type="button"
               onClick={() => handleSelectRoleTab('CUSTOMER')}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'CUSTOMER'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30 font-bold'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                  ? 'bg-[#1e1d1a] text-[#e5c9a3] shadow-md font-black'
+                  : 'text-stone-700 hover:text-stone-900 hover:bg-white/60'
               }`}
             >
               <UserCheck size={14} />
-              <span>Khách hàng</span>
+              <span>1. Khách hàng (Mua iPhone)</span>
             </button>
 
-            {/* 2. Sales / POS */}
+            {/* 2. Sales (Nhân viên bán hàng) */}
             <button
               type="button"
               onClick={() => handleSelectRoleTab('SALES')}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'SALES'
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-500/30 font-bold'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                  ? 'bg-[#1e1d1a] text-[#e5c9a3] shadow-md font-black'
+                  : 'text-stone-700 hover:text-stone-900 hover:bg-white/60'
               }`}
             >
               <ShoppingBag size={14} />
-              <span>NV CSKH / Bán hàng</span>
+              <span>2. Nhân viên Bán hàng (POS)</span>
             </button>
 
-            {/* 3. Warehouse */}
+            {/* 3. Warehouse (Nhân viên kho) */}
             <button
               type="button"
               onClick={() => handleSelectRoleTab('WAREHOUSE')}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'WAREHOUSE'
-                  ? 'bg-amber-600 text-white shadow-md shadow-amber-500/30 font-bold'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                  ? 'bg-[#1e1d1a] text-[#e5c9a3] shadow-md font-black'
+                  : 'text-stone-700 hover:text-stone-900 hover:bg-white/60'
               }`}
             >
               <Store size={14} />
-              <span>Nhân viên Kho</span>
+              <span>3. Nhân viên Kho (VN/A)</span>
             </button>
 
-            {/* 4. Admin */}
+            {/* 4. Admin (Chủ cửa hàng) */}
             <button
               type="button"
               onClick={() => handleSelectRoleTab('ADMIN')}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 activeTab === 'ADMIN'
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-500/30 font-bold'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                  ? 'bg-[#1e1d1a] text-[#e5c9a3] shadow-md font-black'
+                  : 'text-stone-700 hover:text-stone-900 hover:bg-white/60'
               }`}
             >
               <ShieldCheck size={14} />
-              <span>Chủ shop (Admin)</span>
-            </button>
-
-            {/* 5. Seller */}
-            <button
-              type="button"
-              onClick={() => handleSelectRoleTab('SELLER')}
-              className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl text-xs font-semibold transition-all ${
-                activeTab === 'SELLER'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/30 font-bold'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
-              }`}
-            >
-              <Store size={14} />
-              <span>Nhà bán hàng</span>
+              <span>4. Admin (Chủ cửa hàng)</span>
             </button>
           </div>
         </div>
@@ -359,8 +349,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToReg
             className={`w-full py-3 px-4 rounded-xl text-white font-bold text-sm transition-all shadow-lg flex items-center justify-center gap-2 select-none active:scale-[0.99] ${
               activeTab === 'CUSTOMER'
                 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/25'
-                : activeTab === 'SELLER'
-                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-emerald-500/25'
+                : activeTab === 'SALES'
+                ? 'bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 shadow-sky-500/25'
+                : activeTab === 'WAREHOUSE'
+                ? 'bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 shadow-amber-500/25'
                 : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/25'
             } ${(!email || !password || isLoading) ? 'opacity-60 cursor-not-allowed shadow-none' : 'hover:shadow-xl'}`}
           >

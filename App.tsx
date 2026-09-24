@@ -34,7 +34,7 @@ import {
   Store, Sparkles, ChevronDown, ChevronUp, ShieldCheck 
 } from 'lucide-react';
 import { MOCK_CART_ITEMS, MOCK_PRODUCTS_LIST } from './constants';
-import { GioHangService, AuthService, AuthUserData } from './services';
+import { GioHangService, AuthService, AuthUserData, getProductVisualSync } from './services';
 
 type ViewState = 'landing-3d' | 'home' | 'product' | 'confirmation' | 'checkout' | 'result' | 'order-detail' | 'login' | 'tracking' | 'orders' | 'admin' | 'register' | 'seller-channel' | 'forgot-password' | 'warehouse' | 'customers' | 'returns' | 'pos' | 'cskh';
 
@@ -48,32 +48,32 @@ const INITIAL_CUSTOMERS: CustomerProfile[] = [
 const INITIAL_IMPORT_TICKETS: StockImportTicket[] = [
   {
     id: 'ticket-1',
-    code: 'NK-2026-0810',
-    supplier: 'Xưởng May Dệt May Gia Định',
-    importDate: '26/12/2024 09:30',
+    code: 'NK-2026-0901',
+    supplier: 'Apple Vietnam Distribution (Digiworld / Synnex FPT)',
+    importDate: '20/09/2026 09:30',
     creator: 'Trần Văn Kho (Thủ kho chính)',
     items: [
-      { productId: 'DIOR-TSHIRT-001', productName: 'Áo Thun Cao Cấp DIOR In Chữ Nổi', quantity: 100, importPrice: 280000 },
-      { productId: 'ZSHOP-POLO-002', productName: 'Áo Polo Thể Thao Nam ZShop Limited Edition', quantity: 80, importPrice: 210000 }
+      { productId: 'ip-18-promax', productName: 'iPhone 18 Pro Max 256GB | Chính hãng VN/A', quantity: 35, importPrice: 33500000 },
+      { productId: 'ip-17-promax', productName: 'iPhone 17 Pro Max 256GB | Chính hãng VN/A', quantity: 38, importPrice: 30200000 }
     ],
-    totalQuantity: 180,
-    totalCost: 44800000,
+    totalQuantity: 73,
+    totalCost: 2320100000,
     status: 'COMPLETED',
-    note: 'Đợt nhập bổ sung nguồn hàng bán Tết 2026'
+    note: 'Nhập lô Flagship iPhone 18 Pro Max & iPhone 17 Pro Max chính hãng VN/A'
   },
   {
     id: 'ticket-2',
-    code: 'NK-2026-0811',
-    supplier: 'Công ty Thời Trang Quốc Tế Vina',
-    importDate: '27/12/2024 14:15',
+    code: 'NK-2026-0902',
+    supplier: 'CellphoneS Wholesale & Apple Authorized Reseller',
+    importDate: '22/09/2026 14:15',
     creator: 'Trần Văn Kho (Thủ kho chính)',
     items: [
-      { productId: 'SNEAKER-001', productName: 'Giày Sneaker Nam Retro Streetwear', quantity: 50, importPrice: 520000 }
+      { productId: 'ip-16-promax', productName: 'iPhone 16 Pro Max 256GB | Chính hãng VN/A', quantity: 48, importPrice: 26500000 }
     ],
-    totalQuantity: 50,
-    totalCost: 26000000,
+    totalQuantity: 48,
+    totalCost: 1272000000,
     status: 'COMPLETED',
-    note: 'Nhập theo khuyến nghị kho AI (UC08)'
+    note: 'Nhập bổ sung iPhone 16 Pro Max theo khuyến nghị kho AI (UC08)'
   }
 ];
 
@@ -83,56 +83,47 @@ const INITIAL_RETURN_REQUESTS: ReturnRequest[] = [
     orderId: 'DH-20241227-02',
     customerName: 'Phạm Văn C',
     customerPhone: '0933221144',
-    items: [{ name: 'Áo Khoác Bomber Unisex', quantity: 1, price: 120000 }],
-    reason: 'Không vừa size, áo hơi chật vai',
-    refundAmount: 120000,
-    pointsToDeduct: 6,
+    items: [{ name: 'iPhone 15 Pro Max 256GB | Chính hãng VN/A', quantity: 1, price: 25990000 }],
+    reason: 'Muốn đổi nâng cấp dung lượng từ 256GB lên 512GB (Nguyên seal hộp)',
+    refundAmount: 25990000,
+    pointsToDeduct: 120,
     status: 'PENDING',
-    requestedAt: '28/12/2024 11:20'
+    requestedAt: '22/09/2026 11:20'
   },
   {
     id: 'RET-002',
     orderId: 'DH-20241226-03',
     customerName: 'Hoàng Thị D',
     customerPhone: '0944556677',
-    items: [{ name: 'Áo Thun Cao Cấp DIOR', quantity: 1, price: 890000 }],
-    reason: 'Hàng không đúng như màu sắc mô tả trên ảnh',
-    refundAmount: 890000,
-    pointsToDeduct: 45,
+    items: [{ name: 'iPhone 16 Pro 128GB | Chính hãng VN/A', quantity: 1, price: 24990000 }],
+    reason: 'Đổi màu từ Titan Trắng sang Titan Sa Mạc theo chính sách 1 đổi 1',
+    refundAmount: 24990000,
+    pointsToDeduct: 110,
     status: 'APPROVED',
-    requestedAt: '27/12/2024 16:45'
+    requestedAt: '21/09/2026 16:45'
   }
 ];
 
 const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
   {
     id: 'DH-20260908-01',
-    createdAt: '08/09/2026 10:15',
+    createdAt: '23/09/2026 10:15',
     status: OrderStatus.DELIVERED,
     items: [
       {
-        id: 'ZSHOP-POLO-002',
-        name: 'Áo Polo Thể Thao Nam ZShop Limited Edition',
-        image: 'https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=600',
-        size: 'L',
-        color: 'Xanh Navy',
-        price: 299000,
-        quantity: 1
-      },
-      {
-        id: 'SHORT-001',
-        name: 'Quần Short Kaki Co Giãn 4 Chiều Phong Cách Trẻ',
-        image: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=600',
-        size: 'L',
-        color: 'Be',
-        price: 199000,
+        id: 'ip-18-promax',
+        name: 'iPhone 18 Pro Max 256GB | Chính hãng VN/A',
+        image: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-17-pro-max_3_1_1_1.jpg',
+        size: '256GB',
+        color: 'Titan Đỏ Rượu Vang',
+        price: 37990000,
         quantity: 1
       }
     ],
-    subtotal: 498000,
+    subtotal: 37990000,
     shippingFee: 0,
-    discount: 50000,
-    totalAmount: 448000,
+    discount: 500000,
+    totalAmount: 37490000,
     paymentMethod: 'VietQR Napas 24/7',
     isPaid: true,
     shippingAddress: {
@@ -141,29 +132,29 @@ const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
       address: '12 Lê Lợi, P. Bến Nghé, Quận 1, TP.HCM'
     },
     trackingCode: 'ZSE-88291038VN',
-    carrierName: 'ZShop Express Fast 24/7',
-    estimatedDelivery: '08/09/2026 15:30',
-    completedAt: '08/09/2026 15:30'
+    carrierName: 'ZShop Apple Express 2h',
+    estimatedDelivery: '23/09/2026 12:30',
+    completedAt: '23/09/2026 12:15'
   },
   {
     id: 'DH-20260907-03',
-    createdAt: '07/09/2026 14:00',
+    createdAt: '22/09/2026 14:00',
     status: OrderStatus.SHIPPING,
     items: [
       {
-        id: 'DIOR-TSHIRT-001',
-        name: 'Áo Thun Cao Cấp DIOR In Chữ Nổi Chuẩn Form',
-        image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
-        size: 'M',
-        color: 'Trắng Basic',
-        price: 349000,
+        id: 'ip-17-promax',
+        name: 'iPhone 17 Pro Max 256GB | Chính hãng VN/A',
+        image: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-17-pro-max_3_1_1_1.jpg',
+        size: '256GB',
+        color: 'Titan Cam Vũ Trụ',
+        price: 34490000,
         quantity: 1
       }
     ],
-    subtotal: 349000,
-    shippingFee: 30000,
-    discount: 30000,
-    totalAmount: 349000,
+    subtotal: 34490000,
+    shippingFee: 0,
+    discount: 500000,
+    totalAmount: 33990000,
     paymentMethod: 'Thanh toán khi nhận hàng (COD)',
     isPaid: false,
     shippingAddress: {
@@ -172,28 +163,28 @@ const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
       address: '12 Lê Lợi, P. Bến Nghé, Quận 1, TP.HCM'
     },
     trackingCode: 'ZSE-99120482VN',
-    carrierName: 'ZShop Express Fast 24/7',
+    carrierName: 'ZShop Apple Express 2h',
     estimatedDelivery: 'Hôm nay trước 18:00'
   },
   {
     id: 'DH-20260908-04',
-    createdAt: '08/09/2026 09:30',
+    createdAt: '21/09/2026 09:30',
     status: OrderStatus.PENDING,
     items: [
       {
-        id: 'SNEAKER-001',
-        name: 'Giày Sneaker Nam Retro Streetwear Đế Đệm Êm',
-        image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600',
-        size: '42 (26.0cm)',
-        color: 'Trắng Basic',
-        price: 650000,
+        id: 'ip-16-promax',
+        name: 'iPhone 16 Pro Max 256GB | Chính hãng VN/A',
+        image: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max_1_1_2_1.png',
+        size: '256GB',
+        color: 'Titan Sa Mạc',
+        price: 29990000,
         quantity: 1
       }
     ],
-    subtotal: 650000,
-    shippingFee: 30000,
-    discount: 50000,
-    totalAmount: 630000,
+    subtotal: 29990000,
+    shippingFee: 0,
+    discount: 500000,
+    totalAmount: 29490000,
     paymentMethod: 'Chuyển khoản VietQR',
     isPaid: true,
     shippingAddress: {
@@ -202,27 +193,27 @@ const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
       address: '12 Lê Lợi, P. Bến Nghé, Quận 1, TP.HCM'
     },
     trackingCode: 'ZSE-11002349VN',
-    carrierName: 'ZShop Express Fast 24/7'
+    carrierName: 'ZShop Apple Express 2h'
   },
   {
     id: 'DH-20241227-02',
-    createdAt: '27/12/2024 16:45',
+    createdAt: '20/09/2026 16:45',
     status: OrderStatus.RETURN_REQUESTED,
     items: [
       {
-        id: 'BOMBER-001',
-        name: 'Áo Khoác Bomber Unisex Thêu Logo Sắc Nét',
-        image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600',
-        size: 'M',
-        color: 'Đen Tuyển',
-        price: 120000,
+        id: 'ip-15-promax',
+        name: 'iPhone 15 Pro Max 256GB | Chính hãng VN/A',
+        image: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-pro-max_2__5_2_1_1.jpg',
+        size: '256GB',
+        color: 'Titan Tự Nhiên',
+        price: 25990000,
         quantity: 1
       }
     ],
-    subtotal: 120000,
-    shippingFee: 30000,
+    subtotal: 25990000,
+    shippingFee: 0,
     discount: 0,
-    totalAmount: 150000,
+    totalAmount: 25990000,
     paymentMethod: 'COD',
     isPaid: true,
     shippingAddress: {
@@ -230,9 +221,9 @@ const INITIAL_CUSTOMER_ORDERS: CustomerOrder[] = [
       phone: '0933221144',
       address: 'Số 123, Đường Xuân Thủy, Phổ Yên, Thái Nguyên'
     },
-    returnReason: 'Không vừa size, áo hơi chật vai',
+    returnReason: 'Đổi nâng cấp dung lượng từ 256GB lên 512GB',
     returnType: 'EXCHANGE_SIZE',
-    exchangeSize: 'L'
+    exchangeSize: '512GB'
   }
 ];
 
@@ -304,7 +295,6 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<UserRole>(() => {
     const session = AuthService.getSession();
     if (session?.role === 'ADMIN') return UserRole.ADMIN;
-    if (session?.role === 'SELLER') return UserRole.SELLER;
     if (session?.role === 'SALES') return UserRole.SALES;
     if (session?.role === 'WAREHOUSE') return UserRole.WAREHOUSE;
     if (session?.role === 'CUSTOMER') return UserRole.CUSTOMER;
@@ -316,17 +306,21 @@ const App: React.FC = () => {
     try {
       const saved = localStorage.getItem('zshop_customer_cart');
       if (saved) {
-        return JSON.parse(saved);
+        const parsed: CartItem[] = JSON.parse(saved);
+        // Lọc chỉ giữ các sản phẩm iPhone trong danh mục < 30 mẫu hiện tại
+        return Array.isArray(parsed)
+          ? parsed.filter(item => item?.name?.toLowerCase().includes('iphone') || item?.id?.startsWith('ip-'))
+          : [];
       }
     } catch (e) {
       console.error('Error reading cart from localStorage', e);
     }
-    return []; // Mặc định giỏ rỗng, tuyệt đối không chèn dữ liệu cũ/giả lập
+    return [];
   });
 
   const [lastCompletedOrder, setLastCompletedOrder] = useState<CustomerOrder | null>(null);
   const [isMiniCartOpen, setIsMiniCartOpen] = useState(false);
-  const [selectedProductId, setSelectedProductId] = useState<string>("DIOR-TSHIRT-001");
+  const [selectedProductId, setSelectedProductId] = useState<string>("ip-18-promax");
 
   // Đồng bộ giỏ hàng vào localStorage khi có thay đổi
   React.useEffect(() => {
@@ -341,16 +335,16 @@ const App: React.FC = () => {
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
   const [isLoyaltyModalOpen, setIsLoyaltyModalOpen] = useState(false);
 
-  // Global Seller State to sync request between Seller UI and Admin UI
+  // Global Staff State for Admin (Chủ cửa hàng) managing Nhân viên Bán hàng & Nhân viên Kho (UC01)
   const [globalSellers, setGlobalSellers] = useState([
-      { id: 'S-101', name: 'Nguyễn Văn Nam', shopName: 'Nam Sneaker', status: 'PENDING', date: '19/04/2026', email: 'nam.sneaker@gmail.com' },
-      { id: 'S-102', name: 'Trần Thị Hà', shopName: 'Hà Cosmatic', status: 'PENDING', date: '19/04/2026', email: 'ha.beauty99@gmail.com' },
-      { id: 'S-103', name: 'Lê Hoàng', shopName: 'Hoàng Tech', status: 'APPROVED', date: '15/04/2026', email: 'congnghe.hoang@vietnam.vn' },
+      { id: 'NV-BH01', name: 'Nguyễn Thu Ngân', shopName: 'Nhân viên Bán hàng (POS & CSKH)', status: 'APPROVED', date: '10/01/2026', email: 'sales@test.com' },
+      { id: 'NV-KH01', name: 'Trần Văn Kho', shopName: 'Nhân viên Kho (Thủ kho chính)', status: 'APPROVED', date: '12/01/2026', email: 'warehouse@test.com' },
+      { id: 'NV-BH02', name: 'Lê Thị Hương', shopName: 'Nhân viên Bán hàng (Ca tối)', status: 'PENDING', date: '20/04/2026', email: 'huong.sales@zshop.vn' },
   ]);
 
   // Tab states for role portals
   const [adminInitialTab, setAdminInitialTab] = useState<'DASHBOARD' | 'ORDERS' | 'PRODUCTS' | 'SELLERS' | 'CONFIG' | 'AI_BI'>('DASHBOARD');
-  const [cskhInitialTab, setCskhInitialTab] = useState<'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING'>('RETURNS');
+  const [cskhInitialTab, setCskhInitialTab] = useState<'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING'>('POS');
   const [sellerInitialTab, setSellerInitialTab] = useState<'overview' | 'products' | 'orders' | 'profile'>('overview');
 
   // Tải giỏ hàng từ máy chủ nếu có (tuyệt đối KHÔNG gán fallback MOCK_CART_ITEMS để tránh tái lặp đồ cũ)
@@ -369,27 +363,68 @@ const App: React.FC = () => {
   }, [userRole]);
 
 
-  // Async Cart Handlers to update SQL
-  const handleAddToCart = async (item: CartItem) => {
+  // Async Cart Handlers to update SQL & Sync Product Studio Image/Color
+  const enrichCartItemWithStudioSync = (item: CartItem): CartItem => {
+    const visual = getProductVisualSync(item, MOCK_PRODUCTS_LIST);
+    return {
+      ...item,
+      productId: item.productId || visual.canonicalId,
+      image: visual.image,
+      color: item.color || visual.colorLabel,
+      imgFilter: item.imgFilter || visual.imgFilter,
+      studioBg: item.studioBg || visual.studioBg,
+      swatchHex: item.swatchHex || visual.swatchHex,
+      selected: item.selected !== undefined ? item.selected : true
+    };
+  };
+
+  const handleAddToCart = async (rawItem: CartItem) => {
+    const item = enrichCartItemWithStudioSync(rawItem);
     // 1. Optimistic UI update
     setCartItems(prev => {
       const existing = prev.find(i => i.name === item.name && i.size === item.size);
       if (existing) {
-        return prev.map(i => i.id === existing.id ? { ...i, quantity: i.quantity + item.quantity } : i);
+        return prev.map(i => i.id === existing.id ? { ...i, quantity: i.quantity + item.quantity, selected: true, image: item.image, imgFilter: item.imgFilter, studioBg: item.studioBg, swatchHex: item.swatchHex } : i);
       }
-      return [...prev, item];
+      return [...prev.map(i => enrichCartItemWithStudioSync(i)), item];
     });
     setIsMiniCartOpen(true);
 
     // 2. Sync to Backend
     if (userRole === UserRole.CUSTOMER) {
       await GioHangService.themVaoGio(item, 1);
-      // Re-fetch to get correct backend IDs if needed
       const refreshed = await GioHangService.layGioHang(1);
       if (refreshed && refreshed.length > 0) {
-        setCartItems(refreshed.map((i: any) => ({ ...i, id: i.cartItemId?.toString() || i.id?.toString() })));
+        setCartItems(refreshed.map((i: any) => enrichCartItemWithStudioSync({ ...i, id: i.cartItemId?.toString() || i.id?.toString() })));
       }
     }
+  };
+
+  // Chọn / Bỏ chọn 1 món hàng trong giỏ để thanh toán riêng
+  const handleToggleSelectCartItem = (id: string) => {
+    setCartItems(prev => prev.map(item => item.id === id ? { ...item, selected: item.selected === false ? true : false } : item));
+  };
+
+  // Chọn / Bỏ chọn tất cả món trong giỏ
+  const handleSelectAllCartItems = (selectAll: boolean) => {
+    setCartItems(prev => prev.map(item => ({ ...item, selected: selectAll })));
+  };
+
+  // Chia mục chọn mua theo Nhóm / Dòng sản phẩm (vd: Chỉ chọn mua nhóm Flagship 18/17 Series hoặc nhóm iPhone 16/15)
+  const handleSelectCartGroup = (groupKey: 'ALL' | 'FLAGSHIP_18_17' | 'PRO_16_15_14' | 'CLASSIC_OTHER') => {
+    setCartItems(prev => prev.map(item => {
+      if (groupKey === 'ALL') return { ...item, selected: true };
+      const visual = getProductVisualSync(item, MOCK_PRODUCTS_LIST);
+      return { ...item, selected: visual.categoryGroup === groupKey };
+    }));
+  };
+
+  // Chỉ chọn mua duy nhất 1 món hàng và chuyển tới thanh toán ngay (Không phải mua cả giỏ hàng)
+  const handleBuySingleCartItem = (id: string) => {
+    setCartItems(prev => prev.map(item => ({ ...item, selected: item.id === id })));
+    setIsMiniCartOpen(false);
+    window.scrollTo(0, 0);
+    setCurrentView('checkout');
   };
 
   const handleRemoveFromCart = async (id: string) => {
@@ -409,7 +444,6 @@ const App: React.FC = () => {
     }
     // Optimistic UI update
     setCartItems(prev => prev.map(item => item.id === id ? { ...item, quantity: newQuantity } : item));
-    // For a real app, we would sync this exact quantity to the backend here via an update API.
   };
 
   // Xóa toàn bộ giỏ hàng (Clear Cart)
@@ -423,9 +457,19 @@ const App: React.FC = () => {
     }
   };
 
-  // Navigation handlers: Chuyển trực tiếp tới One-Page Checkout
+  // Danh sách các món được khách tích chọn để thanh toán (nếu chưa chọn món nào thì lấy món đầu tiên)
+  const selectedCheckoutItems = React.useMemo(() => {
+    const checked = cartItems.filter(item => item.selected !== false);
+    return checked.length > 0 ? checked : cartItems.slice(0, 1);
+  }, [cartItems]);
+
+  // Navigation handlers: Chuyển trực tiếp tới One-Page Checkout với các món đã chọn
   const navigateToConfirmation = () => {
-    setIsMiniCartOpen(false); // Close mini cart if open
+    if (cartItems.length > 0 && cartItems.every(i => i.selected === false)) {
+      alert('Vui lòng tích chọn ít nhất 1 sản phẩm bạn muốn mua trong giỏ hàng!');
+      return;
+    }
+    setIsMiniCartOpen(false);
     window.scrollTo(0, 0);
     setCurrentView('checkout');
   };
@@ -459,8 +503,8 @@ const App: React.FC = () => {
     setCurrentView('admin');
   };
 
-  // Điều hướng nhanh đến Cổng CSKH & Sales Hợp Nhất
-  const handleCSKHNavigateTab = (tab: 'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING' = 'RETURNS') => {
+  // Điều hướng nhanh đến Cổng Bán Hàng & CSKH Hợp Nhất
+  const handleCSKHNavigateTab = (tab: 'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING' = 'POS') => {
     setCskhInitialTab(tab);
     if (userRole !== UserRole.SALES) {
       setUserRole(UserRole.SALES);
@@ -469,27 +513,21 @@ const App: React.FC = () => {
     setCurrentView('cskh');
   };
 
-  // Điều hướng nhanh đến Kênh Nhà Bán Hàng
+  // Điều hướng nhanh đến Quản trị Cửa hàng
   const handleSellerNavigateTab = (tab: 'overview' | 'products' | 'orders' | 'profile' = 'overview') => {
     setSellerInitialTab(tab);
-    if (userRole !== UserRole.SELLER) {
-      setUserRole(UserRole.SELLER);
-    }
     window.scrollTo(0, 0);
-    setCurrentView('seller-channel');
+    setCurrentView('admin');
   };
 
-  // Chuyển đổi vai trò làm việc linh hoạt (phục vụ kiểm thử và phân quyền)
+  // Chuyển đổi vai trò làm việc linh hoạt theo đúng 4 Tác nhân cửa hàng nhỏ
   const handleSwitchRole = (role: UserRole) => {
     setUserRole(role);
     if (role === UserRole.ADMIN) {
       setAdminInitialTab('DASHBOARD');
       setCurrentView('admin');
-    } else if (role === UserRole.SELLER) {
-      setSellerInitialTab('overview');
-      setCurrentView('seller-channel');
     } else if (role === UserRole.SALES) {
-      setCskhInitialTab('RETURNS');
+      setCskhInitialTab('POS');
       setCurrentView('cskh');
     } else if (role === UserRole.WAREHOUSE) {
       setCurrentView('warehouse');
@@ -503,8 +541,6 @@ const App: React.FC = () => {
   const handleSwitchWorkspace = (workspace: PortalWorkspace) => {
     if (workspace === 'ADMIN') {
       handleSwitchRole(UserRole.ADMIN);
-    } else if (workspace === 'SELLER') {
-      handleSwitchRole(UserRole.SELLER);
     } else if (workspace === 'CSKH') {
       handleSwitchRole(UserRole.SALES);
     } else {
@@ -518,13 +554,14 @@ const App: React.FC = () => {
 
     let createdOrder: CustomerOrder | null = null;
 
-    // Tự động lưu đơn hàng mới vào danh sách Đơn mua của khách hàng
-    if (orderInfo && cartItems.length > 0) {
+    // Tự động lưu đơn hàng mới vào danh sách Đơn mua của khách hàng (Chỉ gồm các món đã tích chọn mua)
+    const purchasedItems = selectedCheckoutItems;
+    if (orderInfo && purchasedItems.length > 0) {
       createdOrder = {
         id: orderInfo.orderId || `DH-${Date.now().toString().slice(-6)}`,
         createdAt: new Date().toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
         status: OrderStatus.PROCESSING,
-        items: cartItems.map(c => ({
+        items: purchasedItems.map(c => ({
           id: c.id,
           name: c.name,
           image: c.image,
@@ -532,10 +569,10 @@ const App: React.FC = () => {
           price: c.price,
           quantity: c.quantity
         })),
-        subtotal: cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        subtotal: purchasedItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
         shippingFee: orderInfo.shippingMethod === 'express' ? 50000 : 30000,
         discount: 50000,
-        totalAmount: orderInfo.totalAmount || cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
+        totalAmount: orderInfo.totalAmount || purchasedItems.reduce((sum, i) => sum + i.price * i.quantity, 0),
         paymentMethod: orderInfo.paymentMethod === 'QR_CODE' ? 'VietQR Napas 24/7' : orderInfo.paymentMethod === 'COD' ? 'Tiền mặt khi nhận hàng (COD)' : 'Thanh toán trực tuyến',
         isPaid: orderInfo.paymentMethod !== 'COD',
         shippingAddress: {
@@ -574,13 +611,18 @@ const App: React.FC = () => {
       setLastCompletedOrder(createdOrder);
     }
 
-    // Làm sạch triệt để giỏ hàng sau khi thanh toán thành công
-    setCartItems([]);
-    try {
-      localStorage.removeItem('zshop_customer_cart');
-    } catch (e) {}
+    // Chỉ xóa những sản phẩm đã chọn mua khỏi giỏ hàng, GIỮ LẠI các sản phẩm chưa chọn mua trong giỏ!
+    const purchasedIds = new Set(purchasedItems.map(i => i.id));
+    setCartItems(prev => {
+      const remaining = prev.filter(item => !purchasedIds.has(item.id));
+      return remaining;
+    });
     if (userRole === UserRole.CUSTOMER) {
-      GioHangService.xoaToanBoGio(1);
+      purchasedItems.forEach(item => {
+        if (!item.id.startsWith('mock')) {
+          GioHangService.xoaKhoiGio(item.id, 1);
+        }
+      });
     }
 
     setCurrentView('result');
@@ -672,44 +714,17 @@ const App: React.FC = () => {
   };
 
   const navigateToSellerChannel = () => {
-    if (userRole === UserRole.SELLER) {
+    if (userRole === UserRole.ADMIN) {
       window.scrollTo(0, 0);
-      setCurrentView('seller-channel');
+      setCurrentView('admin');
     } else {
-      if (confirm('Bạn cần đăng nhập với tài khoản Nhà bán hàng (Seller) để vào Kênh người bán. Chuyển đến trang Đăng nhập?')) {
-        setCurrentView('login');
-      }
+      setCurrentView('login');
     }
   };
 
   const navigateToBecomeSeller = () => {
-    if (userRole === UserRole.GUEST) {
-      if (confirm('Bạn cần đăng nhập hoặc đăng ký tài khoản để trở thành Người bán. Chuyển đến trang Đăng nhập?')) {
-        setCurrentView('login');
-      }
-    } else if (userRole === UserRole.SELLER) {
-      navigateToSellerChannel();
-    } else {
-      window.scrollTo(0, 0);
-      setCurrentView('seller-channel');
-    }
+    setCurrentView('login');
   };
-
-  // Guard: never allow GUEST to stay on seller-channel view
-  React.useEffect(() => {
-    if (currentView === 'seller-channel' && userRole === UserRole.GUEST) {
-      setCurrentView('login');
-    }
-  }, [currentView, userRole]);
-
-  // Auto-upgrade role to SELLER for demo if Admin approves "Cửa hàng ZS-Economy Demo"
-  React.useEffect(() => {
-    const demoShop = globalSellers.find(s => s.shopName === 'Cửa hàng ZS-Economy Demo');
-    if (demoShop && demoShop.status === 'APPROVED' && userRole !== UserRole.SELLER) {
-       setUserRole(UserRole.SELLER);
-       alert('Chúc mừng! Yêu cầu trở thành Người bán của bạn đã được phê duyệt. Bạn hiện đã có quyền truy cập đầy đủ vào Kênh người bán.');
-    }
-  }, [globalSellers, userRole]);
 
   // Deduct stock for POS or Store checkout
   const handleDeductStock = (productId: string, quantity: number) => {
@@ -778,20 +793,16 @@ const App: React.FC = () => {
     }
   };
 
-  const handleLoginSuccess = (role: 'CUSTOMER' | 'ADMIN' | 'SELLER' | 'SALES' | 'WAREHOUSE') => {
+  const handleLoginSuccess = (role: 'CUSTOMER' | 'ADMIN' | 'SALES' | 'WAREHOUSE') => {
     const session = AuthService.getSession();
     setCurrentUser(session?.user || null);
     if (role === 'ADMIN') {
       setUserRole(UserRole.ADMIN);
       setAdminInitialTab('DASHBOARD');
       setCurrentView('admin');
-    } else if (role === 'SELLER') {
-      setUserRole(UserRole.SELLER);
-      setSellerInitialTab('overview');
-      setCurrentView('seller-channel');
     } else if (role === 'SALES') {
       setUserRole(UserRole.SALES);
-      setCskhInitialTab('RETURNS');
+      setCskhInitialTab('POS');
       setCurrentView('cskh');
     } else if (role === 'WAREHOUSE') {
       setUserRole(UserRole.WAREHOUSE);
@@ -825,6 +836,10 @@ const App: React.FC = () => {
           onCheckout={navigateToConfirmation}
           onAddToCart={handleAddToCart}
           onClearCart={handleClearAllCart}
+          onToggleSelectItem={handleToggleSelectCartItem}
+          onSelectAllItems={handleSelectAllCartItems}
+          onSelectCartGroup={handleSelectCartGroup}
+          onBuySingleItem={handleBuySingleCartItem}
           onContinueShopping={() => {
             setIsMiniCartOpen(false);
             if (currentView === 'product') {
@@ -947,36 +962,6 @@ const App: React.FC = () => {
         />
       )}
 
-      {currentView === 'seller-channel' && (
-        userRole !== UserRole.WAREHOUSE && userRole !== UserRole.SALES ? (
-          <SellerChannelPage
-            onBack={navigateToHome}
-            userRole={userRole}
-            initialTab={sellerInitialTab}
-            shopStatus={globalSellers.find(s => s.shopName === 'Cửa hàng ZS-Economy Demo')?.status as 'PENDING' | 'APPROVED' | 'REJECTED'}
-            onRequestApproval={(shopInfo) => {
-               const newId = `S-${Math.floor(Math.random() * 1000) + 200}`;
-               setGlobalSellers([...globalSellers, {
-                   id: newId,
-                   name: 'Nhà Bán Hàng Mới',
-                   shopName: shopInfo.shopName || 'Cửa hàng ZS-Economy Demo',
-                   status: 'PENDING',
-                   date: new Date().toLocaleDateString('en-GB'),
-                   email: 'seller.new@gmail.com'
-               }]);
-            }}
-          />
-        ) : (
-          <AccessDenied 
-            title="Kênh Người Bán (Seller Channel)"
-            requiredRole="Nhà bán hàng (Seller) hoặc Khách hàng"
-            currentRole={userRole}
-            onGoHome={navigateToHome}
-            onGoLogin={() => setCurrentView('login')}
-          />
-        )
-      )}
-
       {(currentView === 'tracking' || currentView === 'orders') && (
         <MyOrdersPage
           orders={customerOrders}
@@ -1013,7 +998,9 @@ const App: React.FC = () => {
 
       {(currentView === 'confirmation' || currentView === 'checkout') && (
         <CheckoutPage
-          cartItems={cartItems}
+          cartItems={selectedCheckoutItems}
+          allCartItems={cartItems}
+          onToggleSelectItem={handleToggleSelectCartItem}
           onBack={navigateToHome}
           onPaymentSuccess={navigateToResult}
           onOpenCart={() => setIsMiniCartOpen(true)}
@@ -1074,18 +1061,19 @@ const App: React.FC = () => {
             globalSellers={globalSellers} 
             setGlobalSellers={setGlobalSellers} 
             onNavigateToWarehouse={() => setCurrentView('warehouse')}
-            onNavigateToCustomers={() => handleCSKHNavigateTab('CUSTOMERS')}
+            onNavigateToCustomers={() => handleCSKHNavigateTab('POS')}
             onNavigateToReturns={() => handleCSKHNavigateTab('RETURNS')}
             onNavigateToHome={navigateToHome}
             onSwitchWorkspace={handleSwitchWorkspace}
+            onSwitchRole={handleSwitchRole}
             currentUser={currentUser}
             pendingReturnsCount={returnRequests.filter(r => r.status === 'PENDING').length}
             initialTab={adminInitialTab}
           />
         ) : (
           <AccessDenied 
-            title="Quản Trị Hệ Thống (Admin Dashboard)"
-            requiredRole="Chủ shop (Admin)"
+            title="Quản Trị Cửa Hàng (Chủ Cửa Hàng)"
+            requiredRole="Chủ cửa hàng (Admin)"
             currentRole={userRole}
             onGoHome={navigateToHome}
             onGoLogin={() => setCurrentView('login')}
@@ -1100,17 +1088,21 @@ const App: React.FC = () => {
             onProcessReturn={handleProcessReturn}
             customers={customers}
             onAddCustomer={handleAddCustomer}
-            onUpdateCustomerPoints={(id, delta) => handleUpdateCustomerPoints(id, delta, 0)}
+            onUpdateCustomerPoints={(id, delta, spent) => handleUpdateCustomerPoints(id, delta, spent || 0)}
             products={products}
             onBackToHome={navigateToHome}
             onSwitchWorkspace={handleSwitchWorkspace}
             currentUser={currentUser}
             initialTab={cskhInitialTab}
+            userRole={userRole}
+            onSwitchRole={handleSwitchRole}
+            onLogout={handleLogout}
+            onDeductStock={handleDeductStock}
           />
         ) : (
           <AccessDenied 
-            title="Cổng CSKH & Vận Hành Bán Hàng"
-            requiredRole="NV CSKH / Bán hàng hoặc Admin"
+            title="Bàn Làm Việc Nhân Viên Bán Hàng (POS & CSKH)"
+            requiredRole="Nhân viên Bán hàng hoặc Chủ cửa hàng"
             currentRole={userRole}
             onGoHome={navigateToHome}
             onGoLogin={() => setCurrentView('login')}
@@ -1128,11 +1120,15 @@ const App: React.FC = () => {
             onAddImportTicket={handleAddImportTicket}
             returnRequests={returnRequests}
             onAddProduct={(newProd) => setProducts(prev => [newProd, ...prev])}
+            userRole={userRole}
+            currentUser={currentUser}
+            onSwitchRole={handleSwitchRole}
+            onLogout={handleLogout}
           />
         ) : (
           <AccessDenied 
-            title="Quản Lý Kho Hàng & Nhập Hàng"
-            requiredRole="Nhân viên Kho hoặc Admin"
+            title="Quản Lý Kho Hàng & Nhập Hàng VN/A"
+            requiredRole="Nhân viên Kho hoặc Chủ cửa hàng"
             currentRole={userRole}
             onGoHome={navigateToHome}
             onGoLogin={() => setCurrentView('login')}
