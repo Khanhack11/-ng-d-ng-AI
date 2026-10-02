@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Check, ChevronLeft, ChevronRight, ShieldCheck, MapPin, Truck, 
   CreditCard, QrCode, Banknote, Wallet, Tag, Ticket, AlertCircle, 
   Copy, RefreshCw, ShoppingBag, Plus, Minus, Trash2, Edit3, X, 
-  Award, Smartphone, ThumbsUp, HelpCircle
+  Award, Smartphone, ThumbsUp
 } from 'lucide-react';
 import { PaymentMethodType, CartItem, UserRole, CustomerProfile } from '../types';
 import { DatHangService, ThanhToanService, AuthUserData, getProductVisualSync } from '../services';
@@ -590,7 +590,7 @@ export default function CheckoutPage({
                             className="w-44 h-44 object-contain rounded-lg mx-auto"
                             onError={(e: any) => {
                               // Fallback nếu mất mạng
-                              e.target.src = 'components/img_QR/QR_NQK.png';
+                              e.target.src = '/QR_NQK.png';
                             }}
                           />
                           <div className="text-[10px] font-bold text-slate-500 mt-1 flex items-center justify-center gap-1">

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Lock, Key, CheckCircle2, AlertCircle, X, Eye, EyeOff } from 'lucide-react';
 import { AuthService } from '../services';
 
@@ -80,7 +80,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <Key size={18} className="text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-base leading-tight">Đổi Mật Khẩu (UC01)</h3>
+              <h3 className="font-bold text-base leading-tight">Đổi Mật Khẩu</h3>
               <p className="text-xs text-white/80">Tài khoản: {userEmail}</p>
             </div>
           </div>

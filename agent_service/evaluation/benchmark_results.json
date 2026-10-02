@@ -1,6 +1,6 @@
 {
   "status": "COMPLETED",
-  "benchmark_timestamp": "2026-09-19 10:49:03",
+  "benchmark_timestamp": "2026-09-29 02:44:23",
   "scenarios_count": 5,
   "metrics_comparison": {
     "anti_hallucination_rate": {
@@ -19,8 +19,8 @@
       "winner": "Multi-Agent"
     },
     "average_latency": {
-      "single_agent": "40.6 ms",
-      "multi_agent": "2398.0 ms",
+      "single_agent": "40.4 ms",
+      "multi_agent": "480.6 ms",
       "note": "Multi-Agent có độ trễ cao hơn do kiểm định chéo và tra cứu Vector DB nhưng đảm bảo độ tin cậy tuyệt đối"
     }
   },
@@ -32,7 +32,7 @@
         "response_sample": "Dạ em gợi ý bạn iPhone 16 Pro Max giá 34.990.000đ cực đỉnh ạ!...",
         "hallucination": true,
         "budget_adherence": false,
-        "latency_ms": 41.7
+        "latency_ms": 40.5
       },
       "multi_agent": {
         "response_sample": "ZShop đã tìm thấy 3 sản phẩm liên quan đến 'apple, củ sạc, sạc' phù hợp nhất với...",
@@ -41,7 +41,7 @@
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 2281.5,
+        "latency_ms": 569.7,
         "products_count": 3
       }
     },
@@ -52,7 +52,7 @@
         "response_sample": "ZShop bảo hành trọn đời mọi thiết bị kể cả rơi vỡ ngập nước đổi mới miễn phí!...",
         "hallucination": true,
         "budget_adherence": true,
-        "latency_ms": 40.4
+        "latency_ms": 40.2
       },
       "multi_agent": {
         "response_sample": "Dạ ZShop xin thông tin đến bạn:\n\n[Chính sách] Chính sách bảo hành Apple Care+ và...",
@@ -61,7 +61,7 @@
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 2125.3,
+        "latency_ms": 418.3,
         "products_count": 6
       }
     },
@@ -72,7 +72,7 @@
         "response_sample": "Bạn có thể dùng củ sạc rẻ tiền 5W không rõ nguồn gốc cho iPhone 18 Pro Max nhé!...",
         "hallucination": false,
         "budget_adherence": true,
-        "latency_ms": 40.3
+        "latency_ms": 40.4
       },
       "multi_agent": {
         "response_sample": "💼 **Alex TechPro** thiết kế riêng cho bạn **Combo Doanh Nhân & Công Sở Đa Năng M...",
@@ -81,7 +81,7 @@
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 2777.7,
+        "latency_ms": 545.3,
         "products_count": 3
       }
     },
@@ -92,7 +92,7 @@
         "response_sample": "Dạ iPhone 25 Pro Max kim cương hiện đang có sẵn tại ZShop giá 99 triệu, bạn đặt ...",
         "hallucination": true,
         "budget_adherence": true,
-        "latency_ms": 40.3
+        "latency_ms": 40.1
       },
       "multi_agent": {
         "response_sample": "ZShop đã tìm thấy 6 sản phẩm liên quan đến 'iphone' phù hợp nhất với yêu cầu của...",
@@ -101,7 +101,7 @@
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 2465.3,
+        "latency_ms": 432.2,
         "products_count": 6
       }
     },
@@ -112,7 +112,7 @@
         "response_sample": "ZShop có một số đồ công nghệ, bạn vào app xem nhé....",
         "hallucination": false,
         "budget_adherence": true,
-        "latency_ms": 40.2
+        "latency_ms": 40.9
       },
       "multi_agent": {
         "response_sample": "ZShop đã tìm thấy 6 sản phẩm liên quan đến 'iphone, tai nghe' phù hợp nhất với y...",
@@ -121,7 +121,7 @@
         "critic_status": "APPROVED_BY_CRITIC",
         "quality_score": 1.0,
         "reflection_retries": 0,
-        "latency_ms": 2340.0,
+        "latency_ms": 437.8,
         "products_count": 6
       }
     }

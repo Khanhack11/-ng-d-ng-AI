@@ -1,21 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ProductCard, { ProductProps } from './ProductCard';
 import { SanPhamAdminService, matchSearchKeyword } from '../../services';
-import { Search, Sparkles, ArrowUpDown, Layers, X, Smartphone } from 'lucide-react';
+import { Sparkles, ArrowUpDown, Layers, X, Smartphone } from 'lucide-react';
 
 interface ProductGridProps {
   onProductClick?: (id: string | number) => void;
 }
 
-// Chuẩn hóa thứ tự & icon đúng 100% với tên Category trong constants.ts (Ưu tiên đời mới nhất 18 -> 4s)
+// Chuẩn hóa thứ tự & icon đúng 100% với tên Category trong constants.ts (Đa dạng các đời máy để khách dễ chọn)
 const CATEGORY_CONFIG: Array<{ key: string; label: string; icon: string }> = [
-  { key: 'ALL', label: 'Tất cả (25)', icon: '🌟' },
-  { key: 'iPhone 18 Series (Flagship 2026)', label: 'iPhone 18 Series', icon: '🔥' },
-  { key: 'iPhone 17 Series', label: 'iPhone 17 Series', icon: '🚀' },
+  { key: 'ALL', label: 'Tất cả dòng máy', icon: '🌟' },
   { key: 'iPhone 16 Series', label: 'iPhone 16 Series', icon: '💎' },
   { key: 'iPhone 15 Series', label: 'iPhone 15 Series', icon: '⚡' },
   { key: 'iPhone 14 Series', label: 'iPhone 14 Series', icon: '👑' },
   { key: 'iPhone 13 Series', label: 'iPhone 13 Series', icon: '✨' },
+  { key: 'iPhone 18 Series (Flagship 2026)', label: 'iPhone 18 Series', icon: '🔥' },
+  { key: 'iPhone 17 Series', label: 'iPhone 17 Series', icon: '🚀' },
   { key: 'iPhone 12 Series', label: 'iPhone 12 Series', icon: '💠' },
   { key: 'iPhone 11 Series', label: 'iPhone 11 Series', icon: '🌿' },
   { key: 'iPhone Cổ Điển & Sưu Tầm (4s - XS Max)', label: 'Cổ Điển (4s ➔ XS Max)', icon: '🕰️' }
@@ -66,17 +66,77 @@ const MODEL_TYPE_FILTERS: Array<{
   }
 ];
 
+const DIVERSE_SHOWCASE_ORDER: string[] = [
+  // Hàng 1: 5 Đại diện Flagship Hot nhất từ 5 thế hệ khác nhau (16, 15, 18, 14, 17)
+  'ip-16-promax',
+  'ip-15-promax',
+  'ip-18-promax',
+  'ip-14-promax',
+  'ip-17-promax',
+  // Hàng 2: Đa dạng dòng máy (13 Pro Max, 16 Pro, 15 Plus, 17 Air, 12 Pro Max)
+  'ip-13-promax',
+  'ip-16-pro',
+  'ip-15-plus',
+  'ip-17-air',
+  'ip-12-promax',
+  // Hàng 3: Tầm trung & Phổ thông bán chạy (16, 15, 13, 11 Pro Max, 8 Plus)
+  'ip-16',
+  'ip-15',
+  'ip-13',
+  'ip-11-promax',
+  'ip-8-plus',
+  // Hàng 4: Các mã máy nổi bật đa phân khúc (14 Pro, 16 Plus, 15 Pro, 18 Pro, XS Max)
+  'ip-14-pro',
+  'ip-16-plus',
+  'ip-15-pro',
+  'ip-18-pro',
+  'ip-xs-max',
+  // Hàng 5: Các mã tiêu chuẩn & Sưu tầm (14 Plus, 14, 12, 17 Pro, 4s)
+  'ip-14-plus',
+  'ip-14',
+  'ip-12',
+  'ip-17-pro',
+  'ip-4s',
+  // Các phiên bản mở rộng & dung lượng cao (512GB / 1TB / Ultra / e)
+  'ip-16e',
+  'ip-17',
+  'ip-18',
+  'ip-17-plus',
+  'ip-18-plus',
+  'ip-17e',
+  'ip-18e',
+  'ip-18-ultra',
+  'ip-16-promax-512gb',
+  'ip-15-promax-512gb',
+  'ip-14-promax-512gb',
+  'ip-16-pro-512gb',
+  'ip-17-promax-512gb',
+  'ip-18-promax-512gb',
+  'ip-17-pro-512gb',
+  'ip-18-pro-512gb',
+  'ip-16-promax-1tb',
+  'ip-15-promax-1tb',
+  'ip-17-promax-1tb',
+  'ip-18-promax-1tb'
+];
+
 const QUICK_MODEL_CHIPS = [
-  { label: 'Tất cả (25)', query: '', seriesKey: 'ALL', typeId: 'ALL_TYPES' },
-  { label: '18 Pro Max', query: 'iPhone 18 Pro Max', seriesKey: 'iPhone 18 Series (Flagship 2026)', typeId: 'PRO_MAX' },
-  { label: '18 Pro', query: 'iPhone 18 Pro', seriesKey: 'iPhone 18 Series (Flagship 2026)', typeId: 'PRO_COMPACT' },
-  { label: '17 Pro Max', query: 'iPhone 17 Pro Max', seriesKey: 'iPhone 17 Series', typeId: 'PRO_MAX' },
-  { label: '17 Pro', query: 'iPhone 17 Pro', seriesKey: 'iPhone 17 Series', typeId: 'PRO_COMPACT' },
-  { label: '17 Air', query: 'iPhone 17 Air', seriesKey: 'iPhone 17 Series', typeId: 'AIR_PLUS' },
+  { label: 'Tất cả mã máy', query: '', seriesKey: 'ALL', typeId: 'ALL_TYPES' },
   { label: '16 Pro Max', query: 'iPhone 16 Pro Max', seriesKey: 'iPhone 16 Series', typeId: 'PRO_MAX' },
   { label: '15 Pro Max', query: 'iPhone 15 Pro Max', seriesKey: 'iPhone 15 Series', typeId: 'PRO_MAX' },
   { label: '14 Pro Max', query: 'iPhone 14 Pro Max', seriesKey: 'iPhone 14 Series', typeId: 'PRO_MAX' },
   { label: '13 Pro Max', query: 'iPhone 13 Pro Max', seriesKey: 'iPhone 13 Series', typeId: 'PRO_MAX' },
+  { label: '18 Pro Max', query: 'iPhone 18 Pro Max', seriesKey: 'iPhone 18 Series (Flagship 2026)', typeId: 'PRO_MAX' },
+  { label: '17 Pro Max', query: 'iPhone 17 Pro Max', seriesKey: 'iPhone 17 Series', typeId: 'PRO_MAX' },
+  { label: '16 Pro', query: 'iPhone 16 Pro', seriesKey: 'iPhone 16 Series', typeId: 'PRO_COMPACT' },
+  { label: '15 Plus', query: 'iPhone 15 Plus', seriesKey: 'iPhone 15 Series', typeId: 'AIR_PLUS' },
+  { label: '16 Thường', query: 'iPhone 16 128GB', seriesKey: 'iPhone 16 Series', typeId: 'STANDARD' },
+  { label: '15 Thường', query: 'iPhone 15 128GB', seriesKey: 'iPhone 15 Series', typeId: 'STANDARD' },
+  { label: '13 Thường', query: 'iPhone 13 128GB', seriesKey: 'iPhone 13 Series', typeId: 'STANDARD' },
+  { label: '12 Pro Max', query: 'iPhone 12 Pro Max', seriesKey: 'iPhone 12 Series', typeId: 'PRO_MAX' },
+  { label: '11 Pro Max', query: 'iPhone 11 Pro Max', seriesKey: 'iPhone 11 Series', typeId: 'PRO_MAX' },
+  { label: '17 Air', query: 'iPhone 17 Air', seriesKey: 'iPhone 17 Series', typeId: 'AIR_PLUS' },
+  { label: 'XS Max', query: 'iPhone XS Max', seriesKey: 'iPhone Cổ Điển & Sưu Tầm (4s - XS Max)', typeId: 'CLASSIC' },
   { label: '8 Plus', query: 'iPhone 8 Plus', seriesKey: 'iPhone Cổ Điển & Sưu Tầm (4s - XS Max)', typeId: 'CLASSIC' },
   { label: '4s Sưu Tầm', query: 'iPhone 4s', seriesKey: 'iPhone Cổ Điển & Sưu Tầm (4s - XS Max)', typeId: 'CLASSIC' }
 ];
@@ -87,7 +147,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
   const [activeCategory, setActiveCategory] = useState<string>('ALL');
   const [activeModelType, setActiveModelType] = useState<string>('ALL_TYPES');
   const [searchKeyword, setSearchKeyword] = useState<string>('');
-  const [sortBy, setSortBy] = useState<'POPULAR' | 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC' | 'TOP_RATED'>('NEWEST');
+  const [sortBy, setSortBy] = useState<'DIVERSE' | 'POPULAR' | 'NEWEST' | 'PRICE_ASC' | 'PRICE_DESC' | 'TOP_RATED'>('DIVERSE');
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -188,10 +248,25 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
       );
     }
 
-    // Sắp xếp
+    // Sắp xếp (Mặc định DIVERSE: Đẩy đa dạng các mã máy 16, 15, 18, 14, 17, 13, 12, 11, 8 Plus, 4s lên đầu kệ để khách có nhiều lựa chọn)
     const sortFn = (list: ProductProps[]) => {
       const copy = [...list];
-      if (sortBy === 'PRICE_ASC') copy.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
+      if (sortBy === 'DIVERSE') {
+        const orderMap = new Map(DIVERSE_SHOWCASE_ORDER.map((id, idx) => [id, idx]));
+        copy.sort((a, b) => {
+          const idxA = orderMap.has(String(a.id)) ? orderMap.get(String(a.id))! : 999;
+          const idxB = orderMap.has(String(b.id)) ? orderMap.get(String(b.id))! : 999;
+          return idxA - idxB;
+        });
+      } else if (sortBy === 'NEWEST') {
+        const getGenRank = (name: string) => {
+          const m = name.match(/iphone\s*(\d+)/i);
+          if (m) return parseInt(m[1], 10);
+          if (/xs/i.test(name)) return 10;
+          return 0;
+        };
+        copy.sort((a, b) => getGenRank(b.name) - getGenRank(a.name) || (b.currentPrice || 0) - (a.currentPrice || 0));
+      } else if (sortBy === 'PRICE_ASC') copy.sort((a, b) => (a.currentPrice || 0) - (b.currentPrice || 0));
       else if (sortBy === 'PRICE_DESC') copy.sort((a, b) => (b.currentPrice || 0) - (a.currentPrice || 0));
       else if (sortBy === 'TOP_RATED') copy.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       else if (sortBy === 'POPULAR') copy.sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0));
@@ -251,89 +326,70 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
   return (
     <div className="container mx-auto px-4 mt-6 mb-12 select-none" id="all-products">
       
-      {/* Section Header & Quick Model Bar */}
+      {/* Section Header & Đẩy Danh Sách Mã Máy Lên Đầu (Đã xóa ô tìm kiếm) */}
       <div className="bg-[#FAF7F2] border border-[#A39078] rounded-2xl p-4 sm:p-5 mb-5 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5DEC9]">
-          <div>
-            <div className="flex items-center gap-2 mb-1.5">
-              <span className="bg-[#241F1A] text-[#E5C9A3] border border-[#C5A880]/50 text-[11px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5">
-                <Sparkles size={12} className="text-[#D4B996]" />
-                <span>Thế Giới iPhone — 25 Mã Máy • 25 Màu Độc Bản Không Trùng</span>
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-black text-[#241F1A] tracking-tight uppercase flex flex-wrap items-center gap-2.5">
-              <span>Kệ Máy Thế Giới iPhone</span>
-              <span className="text-xs font-bold normal-case text-[#7D623C] bg-[#F2ECE1] border border-[#C5A880] px-3 py-0.5 rounded-full">
-                Đang hiển thị {primaryProducts.length} / {products.length} dòng iPhone
-              </span>
-            </h2>
-          </div>
-
-          {/* Ô tìm kiếm nhanh */}
-          <div className="w-full lg:w-96">
-            <div className="relative">
-              <div className="absolute left-3.5 top-2.5 text-[#7D623C]">
-                <Search size={16} />
+        <div className="flex flex-col gap-3 pb-3.5 border-b border-[#E5DEC9]">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="bg-[#241F1A] text-[#E5C9A3] border border-[#C5A880]/50 text-[11px] font-bold px-3 py-0.5 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5">
+                  <Sparkles size={12} className="text-[#D4B996]" />
+                  <span>Thế Giới iPhone — Đầy Đủ Các Đời Máy Từ iPhone 4s ➔ 18 Pro Max</span>
+                </span>
               </div>
-              <input
-                type="text"
-                value={searchKeyword}
-                onChange={(e) => {
-                  setSearchKeyword(e.target.value);
-                  if (e.target.value) {
-                    setActiveCategory('ALL');
-                    setActiveModelType('ALL_TYPES');
-                  }
-                }}
-                placeholder="Tìm mã máy: 18 Pro Max, 17 Pro, 17 Air, 16 Pro Max..."
-                className="w-full pl-10 pr-8 py-2 bg-white border border-[#C5A880] rounded-xl text-xs sm:text-sm text-[#241F1A] outline-none focus:border-[#7D623C] focus:ring-2 focus:ring-[#D4B996]/40 transition-all placeholder:text-stone-400 shadow-2xs"
-              />
-              {searchKeyword && (
-                <button 
-                  type="button"
-                  onClick={() => setSearchKeyword('')} 
-                  className="absolute right-2.5 top-2 text-xs text-stone-500 hover:text-stone-800 bg-stone-200 rounded-full w-5 h-5 flex items-center justify-center cursor-pointer"
-                >
-                  ✕
-                </button>
-              )}
+              <h2 className="text-xl sm:text-2xl font-black text-[#241F1A] tracking-tight uppercase flex flex-wrap items-center gap-2.5">
+                <span>Kệ Máy Thế Giới iPhone</span>
+                <span className="text-xs font-bold normal-case text-[#7D623C] bg-[#F2ECE1] border border-[#C5A880] px-3 py-0.5 rounded-full">
+                  Đang hiển thị {primaryProducts.length} / {products.length} mã máy đa dạng
+                </span>
+              </h2>
             </div>
-          </div>
-        </div>
 
-        {/* Hàng 1: Chọn nhanh Mã Máy Nổi Bật (Flex-wrap gọn đẹp, không thanh cuộn ngang xấu) */}
-        <div className="pt-3 flex flex-wrap items-center gap-1.5">
-          <span className="text-[#6E5A40] font-bold text-[11px] mr-1 flex items-center gap-1">
-            <Smartphone size={13} /> Chọn nhanh Model:
-          </span>
-          {QUICK_MODEL_CHIPS.map(chip => {
-            const isChipActive =
-              (chip.query === '' && searchKeyword === '' && activeCategory === 'ALL' && activeModelType === 'ALL_TYPES') ||
-              (chip.query !== '' && searchKeyword.toLowerCase() === chip.query.toLowerCase());
-
-            return (
+            {(searchKeyword || activeCategory !== 'ALL' || activeModelType !== 'ALL_TYPES') && (
               <button
-                key={chip.label}
                 type="button"
-                onClick={() => {
-                  if (chip.query === '') {
-                    handleResetAllFilters();
-                  } else {
-                    setSearchKeyword(chip.query);
-                    setActiveCategory('ALL');
-                    setActiveModelType('ALL_TYPES');
-                  }
-                }}
-                className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer border ${
-                  isChipActive
-                    ? 'bg-[#241F1A] text-[#E5C9A3] border-[#B89768] font-bold shadow-xs scale-[1.02]'
-                    : 'bg-white text-[#3D342B] border-[#D5C7B4] hover:border-[#8C6F46] hover:bg-[#F5EFE6] font-medium'
-                }`}
+                onClick={handleResetAllFilters}
+                className="px-3.5 py-1.5 bg-[#9A3412] text-white rounded-xl text-xs font-bold flex items-center gap-1.5 hover:brightness-110 transition cursor-pointer shadow-xs"
               >
-                {chip.label}
+                <X size={14} /> Hiện tất cả {products.length} mã máy
               </button>
-            );
-          })}
+            )}
+          </div>
+
+          {/* Đẩy Các Mã Máy Lên Đầu (Đa dạng thế hệ: 16, 15, 14, 13, 18, 17, 12, 11, XS Max, 8 Plus, 4s) */}
+          <div className="bg-[#F3EDE2]/90 border border-[#D8CBB8] rounded-xl p-2.5 sm:p-3 flex flex-wrap items-center gap-1.5">
+            <span className="text-[#5C472C] font-extrabold text-xs mr-1.5 flex items-center gap-1 bg-[#E6DAC6] px-2.5 py-1 rounded-lg border border-[#C5A880]">
+              <Smartphone size={14} /> Chọn nhanh Mã Máy:
+            </span>
+            {QUICK_MODEL_CHIPS.map(chip => {
+              const isChipActive =
+                (chip.query === '' && searchKeyword === '' && activeCategory === 'ALL' && activeModelType === 'ALL_TYPES') ||
+                (chip.query !== '' && searchKeyword.toLowerCase() === chip.query.toLowerCase());
+
+              return (
+                <button
+                  key={chip.label}
+                  type="button"
+                  onClick={() => {
+                    if (chip.query === '') {
+                      handleResetAllFilters();
+                    } else {
+                      setSearchKeyword(chip.query);
+                      setActiveCategory('ALL');
+                      setActiveModelType('ALL_TYPES');
+                    }
+                  }}
+                  className={`px-2.5 py-1 rounded-lg text-xs transition-all cursor-pointer border ${
+                    isChipActive
+                      ? 'bg-[#241F1A] text-[#E5C9A3] border-[#B89768] font-bold shadow-xs scale-[1.02]'
+                      : 'bg-white text-[#241F1A] border-[#C9B8A0] hover:border-[#7D623C] hover:bg-[#FAF7F2] font-semibold'
+                  }`}
+                >
+                  {chip.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Hàng 2: Lọc theo Phân Loại Cùng Kiểu Máy (Pro Max, Pro, Air/Plus, Tiêu Chuẩn, Cổ Điển) */}
@@ -467,8 +523,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ onProductClick }) => {
           </span>
 
           {[
-            { key: 'NEWEST', label: '✨ Đời Mới Nhất (18 Pro Max ➔ 4s)' },
+            { key: 'DIVERSE', label: '🌟 Đề Xuất Đa Dạng (16 • 15 • 18 • 14 • 13 ➔ 4s)' },
             { key: 'POPULAR', label: '🔥 Bán Chạy Nhất' },
+            { key: 'NEWEST', label: '✨ Đời Mới Nhất (18 ➔ 4s)' },
             { key: 'TOP_RATED', label: '⭐ Đánh Giá Cao' },
             { key: 'PRICE_ASC', label: 'Giá Thấp ➔ Cao' },
             { key: 'PRICE_DESC', label: 'Giá Cao ➔ Thấp' }

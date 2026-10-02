@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Lock, ArrowLeft, Eye, EyeOff, ShoppingBag, X, CheckCircle2, ShieldCheck, Store, UserCheck, Sparkles, Wifi, WifiOff, AlertCircle } from 'lucide-react';
+import { User, Lock, ArrowLeft, Eye, EyeOff, ShoppingBag, X, CheckCircle2, ShieldCheck, Store, UserCheck, AlertCircle } from 'lucide-react';
 import { AuthService } from '../services';
 
 interface LoginPageProps {
@@ -41,7 +41,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToReg
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
 
   // Google Modal State
   const [showGoogleModal, setShowGoogleModal] = useState(false);
@@ -58,10 +57,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess, onBack, onGoToReg
       setEmail('customer@test.com');
       setPassword('123');
     }
-
-    AuthService.checkBackendHealth().then((status) => {
-      setIsBackendOnline(status);
-    });
   }, []);
 
   // Đổi Role Tab tự động điền thông tin tài khoản mẫu theo 4 Tác nhân UML

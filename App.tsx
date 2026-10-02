@@ -1,24 +1,15 @@
 import React, { useState } from 'react';
 import ProductDetailPage from './components/ProductDetailPage';
 import CheckoutPage from './components/CheckoutPage';
-import OrderConfirmationPage from './components/OrderConfirmationPage';
 import TransactionResultPage from './components/TransactionResultPage';
-import OrderDetailPage from './components/OrderDetailPage';
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
-import SellerChannelPage from './components/SellerChannelPage';
-import OrderTrackingPage from './components/OrderTrackingPage';
 import AdminDashboard from './components/AdminDashboard';
 import MiniCart from './components/MiniCart';
-import HomePage from './components/HomePage';
 import ShopeeHomePage from './components/ZShop/ShopeeHomePage';
-import LandingPage3D from './components/Landing3D/LandingPage3D';
 import ForgotPasswordPage from './components/ForgotPasswordPage';
 import ChatBot from './components/ChatBot';
 import WarehousePage from './components/WarehousePage';
-import CustomerManagementPage from './components/CustomerManagementPage';
-import ReturnManagementPage from './components/ReturnManagementPage';
-import POSPage from './components/POSPage';
 import ChangePasswordModal from './components/ChangePasswordModal';
 import CustomerLoyaltyModal from './components/CustomerLoyaltyModal';
 import MyOrdersPage from './components/MyOrdersPage';
@@ -29,14 +20,11 @@ import {
   StockImportTicket, ReturnRequest, CustomerOrder, 
   CustomerOrderItem, CustomerReview, OrderStatus 
 } from './types';
-import { 
-  LayoutDashboard, ShoppingCart, Package, Users, RotateCcw, 
-  Store, Sparkles, ChevronDown, ChevronUp, ShieldCheck 
-} from 'lucide-react';
-import { MOCK_CART_ITEMS, MOCK_PRODUCTS_LIST } from './constants';
+import { ShieldCheck } from 'lucide-react';
+import { MOCK_PRODUCTS_LIST } from './constants';
 import { GioHangService, AuthService, AuthUserData, getProductVisualSync } from './services';
 
-type ViewState = 'landing-3d' | 'home' | 'product' | 'confirmation' | 'checkout' | 'result' | 'order-detail' | 'login' | 'tracking' | 'orders' | 'admin' | 'register' | 'seller-channel' | 'forgot-password' | 'warehouse' | 'customers' | 'returns' | 'pos' | 'cskh';
+type ViewState = 'home' | 'product' | 'confirmation' | 'checkout' | 'result' | 'order-detail' | 'login' | 'tracking' | 'orders' | 'admin' | 'register' | 'forgot-password' | 'warehouse' | 'customers' | 'returns' | 'pos' | 'cskh';
 
 const INITIAL_CUSTOMERS: CustomerProfile[] = [
   { id: 'CUST-001', name: 'Nguyễn Quốc Khánh', phone: '0901234567', email: 'khanh.nguyen@gmail.com', address: '12 Lê Lợi, P. Bến Nghé, Q.1, TP.HCM', points: 450, tier: 'Vàng', totalSpent: 12500000, createdAt: '10/01/2026' },
@@ -73,7 +61,7 @@ const INITIAL_IMPORT_TICKETS: StockImportTicket[] = [
     totalQuantity: 48,
     totalCost: 1272000000,
     status: 'COMPLETED',
-    note: 'Nhập bổ sung iPhone 16 Pro Max theo khuyến nghị kho AI (UC08)'
+    note: 'Nhập bổ sung iPhone 16 Pro Max theo khuyến nghị kho AI'
   }
 ];
 
@@ -345,7 +333,6 @@ const App: React.FC = () => {
   // Tab states for role portals
   const [adminInitialTab, setAdminInitialTab] = useState<'DASHBOARD' | 'ORDERS' | 'PRODUCTS' | 'SELLERS' | 'CONFIG' | 'AI_BI'>('DASHBOARD');
   const [cskhInitialTab, setCskhInitialTab] = useState<'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING'>('POS');
-  const [sellerInitialTab, setSellerInitialTab] = useState<'overview' | 'products' | 'orders' | 'profile'>('overview');
 
   // Tải giỏ hàng từ máy chủ nếu có (tuyệt đối KHÔNG gán fallback MOCK_CART_ITEMS để tránh tái lặp đồ cũ)
   React.useEffect(() => {
@@ -474,12 +461,6 @@ const App: React.FC = () => {
     setCurrentView('checkout');
   };
 
-  const navigateToCheckout = () => {
-    setIsMiniCartOpen(false);
-    window.scrollTo(0, 0);
-    setCurrentView('checkout');
-  };
-
   const navigateToProduct = (productId?: string) => {
     if (productId) {
       setSelectedProductId(productId);
@@ -495,6 +476,12 @@ const App: React.FC = () => {
 
   // Điều hướng nhanh đến từng chức vụ của Admin
   const handleAdminNavigateTab = (tab: 'DASHBOARD' | 'ORDERS' | 'PRODUCTS' | 'SELLERS' | 'CONFIG' | 'AI_BI') => {
+    const session = AuthService.getSession();
+    const isAdmin = currentUser?.role === 'ADMIN' || session?.role === 'ADMIN';
+    if (!isAdmin) {
+      alert('Chỉ tài khoản Chủ cửa hàng (Admin) mới có quyền truy cập khu vực Quản trị!');
+      return;
+    }
     setAdminInitialTab(tab);
     if (userRole !== UserRole.ADMIN) {
       setUserRole(UserRole.ADMIN);
@@ -514,14 +501,25 @@ const App: React.FC = () => {
   };
 
   // Điều hướng nhanh đến Quản trị Cửa hàng
-  const handleSellerNavigateTab = (tab: 'overview' | 'products' | 'orders' | 'profile' = 'overview') => {
-    setSellerInitialTab(tab);
+  const handleSellerNavigateTab = (_tab: 'overview' | 'products' | 'orders' | 'profile' = 'overview') => {
+    const session = AuthService.getSession();
+    const isAdmin = currentUser?.role === 'ADMIN' || session?.role === 'ADMIN';
+    if (!isAdmin) {
+      alert('Chỉ tài khoản Chủ cửa hàng (Admin) mới có quyền truy cập!');
+      return;
+    }
     window.scrollTo(0, 0);
     setCurrentView('admin');
   };
 
-  // Chuyển đổi vai trò làm việc linh hoạt theo đúng 4 Tác nhân cửa hàng nhỏ
+  // Chuyển đổi vai trò làm việc linh hoạt - CHỈ DÀNH CHO ADMIN ĐÃ ĐĂNG NHẬP
   const handleSwitchRole = (role: UserRole) => {
+    const session = AuthService.getSession();
+    const isAdmin = currentUser?.role === 'ADMIN' || session?.role === 'ADMIN';
+    if (!isAdmin) {
+      alert('Chỉ tài khoản Chủ cửa hàng (Admin) mới có quyền chuyển đổi giữa các tác nhân!');
+      return;
+    }
     setUserRole(role);
     if (role === UserRole.ADMIN) {
       setAdminInitialTab('DASHBOARD');
@@ -539,6 +537,11 @@ const App: React.FC = () => {
 
   // Switch workspace handler từ PortalTopBar
   const handleSwitchWorkspace = (workspace: PortalWorkspace) => {
+    const session = AuthService.getSession();
+    const isAdmin = currentUser?.role === 'ADMIN' || session?.role === 'ADMIN';
+    if (!isAdmin) {
+      return;
+    }
     if (workspace === 'ADMIN') {
       handleSwitchRole(UserRole.ADMIN);
     } else if (workspace === 'CSKH') {
@@ -628,11 +631,6 @@ const App: React.FC = () => {
     setCurrentView('result');
   };
 
-  const navigateToOrderDetail = () => {
-    window.scrollTo(0, 0);
-    setCurrentView('order-detail');
-  };
-
   // 1-Click Re-Order: Thêm lại tất cả sản phẩm vào giỏ hàng và mở giỏ
   const handleReOrder = (items: CustomerOrderItem[]) => {
     const newCartItems: CartItem[] = items.map(it => ({
@@ -663,7 +661,7 @@ const App: React.FC = () => {
     returnType: 'EXCHANGE_SIZE' | 'REFUND', 
     reason: string, 
     exchangeSize?: string, 
-    refundBankInfo?: string
+    _refundBankInfo?: string
   ) => {
     // 1. Cập nhật trạng thái đơn hàng của người mua
     setCustomerOrders(prev => prev.map(o => {
@@ -789,7 +787,7 @@ const App: React.FC = () => {
         handleUpdateCustomerPoints(customers[0].id, -target.pointsToDeduct, 0);
       }
 
-      alert(`✅ Đã xử lý hoàn tất (UC10 Include)!\n- Hoàn tiền: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(target.refundAmount)}\n- Đã thu hồi: ${target.pointsToDeduct} điểm thưởng tích lũy của khách hàng.`);
+      alert(`✅ Đã xử lý hoàn tất!\n- Hoàn tiền: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(target.refundAmount)}\n- Đã thu hồi: ${target.pointsToDeduct} điểm thưởng tích lũy của khách hàng.`);
     }
   };
 
@@ -851,20 +849,6 @@ const App: React.FC = () => {
         />
       )}
 
-      {currentView === 'landing-3d' && (
-        <LandingPage3D
-          onEnterStore={() => setCurrentView('home')}
-          onProductClick={navigateToProduct}
-          onOpenCart={() => setIsMiniCartOpen(true)}
-          cartItemCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-          userRole={userRole}
-          onLogin={() => setCurrentView('login')}
-          onLogout={handleLogout}
-          onGoToAdmin={() => setCurrentView('admin')}
-          onOpenSellerChannel={navigateToSellerChannel}
-        />
-      )}
-
       {currentView === 'home' && (
         <ShopeeHomePage
           onProductClick={navigateToProduct}
@@ -894,6 +878,11 @@ const App: React.FC = () => {
           onNavigateSeller={handleSellerNavigateTab}
           onSwitchRole={handleSwitchRole}
           onSwitchWorkspace={handleSwitchWorkspace}
+          products={products}
+          cartItems={cartItems}
+          onAddToCart={handleAddToCart}
+          customerProfile={customers.find(c => c.email === currentUser?.email) || customers[0]}
+          customerOrders={customerOrders as any}
         />
       )}
 
@@ -962,7 +951,7 @@ const App: React.FC = () => {
         />
       )}
 
-      {(currentView === 'tracking' || currentView === 'orders') && (
+      {(currentView === 'tracking' || currentView === 'orders' || currentView === 'order-detail') && (
         <MyOrdersPage
           orders={customerOrders}
           onBackToHome={navigateToHome}
@@ -1037,23 +1026,6 @@ const App: React.FC = () => {
         />
       )}
 
-      {currentView === 'order-detail' && (
-        <OrderDetailPage
-          cartItems={cartItems}
-          onBack={navigateToResult}
-          onGoHome={navigateToHome}
-          onOpenCart={() => setIsMiniCartOpen(true)}
-          cartItemCount={cartItems.reduce((acc, item) => acc + item.quantity, 0)}
-          userRole={userRole}
-          onLogin={() => setCurrentView('login')}
-          onLogout={handleLogout}
-          onOpenRegister={() => setCurrentView('register')}
-          onOpenSellerChannel={navigateToSellerChannel}
-          onBecomeSeller={navigateToBecomeSeller}
-          onProductClick={navigateToProduct}
-        />
-      )}
-
       {currentView === 'admin' && (
         userRole === UserRole.ADMIN ? (
           <AdminDashboard 
@@ -1081,7 +1053,7 @@ const App: React.FC = () => {
         )
       )}
 
-      {currentView === 'cskh' && (
+      {(currentView === 'cskh' || currentView === 'customers' || currentView === 'returns' || currentView === 'pos') && (
         userRole === UserRole.SALES || userRole === UserRole.ADMIN ? (
           <CSKHPortalPage
             returnRequests={returnRequests}
@@ -1093,11 +1065,18 @@ const App: React.FC = () => {
             onBackToHome={navigateToHome}
             onSwitchWorkspace={handleSwitchWorkspace}
             currentUser={currentUser}
-            initialTab={cskhInitialTab}
+            initialTab={
+              currentView === 'customers' ? 'CUSTOMERS' :
+              currentView === 'returns' ? 'RETURNS' :
+              currentView === 'pos' ? 'POS' :
+              cskhInitialTab
+            }
             userRole={userRole}
             onSwitchRole={handleSwitchRole}
             onLogout={handleLogout}
             onDeductStock={handleDeductStock}
+            onNavigateAdminTab={handleAdminNavigateTab}
+            onNavigateWarehouse={() => setCurrentView('warehouse')}
           />
         ) : (
           <AccessDenied 
@@ -1124,6 +1103,8 @@ const App: React.FC = () => {
             currentUser={currentUser}
             onSwitchRole={handleSwitchRole}
             onLogout={handleLogout}
+            onNavigateAdminTab={handleAdminNavigateTab}
+            onNavigateCSKH={handleCSKHNavigateTab}
           />
         ) : (
           <AccessDenied 
@@ -1136,75 +1117,13 @@ const App: React.FC = () => {
         )
       )}
 
-      {currentView === 'customers' && (
-        userRole === UserRole.SALES || userRole === UserRole.ADMIN ? (
-          <CustomerManagementPage
-            customers={customers}
-            onBack={navigateToHome}
-            onAddCustomer={handleAddCustomer}
-            onUpdatePoints={(id, delta) => handleUpdateCustomerPoints(id, delta, 0)}
-            onOpenReturns={() => setCurrentView('returns')}
-            onOpenPOS={() => setCurrentView('pos')}
-          />
-        ) : (
-          <AccessDenied 
-            title="Quản Lý Khách Hàng (CRM)"
-            requiredRole="NV CSKH / Bán hàng hoặc Admin"
-            currentRole={userRole}
-            onGoHome={navigateToHome}
-            onGoLogin={() => setCurrentView('login')}
-          />
-        )
-      )}
-
-      {currentView === 'returns' && (
-        userRole === UserRole.SALES || userRole === UserRole.ADMIN ? (
-          <ReturnManagementPage
-            returnRequests={returnRequests}
-            onBack={navigateToHome}
-            onProcessReturn={handleProcessReturn}
-            onOpenCustomers={() => setCurrentView('customers')}
-            onOpenPOS={() => setCurrentView('pos')}
-          />
-        ) : (
-          <AccessDenied 
-            title="Quản Lý Đổi Trả & Hoàn Tiền"
-            requiredRole="NV CSKH / Bán hàng hoặc Admin"
-            currentRole={userRole}
-            onGoHome={navigateToHome}
-            onGoLogin={() => setCurrentView('login')}
-          />
-        )
-      )}
-
-      {currentView === 'pos' && (
-        userRole === UserRole.SALES || userRole === UserRole.ADMIN ? (
-          <POSPage
-            products={products}
-            customers={customers}
-            cashierName={currentUser?.name || 'Nguyễn Thu Ngân (NV Bán hàng POS)'}
-            onBack={navigateToHome}
-            onDeductStock={handleDeductStock}
-            onUpdateCustomerPoints={handleUpdateCustomerPoints}
-            onOpenCustomers={() => setCurrentView('customers')}
-            onOpenReturns={() => setCurrentView('returns')}
-          />
-        ) : (
-          <AccessDenied 
-            title="Điểm Bán Hàng Tại Quầy (POS)"
-            requiredRole="Nhân viên Bán hàng hoặc Admin"
-            currentRole={userRole}
-            onGoHome={navigateToHome}
-            onGoLogin={() => setCurrentView('login')}
-          />
-        )
-      )}
-
       {/* Global AI ChatBot positioned at the bottom right with AI Skills & Multi-Persona Engine */}
       <ChatBot 
         products={products}
         cartItems={cartItems}
         onAddToCart={handleAddToCart}
+        onOpenCart={() => setIsMiniCartOpen(true)}
+        onOpenLoyaltyModal={() => setIsLoyaltyModalOpen(true)}
         onSelectProduct={(productId) => {
           setSelectedProductId(productId);
           setCurrentView('product');

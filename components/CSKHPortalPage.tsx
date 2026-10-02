@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { 
   RotateCcw, Users, ShoppingCart, Truck, Search, 
-  CheckCircle, XCircle, ArrowLeft, Phone, 
-  Clock, Printer, X, CreditCard, Flame, Smartphone, RefreshCw
+  ArrowLeft, Printer, X, CreditCard, Flame
 } from 'lucide-react';
 import { 
   ReturnRequest, CustomerProfile, ProductDetail, 
@@ -26,6 +25,8 @@ interface CSKHPortalPageProps {
   onSwitchRole?: (role: UserRole) => void;
   onLogout?: () => void;
   onDeductStock?: (productId: string, quantity: number) => void;
+  onNavigateAdminTab?: (tab: 'DASHBOARD' | 'ORDERS' | 'PRODUCTS' | 'SELLERS' | 'CONFIG' | 'AI_BI') => void;
+  onNavigateWarehouse?: () => void;
 }
 
 export type CSKHTab = 'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING';
@@ -56,7 +57,9 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
   userRole = 'SALES',
   onSwitchRole,
   onLogout,
-  onDeductStock
+  onDeductStock,
+  onNavigateAdminTab,
+  onNavigateWarehouse
 }) => {
   const [activeTab, setActiveTab] = useState<CSKHTab>(initialTab);
 
@@ -170,17 +173,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
   // ==========================================
   // TAB 2: STATE FOR RETURN MANAGEMENT (UC10)
   // ==========================================
-  const [returnStatusFilter, setReturnStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REFUNDED' | 'REJECTED'>('ALL');
-  const [returnSearchTerm, setReturnSearchTerm] = useState('');
-
-  const filteredReturnRequests = returnRequests.filter(req => {
-    const matchStatus = returnStatusFilter === 'ALL' || req.status === returnStatusFilter;
-    const matchSearch =
-      req.orderId.toLowerCase().includes(returnSearchTerm.toLowerCase()) ||
-      req.customerName.toLowerCase().includes(returnSearchTerm.toLowerCase()) ||
-      req.id.toLowerCase().includes(returnSearchTerm.toLowerCase());
-    return matchStatus && matchSearch;
-  });
+  const filteredReturnRequests = returnRequests;
 
   const pendingReturnsCount = returnRequests.filter(r => r.status === 'PENDING').length;
 
@@ -272,6 +265,8 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
         onSwitchWorkspace={onSwitchWorkspace}
         currentUser={currentUser}
         pendingReturnsCount={pendingReturnsCount}
+        onNavigateAdminTab={onNavigateAdminTab}
+        onNavigateWarehouse={onNavigateWarehouse}
         onNavigateCSKH={(tab) => tab && setActiveTab(tab)}
         onNavigateHome={onBackToHome}
         onSwitchRole={onSwitchRole}
@@ -302,7 +297,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
                 </span>
               </div>
               <p className="text-[11px] text-stone-400">
-                Thu ngân bán máy POS tại quầy (UC04), tư vấn Thu cũ đổi mới, tích điểm VIP (UC03) & Bảo hành 1-đổi-1 (UC10)
+                Thu ngân bán máy POS tại quầy, tư vấn Thu cũ đổi mới, tích điểm VIP & Bảo hành 1-đổi-1
               </p>
             </div>
           </div>
@@ -319,7 +314,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
             }`}
           >
             <ShoppingCart size={14} />
-            <span>1. Bán Hàng POS Tại Quầy (UC04)</span>
+            <span>1. Bán Hàng POS Tại Quầy</span>
           </button>
 
           <button
@@ -331,7 +326,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
             }`}
           >
             <Users size={14} />
-            <span>2. Khách Hàng VIP CRM (UC03)</span>
+            <span>2. Khách Hàng VIP CRM</span>
           </button>
 
           <button
@@ -343,7 +338,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
             }`}
           >
             <RotateCcw size={14} />
-            <span>3. Đổi Trả 1-Đổi-1 (UC10)</span>
+            <span>3. Đổi Trả 1-Đổi-1</span>
             {pendingReturnsCount > 0 && (
               <span className="px-1.5 py-0.2 rounded-full bg-rose-600 text-white font-black text-[10px]">
                 {pendingReturnsCount}
@@ -360,7 +355,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
             }`}
           >
             <Truck size={14} />
-            <span>4. Giao Hỏa Tốc 2h (UC06)</span>
+            <span>4. Giao Hỏa Tốc 2h</span>
           </button>
         </div>
       </header>
@@ -766,7 +761,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
             <div className="bg-[#faf8f5] rounded-2xl border border-[#d4b996]/60 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-stone-200 flex flex-wrap items-center justify-between gap-3 bg-stone-100/70">
                 <div>
-                  <h3 className="font-black text-sm text-stone-900">Danh Sách Hồ Sơ Đổi Máy Nâng Cấp Dung Lượng / Bảo Hành 1-Đổi-1 (UC10)</h3>
+                  <h3 className="font-black text-sm text-stone-900">Danh Sách Hồ Sơ Đổi Máy Nâng Cấp Dung Lượng / Bảo Hành 1-Đổi-1</h3>
                   <p className="text-xs text-stone-500">Sau khi Nhân viên Bán hàng duyệt đổi trả, máy sẽ tự động chuyển sang Bộ phận Kho để kiểm định IMEI/Seal</p>
                 </div>
               </div>
@@ -847,7 +842,7 @@ export const CSKHPortalPage: React.FC<CSKHPortalPageProps> = ({
             <div className="bg-[#faf8f5] rounded-2xl shadow-sm border border-[#d4b996]/60 p-6">
               <form onSubmit={handleSearchTracking} className="space-y-3">
                 <label className="block text-xs font-black text-stone-800 uppercase tracking-wide">
-                  Tra Cứu Vận Đơn Giao Hỏa Tốc 2h — Thế Giới iPhone Express (UC06)
+                  Tra Cứu Vận Đơn Giao Hỏa Tốc 2h — Thế Giới iPhone Express
                 </label>
                 <div className="flex gap-2">
                   <input

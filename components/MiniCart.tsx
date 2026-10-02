@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   X, Trash2, ShoppingBag, ArrowRight, Minus, Plus, Sparkles, 
   Ticket, Check, Tag, Truck, ShieldCheck, AlertCircle, 
-  RotateCcw, CheckCircle2, CheckSquare, Square, Layers, Zap
+  RotateCcw, CheckSquare, Square, Layers, Zap
 } from 'lucide-react';
 import { CartItem } from '../types';
 import { MOCK_PRODUCTS_LIST } from '../constants';
@@ -77,17 +77,12 @@ export const MiniCart: React.FC<MiniCartProps> = ({
   const unselectedCount = cartItems.length - selectedItems.length;
   const isAllSelected = cartItems.length > 0 && selectedItems.length === cartItems.length;
 
-  const totalItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const selectedItemQuantity = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const discountAmount = appliedVoucher && selectedItems.length > 0 ? appliedVoucher.discount : 0;
   const isFreeshipEligible = subtotal >= FREESHIP_THRESHOLD || appliedVoucher?.code === 'FREESHIPMAX';
   const shippingFee = selectedItems.length === 0 ? 0 : (isFreeshipEligible ? 0 : 30000);
   const finalTotal = selectedItems.length === 0 ? 0 : Math.max(0, subtotal + shippingFee - (appliedVoucher?.code === 'FREESHIPMAX' ? 0 : discountAmount));
-
-  // Tiến độ Freeship
-  const freeshipProgress = Math.min(100, Math.round((subtotal / FREESHIP_THRESHOLD) * 100));
-  const amountToFreeship = Math.max(0, FREESHIP_THRESHOLD - subtotal);
 
   const handleApplyVoucher = (codeToApply: string) => {
     const code = codeToApply.toUpperCase().trim();

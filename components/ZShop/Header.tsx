@@ -43,16 +43,16 @@ const Header: React.FC<HeaderProps> = ({
   currentUser,
   onLogout,
   onOpenRegister,
-  onOpenSellerChannel,
-  onBecomeSeller,
+  onOpenSellerChannel: _onOpenSellerChannel,
+  onBecomeSeller: _onBecomeSeller,
   onProductClick,
-  onOpenLanding3D,
+  onOpenLanding3D: _onOpenLanding3D,
   onGoToAdmin,
   onViewOrders,
   onGoToWarehouse,
-  onGoToCustomers,
-  onGoToReturns,
-  onOpenPOS,
+  onGoToCustomers: _onGoToCustomers,
+  onGoToReturns: _onGoToReturns,
+  onOpenPOS: _onOpenPOS,
   onOpenChangePassword,
   onOpenLoyaltyModal,
   customerPoints,
@@ -151,8 +151,7 @@ const Header: React.FC<HeaderProps> = ({
         userRole={userRole}
         currentUser={currentUser}
         pendingReturnsCount={pendingReturnsCount}
-        pendingSellersCount={pendingSellersCount}
-        currentWorkspace={userRole === 'ADMIN' ? 'ADMIN' : userRole === 'SELLER' ? 'SELLER' : (userRole === 'SALES' || userRole === 'SUPPORT' || userRole === 'WAREHOUSE') ? 'CSKH' : 'BUYER'}
+        currentWorkspace={userRole === 'ADMIN' ? 'ADMIN' : userRole === 'WAREHOUSE' ? 'WAREHOUSE' : (userRole === 'SALES' || userRole === 'SUPPORT') ? 'CSKH' : 'BUYER'}
         onSwitchWorkspace={onSwitchWorkspace}
         onNavigateAdminTab={onNavigateAdminTab}
         onNavigateCSKH={onNavigateCSKH}
@@ -177,7 +176,7 @@ const Header: React.FC<HeaderProps> = ({
                 </button>
                 <span className="hidden sm:inline text-stone-500">|</span>
                 <button onClick={onViewOrders} className="hover:text-[#e5c9a3] font-medium flex items-center gap-1 cursor-pointer">
-                  📦 Đơn Mua Của Tôi (UC06)
+                  📦 Đơn Mua Của Tôi
                 </button>
                 <span className="hidden sm:inline text-stone-500">|</span>
               </>
@@ -194,7 +193,7 @@ const Header: React.FC<HeaderProps> = ({
             )}
 
             {/* VAI TRÒ ADMIN (CHỦ CỬA HÀNG): HUY HIỆU VÀO TRANG QUẢN TRỊ */}
-            {userRole === 'ADMIN' && (
+            {(userRole === 'ADMIN' || currentUser?.role === 'ADMIN') && (
               <>
                 <button onClick={onGoToAdmin} className="hover:text-amber-200 text-[#e5c9a3] font-bold flex items-center gap-1 bg-[#3a342b] px-2.5 py-0.5 rounded-md border border-[#c5a880]/40 cursor-pointer">
                   👑 Bàn Làm Việc Admin - Chủ Cửa Hàng
@@ -217,7 +216,7 @@ const Header: React.FC<HeaderProps> = ({
             {userRole === 'WAREHOUSE' && (
               <>
                 <button onClick={onGoToWarehouse} className="hover:text-amber-200 text-[#e5c9a3] font-bold flex items-center gap-1 bg-[#3a342b] px-2.5 py-0.5 rounded-md border border-[#c5a880]/40 cursor-pointer">
-                  📦 Bàn Làm Việc Nhân Viên Kho (UC05)
+                  📦 Bàn Làm Việc Nhân Viên Kho
                 </button>
                 <span className="hidden sm:inline text-stone-500">|</span>
               </>
@@ -226,15 +225,6 @@ const Header: React.FC<HeaderProps> = ({
             <span className="hidden md:inline text-stone-300 font-medium">
               📍 Chuyên Điện Thoại iPhone Chính Hãng (iPhone 4s ➔ 18 Pro Max)
             </span>
-            {onNavigateAdminTab && (
-              <button
-                onClick={() => onNavigateAdminTab('AI_BI')}
-                className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#8c6f46] to-[#6b5231] hover:from-[#a38355] hover:to-[#7d603a] text-[#fffdf9] text-[11px] font-black border border-[#e5c9a3]/50 shadow-sm cursor-pointer transition-all"
-                title="Mở Hệ Thống AI Chủ Cửa Hàng (AI Chatbot + AI Forecasting + AI Text-to-Data)"
-              >
-                🤖 Hệ Thống AI Chủ Shop (Text-to-Data)
-              </button>
-            )}
           </div>
         <div className="flex space-x-4 items-center">
           {/* Thông báo gọn gàng với icon vector cố định kích thước */}
@@ -375,7 +365,7 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Search Results Dropdown */}
           {isSearchFocused && searchTerm && (
-              <div className="absolute top-[42px] left-0 w-full mt-2 bg-white rounded-sm shadow-xl border border-gray-100 overflow-hidden z-50 text-gray-800">
+              <div className="absolute top-[42px] left-0 w-full mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50 text-gray-800">
                   {searchResults.length > 0 ? (
                       <div className="max-h-[400px] overflow-y-auto py-2">
                           <div className="px-4 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center justify-between">
@@ -402,7 +392,7 @@ const Header: React.FC<HeaderProps> = ({
                                           </span>
                                           {product.sizes && product.sizes.length > 0 && (
                                               <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.2 rounded">
-                                                  {product.sizes.length} sizes
+                                                  {product.sizes.length} phiên bản
                                               </span>
                                           )}
                                       </div>
@@ -425,7 +415,7 @@ const Header: React.FC<HeaderProps> = ({
                       <div className="p-8 text-center text-gray-500">
                           <PackageOpen size={32} className="mx-auto mb-2 opacity-50" />
                           <p className="text-sm">Không tìm thấy sản phẩm nào khớp với "{searchTerm}"</p>
-                          <p className="text-xs text-gray-400 mt-1">Thử tìm với từ khóa "áo", "giày", "quần", hoặc "túi"</p>
+                          <p className="text-xs text-gray-400 mt-1">Thử tìm với từ khóa "17 Pro Max", "16 Pro Max", "18 Pro Max", hoặc "Titan"</p>
                       </div>
                   )}
               </div>

@@ -1,5 +1,5 @@
-﻿import React from 'react';
-import { Award, Star, Gift, ChevronRight, X, Clock, ShieldCheck, ShoppingBag, ArrowUpRight, TrendingUp } from 'lucide-react';
+import React from 'react';
+import { Award, Gift, X, Clock, ShoppingBag } from 'lucide-react';
 import { CustomerProfile } from '../types';
 
 interface CustomerLoyaltyModalProps {
@@ -65,7 +65,7 @@ export const CustomerLoyaltyModal: React.FC<CustomerLoyaltyModalProps> = ({
               <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl">
                 <Award size={20} className="text-yellow-300" />
               </div>
-              <span className="text-xs uppercase tracking-widest font-bold text-white/90">Thẻ Thành Viên ZShop (UC03)</span>
+              <span className="text-xs uppercase tracking-widest font-bold text-white/90">Thẻ Thành Viên ZShop</span>
             </div>
             <button 
               onClick={onClose}
@@ -134,7 +134,7 @@ export const CustomerLoyaltyModal: React.FC<CustomerLoyaltyModalProps> = ({
               </li>
               <li className="flex items-start gap-1.5">
                 <span className="text-amber-600 font-bold">•</span>
-                <span>Đổi trả sản phẩm: Khi hoàn tiền thành công, hệ thống tự động thu hồi điểm tích lũy của đơn đó (UC10 Include).</span>
+                <span>Đổi trả sản phẩm: Khi hoàn tiền thành công, hệ thống tự động thu hồi điểm tích lũy của đơn đó.</span>
               </li>
             </ul>
           </div>

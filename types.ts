@@ -23,6 +23,11 @@ export interface Order {
   discount: number;
   createdAt: string;
   customerInfo?: OrderFormData; // Added linkage to customer
+  status?: OrderStatus | string;
+  carrierName?: string;
+  estimatedDelivery?: string;
+  totalAmount?: number;
+  trackingCode?: string;
 }
 
 export interface PaymentMethodConfig {
@@ -78,6 +83,11 @@ export interface CartItem {
   imgFilter?: string;
   studioBg?: string;
   swatchHex?: string;
+  selectedColor?: string;
+  selectedSize?: string;
+  availableColors?: string[];
+  availableSizes?: string[];
+  stock?: number;
 }
 
 // Entity: KhachHang (Thông tin khách hàng)

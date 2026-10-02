@@ -27,10 +27,6 @@ export function normalizeVietnamese(str: string): string {
     .trim();
 }
 
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
 /**
  * So khớp từ khóa tìm kiếm thông minh:
  * - Hỗ trợ gõ có dấu ("điện thoại", "củ sạc") hoặc không dấu ("dien thoai", "cu sac")

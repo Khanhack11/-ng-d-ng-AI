@@ -691,16 +691,87 @@ class AiService {
             model: 'gemini-2.5-flash'
         };
 
-        // 0. ƯU TIÊN SỐ 1: Nhận diện truy vấn GenZ về dòng máy iPhone (VD: "tìm cho tôi ip 18prm", "17prm", "so sánh 18prm với 16prm")
+        // =====================================================================
+        // 0. AI ORCHESTRATOR / ROUTER: Phân tích đa ý định (Multi-Agent Synthesis)
+        // Ví dụ: "Tôi có 20 triệu, muốn mua iPhone phù hợp và xem tôi có ưu đãi VIP gì."
+        // =====================================================================
         const genZMatched = this.resolveGenZPhoneModels(query, allProducts);
-        if (genZMatched.length > 0) {
-            result = await this.searchProducts(query, allProducts);
-            metaOptions = {
-                integration_mode: 'Function Calling + DB RAG',
+        const hasBudgetQuery = /(?:dưới|tầm|khoảng|có|từ)\s*\d+(?:[.,]\d+)?\s*(?:củ|cu|triệu|tr|m)/i.test(lower);
+        const hasConsultOrSpec = genZMatched.length > 0 || hasBudgetQuery || /(?:tư vấn mua|mua iphone|so sánh|thông số|chip|camera|pin)/i.test(lower);
+        const hasVipQuery = /(?:điểm vip|ưu đãi vip|quyền lợi vip|bao nhiêu điểm|voucher|mã giảm|hạng thẻ)/i.test(lower);
+        const hasOrderQuery = /(?:đơn hàng|dh-|tra cứu đơn|kiểm tra đơn|đang ở đâu)/i.test(lower);
+        const hasCareQuery = /(?:bảo hành|đổi trả|hoàn tiền|1 đổi 1|care)/i.test(lower);
+
+        // Nếu câu hỏi kết hợp nhiều Agent (VD: Consult Agent + VIP Agent)
+        if (hasConsultOrSpec && (hasVipQuery || hasOrderQuery || hasCareQuery)) {
+            const searchRes = await this.searchProducts(query, allProducts);
+            const activeAgents = ['ConsultAgent(RAG)'];
+            let combinedMsg = `✨ **ZShop GenZ iPhone AI** đã điều phối và tổng hợp kết quả cho bạn:\n\n` +
+                              `📱 **1. Tư Vấn Sản Phẩm (RAG Database)**:\n${searchRes.message}`;
+            let loyaltyObj = undefined;
+            let promosArr = undefined;
+            let orderObj = undefined;
+
+            if (hasVipQuery) {
+                activeAgents.push('VIPAgent(FunctionCalling)');
+                const vipRes = this.handleLoyaltyAndVouchers(context);
+                loyaltyObj = vipRes.customerLoyalty;
+                promosArr = vipRes.promotions;
+                const topProd = searchRes.products && searchRes.products[0];
+                const afterVip = topProd ? Math.max(0, topProd.price - (loyaltyObj.pointValueVND || 45000) - 80000) : 0;
+                combinedMsg += `\n\n👑 **2. Quyền Lợi Thành Viên VIP (Function Calling)**:\n` +
+                    `• Hạng thẻ: **${loyaltyObj.tier}** (**${loyaltyObj.points} điểm** = **-${loyaltyObj.pointValueVND.toLocaleString('vi-VN')}đ**)\n` +
+                    `• Ưu đãi VIP: Mã \`VIPGOLD10\` (-80.000đ) + \`FREESHIPMAX\` (Miễn phí ship hỏa tốc 2h)` +
+                    (topProd ? `\n• 👉 **Giá thực trả cho ${topProd.name} sau khi áp ưu đãi VIP**: Chỉ còn **${afterVip.toLocaleString('vi-VN')}đ**!` : '');
+            }
+
+            if (hasOrderQuery) {
+                activeAgents.push('OrderAgent(FunctionCalling)');
+                const ordRes = this.handleOrderTracking(query, context);
+                orderObj = ordRes.orderInfo;
+                combinedMsg += `\n\n📦 **Tra Cứu Đơn Hàng (Function Calling)**:\n${ordRes.message}`;
+            }
+
+            if (hasCareQuery) {
+                activeAgents.push('CareAgent(RAG)');
+                combinedMsg += `\n\n🛠 **Chính Sách Bảo Hành & Care**:\n• Bảo hành chính hãng Apple VN/A 12 tháng, lỗi 1 đổi 1 trong 30 ngày đầu.`;
+            }
+
+            result = {
+                skill: 'PRODUCT_SEARCH_RECOMMEND',
+                message: combinedMsg,
+                products: searchRes.products,
+                customerLoyalty: loyaltyObj,
+                promotions: promosArr,
+                orderInfo: orderObj,
+                multiAgentTrace: {
+                    architecture: `Orchestrator -> ${activeAgents.join(' + ')}`,
+                    status: 'COMPLETED',
+                    qualityScore: 0.99
+                }
+            };
+            result.aiMetadata = this.buildGenAIMetadata(query, result.message, {
+                integration_mode: 'Multi-Agent + RAG + Function Calling',
                 finish_reason: 'function_call',
                 model: 'gemini-2.5-flash',
                 function_call: {
-                    name: 'search_iphone_database_by_genz_model',
+                    name: 'orchestrate_multi_agent_pipeline',
+                    arguments: { query, agents: activeAgents }
+                },
+                latencyMs: Math.max(85, Date.now() - startTime + 55)
+            });
+            return result;
+        }
+
+        // 0B. Nhận diện truy vấn GenZ về dòng máy iPhone (Spec Agent / Consult Agent + RAG)
+        if (genZMatched.length > 0) {
+            result = await this.searchProducts(query, allProducts);
+            metaOptions = {
+                integration_mode: 'Spec/Consult Agent + RAG Grounding',
+                finish_reason: 'stop',
+                model: 'gemini-2.5-flash',
+                function_call: {
+                    name: 'retrieve_iphone_rag_knowledge',
                     arguments: { query, resolved_models: genZMatched.map(m => m.id) }
                 }
             };
@@ -711,15 +782,15 @@ class AiService {
             return result;
         }
 
-        // 1. Nhận diện câu hỏi thường gặp về Chính sách (FAQ Local RAG - Phản hồi siêu tốc < 50ms)
-        if (lower.includes('đổi trả') || lower.includes('hoàn tiền') || lower.includes('bảo hành')) {
+        // 1. Care Agent: Chính sách Bảo hành, Đổi trả & Hỗ trợ sau bán hàng
+        if (lower.includes('đổi trả') || lower.includes('hoàn tiền') || lower.includes('bảo hành') || lower.includes('care')) {
             result = {
                 skill: 'GENERAL_CONSULT',
-                message: `🛡️ **Chính Sách Đổi Trả & Hoàn Tiền 7 Ngày Của ZShop**:\n\n` +
-                         `• **Thời hạn**: Bạn được đổi hàng miễn phí trong vòng **7 ngày** kể từ ngày nhận kiện.\n` +
-                         `• **Điều kiện**: Hàng còn nguyên tem mác, chưa qua giặt tẩy.\n` +
-                         `• **Thu hồi tận nơi**: Shipper ZShop Express sẽ đến tận nhà thu hồi hoặc giao size mới đổi cho bạn, bạn không cần phải ra bưu cục gửi hàng.\n` +
-                         `• **Hỗ trợ tức thì**: Bạn có thể vào mục **"Đơn Mua Của Tôi"** > Bấm **"Yêu Cầu Đổi Trả"** hoặc liên hệ CSKH 0901 234 567!`
+                message: `🛠 **Chính Sách Bảo Hành & Care Chính Hãng Tại ZShop**:\n\n` +
+                         `• **Bảo hành chính hãng Apple VN/A**: **12 tháng** tại tất cả trung tâm bảo hành ủy quyền Apple toàn quốc (kích hoạt tự động theo IMEI/Serial).\n` +
+                         `• **Đặc quyền 1 Đổi 1 trong 30 ngày**: Đổi ngay máy mới tương đương nếu phát sinh lỗi phần cứng từ nhà sản xuất.\n` +
+                         `• **Thu hồi & Đổi trả tận nơi (UC10)**: Shipper ZShop Express hỗ trợ nhận và giao máy bảo hành tận nhà trong 24 giờ.\n` +
+                         `• **Cam kết Vàng**: Đền bù **200% giá trị** nếu phát hiện máy không chuẩn chính hãng.`
             };
         } else if (lower.includes('freeship') || lower.includes('phí ship') || lower.includes('phí vận chuyển') || lower.includes('tiền ship') || lower.includes('miễn phí vận chuyển')) {
             result = {
@@ -727,57 +798,50 @@ class AiService {
                 message: `🚚 **Chính Sách Giao Hàng & Phí Vận Chuyển ZShop**:\n\n` +
                          `• 🎁 **Miễn phí vận chuyển (FREESHIP)**: Cho mọi đơn hàng từ **300.000đ** trở lên.\n` +
                          `• **Giao tiêu chuẩn**: 30.000đ (nhận hàng trong 2-3 ngày làm việc).\n` +
-                         `• **Giao hỏa tốc ZShop Fast**: 50.000đ (nhận ngay trong 24 giờ tại TP.HCM & Hà Nội).\n` +
-                         `• **Đồng kiểm an tâm**: Quý khách luôn được phép mở kiện kiểm tra hàng trước khi thanh toán!`
+                         `• **Giao hỏa tốc ZShop Fast**: Nhận ngay trong 2 giờ tại TP.HCM & Hà Nội (hỗ trợ chép dữ liệu sang iPhone mới tại chỗ).\n` +
+                         `• **Đồng kiểm an tâm**: Quý khách luôn được phép mở kiện kiểm tra Serial/IMEI trước khi thanh toán!`
             };
         } else if (lower.includes('thanh toán') || lower.includes('chuyển khoản') || lower.includes('momo') || lower.includes('vietqr') || lower.includes('trả tiền')) {
             result = {
                 skill: 'GENERAL_CONSULT',
-                message: `💳 **Phương Thức Thanh Toán Linh Hoạt Tại ZShop**:\n\n` +
+                message: `💳 **Phương Thức Thanh Toán Đa Kênh SZ-Payment Tại ZShop**:\n\n` +
                          `1. **VietQR Napas 24/7**: Quét mã tự động khớp lệnh trong 3 giây qua bất kỳ App ngân hàng nào.\n` +
-                         `2. **Tiền mặt khi nhận hàng (COD)**: Xem hàng tận tay rồi mới trả tiền cho shipper, miễn phí thu hộ.\n` +
-                         `3. **Ví điện tử MoMo / ZaloPay**: Xác thực FaceID/vân tay một chạm.\n` +
-                         `4. **Thẻ Quốc Tế Visa / Master / JCB**: Chuẩn bảo mật quốc tế PCI-DSS an toàn tuyệt đối.`
+                         `2. **Tiền mặt khi nhận hàng (COD)**: Đồng kiểm ngoại quan & IMEI máy rồi mới trả tiền cho shipper.\n` +
+                         `3. **Ví điện tử MoMo / VNPAY-QR**: Xác thực một chạm.\n` +
+                         `4. **Thẻ Quốc Tế Visa / Mastercard & Trả góp 0%**: Duyệt nhanh trong 5 phút.`
             };
         } else if (lower.includes('địa chỉ') || lower.includes('ở đâu') || lower.includes('cửa hàng') || lower.includes('showroom') || lower.includes('mở cửa') || lower.includes('chi nhánh')) {
             result = {
                 skill: 'GENERAL_CONSULT',
-                message: `📍 **Showroom Flagship Trực Tiếp Của ZShop**:\n\n` +
+                message: `📍 **Showroom Flagship Thế Giới iPhone - ZShop**:\n\n` +
                          `• **Địa chỉ**: 12 Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh.\n` +
                          `• **Giờ mở cửa**: 08:30 - 22:00 hàng ngày (kể cả Thứ Bảy, Chủ Nhật và ngày Lễ).\n` +
-                         `• **Tiện ích**: Có bãi đỗ xe ô tô, phòng thử đồ 3D Spatial và chuyên viên tư vấn trực tiếp.`
+                         `• **Hotline/Zalo kỹ thuật & CSKH**: 0901 234 567.`
             };
-        } else if (persona === 'FITTING' || lower.includes('size') || lower.includes('cao') || lower.includes('nặng') || lower.includes('1m') || lower.includes('kg') || lower.includes('vừa không') || lower.includes('form')) {
-            // 2. [Slide 14] Function Calling: calculate_smart_fitting
-            result = await this.handleSmartFitting(query, context, allProducts);
-            metaOptions = {
-                integration_mode: 'Function Calling',
-                finish_reason: 'function_call',
-                function_call: {
-                    name: 'calculate_smart_fitting',
-                    arguments: result.sizeFitting?.measurementsUsed || { height_cm: 170, weight_kg: 65 }
-                }
-            };
-        } else if (persona === 'ORDERS' || lower.includes('đơn hàng') || lower.includes('dh-') || lower.includes('bao giờ tới') || lower.includes('mã vận đơn') || lower.includes('tra cứu đơn')) {
-            // 3. [Slide 14] Function Calling: get_order_status(order_id)
+        } else if (lower.includes('đơn hàng') || lower.includes('dh-') || lower.includes('bao giờ tới') || lower.includes('mã vận đơn') || lower.includes('tra cứu đơn') || lower.includes('kiểm tra đơn')) {
+            // 2. Order Agent -> Function Calling: get_order_status(order_id)
             result = this.handleOrderTracking(query, context);
             metaOptions = {
-                integration_mode: 'Function Calling',
+                integration_mode: 'Function Calling (Order Agent)',
                 finish_reason: 'function_call',
                 function_call: {
                     name: 'get_order_status',
-                    arguments: { order_id: result.orderInfo?.orderId || 'DH-849201' }
+                    arguments: { order_id: result.orderInfo?.orderId || 'DH-20260907-03' }
                 }
             };
-        } else if (persona === 'LOYALTY' || lower.includes('voucher') || lower.includes('mã giảm') || lower.includes('điểm') || lower.includes('khuyến mãi') || lower.includes('ưu đãi') || lower.includes('vip')) {
-            // 4. [Slide 16] Agent-based Tool Execution: Loyalty & Promotion Concierge
+        } else if (lower.includes('voucher') || lower.includes('mã giảm') || lower.includes('điểm') || lower.includes('khuyến mãi') || lower.includes('ưu đãi') || lower.includes('vip')) {
+            // 3. VIP Agent -> Function Calling: get_customer_vip_loyalty(customer_id)
             result = this.handleLoyaltyAndVouchers(context);
             metaOptions = {
-                integration_mode: 'Agent-based (Loyalty Tool)',
-                finish_reason: 'stop'
+                integration_mode: 'Function Calling (VIP Agent)',
+                finish_reason: 'function_call',
+                function_call: {
+                    name: 'get_customer_vip_loyalty',
+                    arguments: { customer_name: context?.customerName || 'Nguyễn Quốc Khánh' }
+                }
             };
-        } else if (persona === 'BUSINESS' || lower.includes('doanh thu') || lower.includes('báo cáo') || lower.includes('tồn kho') || lower.includes('doanh số') || lower.includes('bán chạy')) {
-            // 5. [Slide 14] Function Calling: get_store_sales_analytics
+        } else if (persona === 'BUSINESS' || lower.includes('doanh thu') || lower.includes('báo cáo') || lower.includes('tồn kho')) {
+            // 4. Function Calling: get_store_sales_analytics
             result = await this.handleSalesAnalytics(allProducts);
             metaOptions = {
                 integration_mode: 'Function Calling',

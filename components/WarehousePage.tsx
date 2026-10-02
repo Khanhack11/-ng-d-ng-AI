@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Package, AlertTriangle, ArrowLeft, Plus, Search, 
   CheckCircle, FileText, Sparkles, X, DollarSign, BarChart3,
-  RotateCcw, Tag, CheckCircle2, Edit3, Smartphone, Flame, ShieldCheck, Boxes
+  RotateCcw, Tag, CheckCircle2, Edit3, Smartphone, Flame, Boxes
 } from 'lucide-react';
 import { ProductDetail, StockImportTicket, ReturnRequest, UserRole } from '../types';
 import PortalTopBar from './PortalTopBar';
@@ -19,6 +19,8 @@ interface WarehousePageProps {
   currentUser?: { name?: string; email?: string; role?: string } | null;
   onSwitchRole?: (role: UserRole) => void;
   onLogout?: () => void;
+  onNavigateAdminTab?: (tab: 'DASHBOARD' | 'ORDERS' | 'PRODUCTS' | 'SELLERS' | 'CONFIG' | 'AI_BI') => void;
+  onNavigateCSKH?: (tab?: 'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING') => void;
 }
 
 const IPHONE_CATEGORIES = [
@@ -64,7 +66,9 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
   userRole = 'WAREHOUSE',
   currentUser,
   onSwitchRole,
-  onLogout
+  onLogout,
+  onNavigateAdminTab,
+  onNavigateCSKH
 }) => {
   const [activeTab, setActiveTab] = useState<'INVENTORY' | 'LOW_STOCK' | 'IMPORT_HISTORY' | 'AI_RECOMMEND' | 'PRODUCTS' | 'RETURNS_RESTOCK'>('INVENTORY');
   const [searchTerm, setSearchTerm] = useState('');
@@ -184,6 +188,9 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
       <PortalTopBar
         userRole={userRole}
         currentUser={currentUser}
+        pendingReturnsCount={returnRequests.filter(r => r.status === 'PENDING').length}
+        onNavigateAdminTab={onNavigateAdminTab}
+        onNavigateCSKH={onNavigateCSKH}
         onNavigateWarehouse={() => setActiveTab('INVENTORY')}
         onNavigateHome={onBack}
         onSwitchRole={onSwitchRole}
@@ -213,7 +220,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
                 </span>
               </div>
               <p className="text-[11px] text-stone-400">
-                Kiểm kê 25 mã iPhone (4s ➔ 18 Pro Max), giám sát màu máy độc bản, nhập lô VN/A & AI dự báo kho (UC02, UC05, UC08)
+                Kiểm kê 25 mã iPhone (4s ➔ 18 Pro Max), giám sát màu máy độc bản, nhập lô VN/A & AI dự báo kho
               </p>
             </div>
           </div>
@@ -230,7 +237,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
             onClick={() => setIsImportModalOpen(true)}
             className="px-4 py-2 bg-gradient-to-r from-[#d4b996] to-[#b89768] hover:brightness-105 text-[#1e1d1a] font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Plus size={16} /> Lập Phiếu Nhập Lô VN/A (UC05)
+            <Plus size={16} /> Lập Phiếu Nhập Lô VN/A
           </button>
         </div>
       </header>
@@ -393,7 +400,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
                 : 'text-stone-600 hover:bg-stone-200/70'
             }`}
           >
-            <Sparkles size={15} /> AI Dự Báo Nhập Kho iPhone (UC08)
+            <Sparkles size={15} /> AI Dự Báo Nhập Kho iPhone
           </button>
 
           <button
@@ -415,7 +422,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
                 : 'text-stone-600 hover:bg-stone-200/70'
             }`}
           >
-            <Tag size={15} /> Điều Chỉnh Giá & Danh Mục (UC02)
+            <Tag size={15} /> Điều Chỉnh Giá & Danh Mục
           </button>
 
           <button
@@ -426,7 +433,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
                 : 'text-stone-600 hover:bg-stone-200/70'
             }`}
           >
-            <RotateCcw size={15} /> Kiểm Định Máy Đổi Trả (UC10)
+            <RotateCcw size={15} /> Kiểm Định Máy Đổi Trả
             {returnRequests.filter(r => r.status === 'APPROVED' || r.status === 'REFUNDED').length > 0 && (
               <span className="px-2 py-0.5 bg-rose-500 text-white rounded-full text-[10px]">
                 {returnRequests.filter(r => r.status === 'APPROVED' || r.status === 'REFUNDED').length}
@@ -647,7 +654,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
                 <div className="flex items-center gap-2">
                   <Sparkles size={20} className="text-[#e5c9a3]" />
                   <h3 className="font-black text-base tracking-wide text-[#e5c9a3]">
-                    Thế Giới iPhone AI — Hệ Thống Dự Báo & Khuyến Nghị Nhập Kho (UC08)
+                    Thế Giới iPhone AI — Hệ Thống Dự Báo & Khuyến Nghị Nhập Kho
                   </h3>
                 </div>
                 <p className="text-xs text-stone-300 leading-relaxed max-w-3xl">
@@ -784,7 +791,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-stone-200">
                 <div>
                   <h3 className="text-base font-black text-stone-900 flex items-center gap-2">
-                    <Tag size={18} className="text-[#8c6f46]" /> Quản Lý Danh Mục & Điều Chỉnh Giá 25 Mã iPhone (UC02)
+                    <Tag size={18} className="text-[#8c6f46]" /> Quản Lý Danh Mục & Điều Chỉnh Giá 25 Mã iPhone
                   </h3>
                   <p className="text-xs text-stone-600">Cập nhật nhanh giá niêm yết, số lượng tồn kho và màu sắc độc bản cho từng dòng iPhone</p>
                 </div>
@@ -793,7 +800,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
                   onClick={() => setIsAddProductModalOpen(true)}
                   className="px-4 py-2 bg-[#1e1d1a] hover:bg-[#332e27] text-[#e5c9a3] font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer"
                 >
-                  <Plus size={16} /> Thêm Mẫu iPhone Mới (UC02)
+                  <Plus size={16} /> Thêm Mẫu iPhone Mới
                 </button>
               </div>
 
@@ -864,7 +871,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
               <div className="flex justify-between items-start pb-4 border-b border-stone-200">
                 <div>
                   <h3 className="text-base font-black text-stone-900 flex items-center gap-2">
-                    <RotateCcw size={18} className="text-rose-600" /> Kiểm Định IMEI / Seal & Tái Nhập Kho Máy Đổi Trả (UC10)
+                    <RotateCcw size={18} className="text-rose-600" /> Kiểm Định IMEI / Seal & Tái Nhập Kho Máy Đổi Trả
                   </h3>
                   <p className="text-xs text-stone-600">
                     Kiểm tra ngoại quan, số Serial/IMEI, tình trạng Pin và áp suất máy từ bộ phận Bán hàng & CSKH chuyển sang.
@@ -987,7 +994,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
                                 }}
                                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5 cursor-pointer"
                               >
-                                <CheckCircle2 size={15} /> Xác Nhận Tái Nhập Kho (UC10)
+                                <CheckCircle2 size={15} /> Xác Nhận Tái Nhập Kho
                               </button>
                             )}
                           </div>
@@ -1001,14 +1008,14 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
         </div>
       </div>
 
-      {/* MODAL: Lập Phiếu Nhập Kho (UC05) */}
+      {/* MODAL: Lập Phiếu Nhập Kho */}
       {isImportModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm">
           <div className="bg-[#faf8f5] rounded-2xl max-w-xl w-full shadow-2xl border border-[#d4b996] overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-4 bg-[#1e1d1a] text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Package size={18} className="text-[#e5c9a3]" />
-                <h3 className="font-black text-sm text-[#e5c9a3]">Lập Phiếu Nhập Lô iPhone Chính Hãng VN/A (UC05)</h3>
+                <h3 className="font-black text-sm text-[#e5c9a3]">Lập Phiếu Nhập Lô iPhone Chính Hãng VN/A</h3>
               </div>
               <button onClick={() => setIsImportModalOpen(false)} className="text-stone-400 hover:text-white">
                 <X size={18} />
@@ -1170,7 +1177,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
             <div className="p-4 bg-[#1e1d1a] text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Smartphone size={18} className="text-[#e5c9a3]" />
-                <h3 className="font-black text-sm text-[#e5c9a3]">Thêm Mẫu iPhone Mới Vào Kho (UC02)</h3>
+                <h3 className="font-black text-sm text-[#e5c9a3]">Thêm Mẫu iPhone Mới Vào Kho</h3>
               </div>
               <button onClick={() => setIsAddProductModalOpen(false)} className="text-stone-400 hover:text-white">
                 <X size={18} />
@@ -1336,7 +1343,7 @@ export const WarehousePage: React.FC<WarehousePageProps> = ({
             <div className="p-4 bg-[#1e1d1a] text-white flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Edit3 size={16} className="text-[#e5c9a3]" />
-                <h3 className="font-black text-sm text-[#e5c9a3]">Cập Nhật Giá & Tồn Kho (UC02)</h3>
+                <h3 className="font-black text-sm text-[#e5c9a3]">Cập Nhật Giá & Tồn Kho</h3>
               </div>
               <button onClick={() => setEditingProduct(null)} className="text-stone-400 hover:text-white">
                 <X size={18} />

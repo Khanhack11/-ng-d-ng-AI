@@ -1,6 +1,5 @@
 import { HeThongBanHangDB } from './database.ts';
-import { CartItem, Order, OrderFormData, PaymentMethodType, ProductDetail, TrackingStep, OrderStatus } from './types.ts';
-import { enrichProduct } from './productUtils.ts';
+import { CartItem, Order, OrderFormData, PaymentMethodType, ProductDetail, TrackingStep } from './types.ts';
 
 export * from './productUtils.ts';
 
@@ -173,7 +172,6 @@ export class GioHangService {
 export class SanPhamAdminService {
     static async layTatCaSanPham(): Promise<any[]> {
         const canonicalList = HeThongBanHangDB.getAllSanPham();
-        const canonicalById = new Map(canonicalList.map(item => [String(item.id), item]));
 
         try {
             const controller = new AbortController();

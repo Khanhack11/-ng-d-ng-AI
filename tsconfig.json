@@ -27,7 +27,8 @@
     "noEmit": true
   },
   "exclude": [
-    "backend",
+    "szshop-backend",
+    "agent_service",
     "node_modules",
     "dist"
   ]

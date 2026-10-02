@@ -50,10 +50,10 @@ def run_vectorization():
 
     # Chạy thử nghiệm các câu truy vấn Semantic Search để kiểm chứng chất lượng Vector DB
     test_queries = [
-        {"q": "áo sơ mi lụa công sở thoáng mát cao cấp", "type": "products"},
-        {"q": "tai nghe bluetooth chống ồn pin trâu", "type": "products"},
-        {"q": "đồng hồ nam mặt sapphire sang trọng dự tiệc", "type": "products"},
-        {"q": "chính sách đổi trả hàng và freeship", "type": "knowledge"}
+        {"q": "iPhone 18 Pro Max màu titan đỏ rượu vang", "type": "products"},
+        {"q": "củ sạc nhanh apple 35w dual usb-c chính hãng", "type": "products"},
+        {"q": "tai nghe airpods pro 2 chống ồn chủ động", "type": "products"},
+        {"q": "chính sách bảo hành 1 đổi 1 trong 30 ngày và freeship", "type": "knowledge"}
     ]
 
     print("\n>>> [DEMO KIỂM THỬ SEMANTIC SEARCH TRÊN CHROMADB]")

@@ -23,8 +23,7 @@ export default defineConfig(({ mode }) => {
       },
       resolve: {
         alias: {
-          '@': path.resolve(__dirname, '.'),
-          'three': path.resolve(__dirname, 'node_modules/three/build/three.module.js'),
+          '@': path.resolve(__dirname, '.')
         }
       }
     };

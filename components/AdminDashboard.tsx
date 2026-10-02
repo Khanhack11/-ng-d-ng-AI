@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { 
-  LayoutDashboard, ShoppingBag, Users, Settings, LogOut, Search, 
+  Users, Settings, LogOut, Search, 
   TrendingUp, Plus, Edit, CheckCircle, XCircle, Truck, Package, 
-  DollarSign, BarChart3, Calendar, Image as ImageIcon, ChevronDown, 
-  ShieldCheck, Store, FileSpreadsheet, Printer, RotateCcw, Sparkles, 
+  DollarSign, BarChart3, 
+  Store, FileSpreadsheet, Printer, RotateCcw, Sparkles, 
   Boxes, Smartphone, Flame, CreditCard
 } from 'lucide-react';
 import { MOCK_PRODUCTS_LIST, MOCK_ORDER } from '../constants';
@@ -73,7 +73,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onNavigateToCustomers,
   onNavigateToReturns,
   onNavigateToHome,
-  onSwitchWorkspace,
+  onSwitchWorkspace: _onSwitchWorkspace,
   onSwitchRole,
   currentUser,
   pendingReturnsCount = 0,
@@ -117,7 +117,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [textToDataInput, setTextToDataInput] = useState<string>('Mặt hàng nào bán chậm nhất?');
   const [activeQueryType, setActiveQueryType] = useState<'SLOWEST_SELLING' | 'BEST_SELLING' | 'LOW_STOCK' | 'REVENUE_BY_SERIES' | 'HIGH_VALUE' | 'NEW_COLORS'>('SLOWEST_SELLING');
   const [aiActionToast, setAiActionToast] = useState<string | null>(null);
-  const [chatbotTestInput, setChatbotTestInput] = useState<string>('18prm màu mới giá bn sốp ơi có trả góp ko?');
 
   const triggerAiToast = (msg: string) => {
     setAiActionToast(msg);
@@ -346,7 +345,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         pendingReturnsCount={pendingReturnsCount}
         onNavigateAdminTab={(tab) => setActiveTab(tab)}
         onNavigateWarehouse={onNavigateToWarehouse}
-        onNavigateCSKH={() => onNavigateToReturns?.()}
+        onNavigateCSKH={(tab) => {
+          if (tab === 'RETURNS') {
+            onNavigateToReturns?.();
+          } else {
+            onNavigateToCustomers?.();
+          }
+        }}
         onNavigateHome={onNavigateToHome}
         onSwitchRole={onSwitchRole}
         onLogout={onLogout}
@@ -379,7 +384,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 activeTab === 'DASHBOARD' ? 'bg-gradient-to-r from-[#d4b996] to-[#b89768] text-[#1e1d1a] shadow-md' : 'text-stone-300 hover:bg-white/5'
               }`}
             >
-              <BarChart3 size={17} /> Báo Cáo Doanh Thu (UC06)
+              <BarChart3 size={17} /> Báo Cáo Doanh Thu
             </button>
             <button
               onClick={() => setActiveTab('AI_BI')}
@@ -387,7 +392,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 activeTab === 'AI_BI' ? 'bg-gradient-to-r from-[#d4b996] to-[#b89768] text-[#1e1d1a] shadow-md' : 'text-[#e5c9a3] hover:bg-white/5'
               }`}
             >
-              <Sparkles size={17} className="text-amber-400" /> AI Cố Vấn Chủ Shop (UC09)
+              <Sparkles size={17} className="text-amber-400" /> AI Cố Vấn Chủ Shop
             </button>
             <button
               onClick={() => setActiveTab('PRODUCTS')}
@@ -395,7 +400,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 activeTab === 'PRODUCTS' ? 'bg-gradient-to-r from-[#d4b996] to-[#b89768] text-[#1e1d1a] shadow-md' : 'text-stone-300 hover:bg-white/5'
               }`}
             >
-              <Smartphone size={17} /> Quản Lý 25 Mã iPhone (UC02)
+              <Smartphone size={17} /> Quản Lý 25 Mã iPhone
             </button>
             <button
               onClick={() => setActiveTab('ORDERS')}
@@ -411,7 +416,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 activeTab === 'SELLERS' ? 'bg-gradient-to-r from-[#d4b996] to-[#b89768] text-[#1e1d1a] shadow-md' : 'text-stone-300 hover:bg-white/5'
               }`}
             >
-              <Users size={17} /> Nhân Sự Cửa Hàng (UC01)
+              <Users size={17} /> Nhân Sự Cửa Hàng
             </button>
             <button
               onClick={() => setActiveTab('CONFIG')}
@@ -456,10 +461,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-black text-stone-900 text-base">
-                  {activeTab === 'DASHBOARD' ? 'Tổng Quan Doanh Thu & Top Model iPhone Hot Hit (UC06)' : 
-                   activeTab === 'AI_BI' ? 'Thế Giới iPhone AI — Cố Vấn Kinh Doanh Cho Chủ Cửa Hàng (UC09)' :
-                   activeTab === 'PRODUCTS' ? 'Quản Lý Bảng Giá & 25 Mã iPhone Chính Hãng VN/A (UC02)' : 
-                   activeTab === 'SELLERS' ? 'Quản Lý Nhân Sự Cửa Hàng Nhỏ: NV Bán Hàng & NV Kho (UC01)' :
+                  {activeTab === 'DASHBOARD' ? 'Tổng Quan Doanh Thu & Top Model iPhone Hot Hit' : 
+                   activeTab === 'AI_BI' ? 'Thế Giới iPhone AI — Cố Vấn Kinh Doanh Cho Chủ Cửa Hàng' :
+                   activeTab === 'PRODUCTS' ? 'Quản Lý Bảng Giá & 25 Mã iPhone Chính Hãng VN/A' : 
+                   activeTab === 'SELLERS' ? 'Quản Lý Nhân Sự Cửa Hàng: NV Bán Hàng & NV Kho' :
                    activeTab === 'CONFIG' ? 'Cấu Hình Cửa Hàng Thế Giới iPhone & Chính Sách Thu Cũ Đổi Mới' :
                    'Điều Phối Đơn Đặt Mua iPhone Online & Giao Hỏa Tốc 2h'}
                 </h2>
@@ -1255,7 +1260,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-200 pb-4">
                   <div>
                     <h3 className="font-black text-stone-900 text-base">
-                      Quản Lý Nhân Sự Nội Bộ Cửa Hàng Thế Giới iPhone (UC01)
+                      Quản Lý Nhân Sự Nội Bộ Cửa Hàng Thế Giới iPhone
                     </h3>
                     <p className="text-xs text-stone-600 mt-0.5">
                       Mô hình cửa hàng nhỏ tinh gọn: Chủ cửa hàng (Admin) trực tiếp phân quyền cho <strong>Nhân viên Bán hàng</strong> và <strong>Nhân viên Kho</strong> (Không có nhà bán hàng trung gian).
@@ -1350,7 +1355,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                 <div className="bg-[#faf8f5] p-6 rounded-2xl border border-[#d4b996]/60 shadow-sm space-y-5">
                   <h3 className="font-black text-stone-900 border-b border-stone-200 pb-3 flex items-center gap-2 text-sm">
-                    <DollarSign size={17} className="text-[#8c6f46]" /> Chính Sách Trợ Giá Thu Cũ & Tích Điểm VIP (UC03)
+                    <DollarSign size={17} className="text-[#8c6f46]" /> Chính Sách Trợ Giá Thu Cũ & Tích Điểm VIP
                   </h3>
                   
                   <div className="space-y-3 text-xs">

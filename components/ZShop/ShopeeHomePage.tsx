@@ -3,6 +3,7 @@ import Header from './Header';
 import HeroBanner from './HeroBanner';
 import ProductGrid from './ProductGrid';
 import Footer from './Footer';
+import { ProductDetail, CartItem, CustomerProfile } from '../../types';
 
 interface ShopeeHomePageProps {
   onProductClick?: (id: string) => void;
@@ -33,6 +34,11 @@ interface ShopeeHomePageProps {
   onNavigateSeller?: (tab?: 'overview' | 'products' | 'orders' | 'profile') => void;
   onSwitchRole?: (role: any) => void;
   onSwitchWorkspace?: (workspace: any) => void;
+  products?: ProductDetail[];
+  cartItems?: CartItem[];
+  onAddToCart?: (item: CartItem) => void;
+  customerProfile?: CustomerProfile | null;
+  customerOrders?: any[];
 }
 
 const ShopeeHomePage: React.FC<ShopeeHomePageProps> = (props) => {

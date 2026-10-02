@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { 
   ShoppingBag, ChevronLeft, Search, Package, Truck, CheckCircle, 
-  RotateCcw, Star, X, Eye, ArrowRight, ShieldCheck, Clock, 
-  AlertCircle, MessageSquare, QrCode, FileText, Check, Copy, 
-  Sparkles, RefreshCw, Phone, MapPin, ExternalLink, ThumbsUp, Camera, Info
+  RotateCcw, Star, X, Eye, ShieldCheck, Clock, 
+  AlertCircle, QrCode, FileText, 
+  Sparkles, RefreshCw, Phone, Camera, Info
 } from 'lucide-react';
-import { CustomerOrder, CustomerOrderItem, CustomerReview, OrderStatus, CartItem, CustomerProfile, UserRole } from '../types';
+import { CustomerOrder, CustomerOrderItem, CustomerReview, OrderStatus, CustomerProfile, UserRole } from '../types';
 import Header from './ZShop/Header';
 
 interface MyOrdersPageProps {
@@ -428,7 +428,7 @@ export const MyOrdersPage: React.FC<MyOrdersPageProps> = ({
                       {isReturning && (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-50 text-rose-700 border border-rose-200 rounded-full text-xs font-bold">
                           <RotateCcw size={14} className="text-rose-600" /> 
-                          {order.status === OrderStatus.RETURN_REQUESTED ? 'ĐANG YÊU CẦU ĐỔI TRẢ (UC10)' : 'ĐÃ HOÀN TRẢ HÀNG'}
+                          {order.status === OrderStatus.RETURN_REQUESTED ? 'ĐANG YÊU CẦU ĐỔI TRẢ' : 'ĐÃ HOÀN TRẢ HÀNG'}
                         </span>
                       )}
                       {isCancelled && (
@@ -638,7 +638,7 @@ export const MyOrdersPage: React.FC<MyOrdersPageProps> = ({
                           className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
                         >
                           <RotateCcw size={13} />
-                          <span>Tiến Độ Đổi Trả (UC10)</span>
+                          <span>Tiến Độ Đổi Trả</span>
                         </button>
                       )}
 
@@ -845,7 +845,7 @@ export const MyOrdersPage: React.FC<MyOrdersPageProps> = ({
                   <RotateCcw size={20} />
                 </div>
                 <div>
-                  <h3 className="text-base font-black text-slate-900">Yêu Cầu Đổi Size & Trả Hàng (UC10)</h3>
+                  <h3 className="text-base font-black text-slate-900">Yêu Cầu Đổi Size & Trả Hàng</h3>
                   <p className="text-[11px] text-slate-500">Đơn hàng #{returnModalData.order.id}</p>
                 </div>
               </div>
@@ -962,7 +962,7 @@ export const MyOrdersPage: React.FC<MyOrdersPageProps> = ({
                       />
                     </div>
                     <p className="text-[11px] text-slate-500">
-                      * Tiền sẽ được hoàn tự động trong 24 giờ sau khi nhân viên thẩm định kiện hàng theo quy định UC10.
+                      * Tiền sẽ được hoàn tự động trong 24 giờ sau khi nhân viên thẩm định kiện hàng theo quy định đổi trả.
                     </p>
                   </div>
                 )}
@@ -1192,7 +1192,7 @@ export const MyOrdersPage: React.FC<MyOrdersPageProps> = ({
 
               <div className="relative">
                 <div className="absolute -left-[23px] top-0 w-4 h-4 rounded-full bg-amber-500 border-2 border-white shadow-xs animate-pulse"></div>
-                <h5 className="font-bold text-amber-900">2. Đang chờ nhân viên CSKH thẩm định (UC10)</h5>
+                <h5 className="font-bold text-amber-900">2. Đang chờ nhân viên CSKH thẩm định</h5>
                 <p className="text-[11px] text-slate-500">Kiểm tra video unboxing và tình trạng tem mác</p>
               </div>
 

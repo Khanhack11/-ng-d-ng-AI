@@ -1,5 +1,0 @@
-{
-  "name": "SZSHOP Payment Gateway",
-  "description": "Giao diện thanh toán trực tuyến an toàn cho SZSHOP với tích hợp QR Code và xử lý lỗi.",
-  "requestFramePermissions": []
-}

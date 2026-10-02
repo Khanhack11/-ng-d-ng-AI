@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'ecommerce-backend',
-      script: './backend/server.js',
+      name: 'szshop-backend',
+      script: './szshop-backend/server.js',
       instances: 'max', // Or a specific number like 2 for cluster mode
       exec_mode: 'cluster',
       env: {

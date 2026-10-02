@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { SanPhamService, SanPhamAdminService, enrichProduct } from '../services'; // Sử dụng Service
 import { 
-  Star, ShoppingCart, Minus, Plus, Play, User, Search, Truck, 
-  ChevronRight, CheckCircle, LogOut, FileText, LayoutDashboard, 
-  Settings, Loader2, ShieldCheck, RotateCcw, Award, Sparkles, 
-  Ticket, Ruler, X, Check, ArrowRight, Zap, Copy, Heart, CheckSquare, Tag
+  Star, ShoppingCart, Minus, Plus, Truck, 
+  ChevronRight, CheckCircle, 
+  Loader2, ShieldCheck, RotateCcw, Award, Sparkles, 
+  Ticket, X, Check, Zap, Tag
 } from 'lucide-react';
 import { CartItem, UserRole, ProductDetail } from '../types';
 import Header from './ZShop/Header';
@@ -88,8 +88,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [isAdded, setIsAdded] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [isBuying, setIsBuying] = useState(false); // New state for Buy Now animation
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   // Apple Storage & Technical Guidance state
   const [isStorageGuideOpen, setIsStorageGuideOpen] = useState(false);
@@ -172,16 +170,6 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       
       loadProduct();
   }, [productId]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsUserMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleQuantityChange = (delta: number) => {
     if (product) {

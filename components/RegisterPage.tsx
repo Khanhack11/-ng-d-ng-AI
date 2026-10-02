@@ -111,7 +111,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
         <button onClick={onBack} className="text-gray-600 hover:text-gray-900 transition-colors p-2 -ml-2 rounded-full hover:bg-gray-100">
           <ArrowLeft size={22} />
         </button>
-        <div className="text-lg font-semibold text-gray-800">Tạo tài khoản Khách hàng ZShop (UC01)</div>
+        <div className="text-lg font-semibold text-gray-800">Tạo tài khoản Khách hàng ZShop</div>
         <div className="w-8"></div>
       </div>
 
@@ -143,10 +143,10 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onRegisterSuccess, onBack, 
         {/* Form Đăng ký */}
         <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
           
-          {/* Thông tin vai trò mặc định chuẩn UML */}
+          {/* Thông tin vai trò mặc định */}
           <div className="p-3 bg-brand-50/70 border border-brand-200 rounded-xl flex items-center justify-between">
             <div className="text-xs font-semibold text-brand-800">
-              🛒 Tác nhân đăng ký: <span className="font-bold">Khách hàng (Customer - UC01)</span>
+              🛒 Tác nhân đăng ký: <span className="font-bold">Khách hàng (Customer)</span>
             </div>
             <span className="text-[10px] font-bold bg-brand-600 text-white px-2 py-0.5 rounded-full">Tích điểm VIP</span>
           </div>

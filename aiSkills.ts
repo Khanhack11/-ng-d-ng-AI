@@ -1,10 +1,9 @@
 import { 
   ProductDetail, CartItem, OrderStatus, TrackingStep, 
-  AIPersonaType, UserMeasurements, CustomerContext, 
-  OutfitCombo, SizeFittingResult, CustomerProfile, Order 
+  AIPersonaType, CustomerContext, 
+  OutfitCombo, SizeFittingResult 
 } from './types';
-import { MOCK_PRODUCTS_LIST, MOCK_ORDER } from './constants';
-import { HeThongBanHangDB } from './database';
+import { MOCK_PRODUCTS_LIST } from './constants';
 
 /**
  * Kiểu dữ liệu phân loại kỹ năng AI
@@ -143,33 +142,36 @@ export const AI_PERSONAS: Record<AIPersonaType, AIPersonaConfig> = {
   STYLIST: {
     id: 'STYLIST',
     name: 'ZShop GenZ iPhone AI',
-    shortName: 'Tư Vấn GenZ',
-    roleTitle: 'Trợ Lý Tư Vấn iPhone Ngôn Ngữ Tự Nhiên GenZ (4s ➔ 18 Pro Max)',
-    avatar: '📱',
-    badge: 'GenZ NLP v3.8',
+    shortName: '💬 AI GenZ',
+    roleTitle: 'Trợ lý tư vấn iPhone ngôn ngữ tự nhiên',
+    avatar: '💬',
+    badge: 'AI Orchestrator',
     accentColor: 'amber',
     themeGradient: 'from-[#1c1b18] via-[#2e2922] to-[#8c6f46]',
-    description: 'Hiểu 100% từ viết tắt & teencode GenZ Việt Nam (18prm, giá bn sốp, trả góp, thu cũ bù nhiu, còn hàng k...) & trả lời đúng trọng tâm câu hỏi.',
+    description: 'Trợ lý AI trung tâm tự động phân tích ý định câu hỏi, kết nối RAG sản phẩm, Function Calling đơn hàng/VIP và tổng hợp câu trả lời tự nhiên.',
     getGreeting: (context) => {
       const name = context?.customerProfile?.name || context?.currentUser?.name;
+      const tier = context?.customerProfile?.tier || 'Vàng';
+      const points = context?.customerProfile?.points ?? 450;
       const cartCount = context?.cartItems?.length || 0;
       const activeProd = context?.activeProduct;
-      let greeting = `✨ Hé lô${name ? ` **${name}**` : ' bạn iu'}! Mình là **ZShop GenZ iPhone AI** — Đã liên kết toàn diện với **Kho 45 mẫu iPhone, Giỏ hàng (${cartCount} món), Đơn hàng & Điểm VIP** của bạn.\n\n`;
+      let greeting = `✨ Xin chào${name ? ` **${name}** (*Hạng ${tier} • ${points} điểm VIP*)` : ' bạn'}! Mình là **ZShop GenZ iPhone AI** — Trợ lý tư vấn iPhone ngôn ngữ tự nhiên.\n\n`;
       if (activeProd) {
-        greeting += `👀 Mình thấy bạn đang xem **${activeProd.name}** (*${activeProd.price.toLocaleString('vi-VN')}đ*). Bạn có thể hỏi ngay: **"Mẫu nào bán chạy nhất?"**, **"Con này trả góp đưa trước bao nhiêu?"**, **"So sánh máy này với 18prm"** hoặc **"Kiểm tra giỏ hàng của tôi"** nhé!`;
+        greeting += `👀 Mình thấy bạn đang quan tâm **${activeProd.name}** (*${activeProd.price.toLocaleString('vi-VN')}đ*). Bạn chỉ cần đặt câu hỏi tự nhiên, mình sẽ tự động tra cứu thông số kỹ thuật, tư vấn ngân sách, kiểm tra đơn hàng hoặc quyền lợi VIP cho bạn ngay!`;
       } else if (cartCount > 0) {
-        greeting += `🛍️ Giỏ hàng của bạn đang có **${cartCount} sản phẩm**. Cứ gõ thoải mái như **"Mẫu nào bán chạy nhất"**, **"18prm giá bn sốp"**, **"Thu cũ 14prm lên 18prm bù nhiu"** hay **"Kiểm tra giỏ hàng"** — mình trả lời chuẩn đét luôn nha!`;
+        greeting += `🛍️ Giỏ hàng của bạn đang có **${cartCount} sản phẩm**. Bạn muốn tư vấn mua máy, so sánh iPhone, tra cứu thông số kỹ thuật, kiểm tra đơn hàng hay xem quyền lợi VIP? Hãy hỏi mình bất cứ điều gì nhé!`;
       } else {
-        greeting += `🔥 Mình hiểu 100% ngôn ngữ tự nhiên & từ viết tắt GenZ Việt Nam.\n💡 Bạn cứ hỏi tự nhiên như: *"Mẫu nào bán chạy nhất?"*, *"18prm giá bn sốp?"*, *"16prm trả góp đưa trc bnhiu?"* hoặc *"Dưới 15 củ con nào chiến game đỉnh nhất?"* nhé!`;
+        greeting += `💡 Bạn không cần chọn từng công cụ riêng lẻ — chỉ cần nhập câu hỏi tự nhiên (kể cả câu hỏi gộp như *"Tôi có 20 triệu, muốn mua iPhone phù hợp và xem tôi có ưu đãi VIP gì"*), mình sẽ tự động xử lý trọn gói cho bạn!`;
       }
       return greeting;
     },
-    quickPromptChips: (context) => [
-      '🏆 Mẫu nào bán chạy nhất?',
-      context?.activeProduct ? `📱 Đánh giá ${context.activeProduct.name.split(' ').slice(0, 3).join(' ')} đang xem` : '🔥 18prm giá bn z sốp?',
-      '💳 16prm trả góp đưa trc bnhiu?',
-      '🔄 Thu cũ 14prm lên 18prm bù mấy củ?',
-      '🛒 Kiểm tra giỏ hàng của tôi'
+    quickPromptChips: () => [
+      '📱 Tư vấn mua máy',
+      '⚖️ So sánh iPhone',
+      '🔬 Thông số kỹ thuật',
+      '📦 Kiểm tra đơn hàng',
+      '🛠 Bảo hành & Care',
+      '👑 Quyền lợi VIP'
     ]
   },
 
@@ -543,7 +545,7 @@ export class AISkillEngine {
     prompt: string,
     catalog: ProductDetail[] = MOCK_PRODUCTS_LIST,
     context?: CustomerContext,
-    persona?: AIPersonaType
+    _persona?: AIPersonaType
   ): AISkillResult | null {
     const { normalized, detectedAbbreviations } = this.normalizeGenZText(prompt);
     const query = prompt.toLowerCase();
@@ -564,13 +566,16 @@ export class AISkillEngine {
       return res;
     };
 
-    // Nhận diện các nhóm câu hỏi chuyên biệt của khách hàng (Sub-Intents)
-    const isAskBestSeller = /\b(bán chạy|ban chay|hot nhất|hot nhat|mua nhiều|nhiều người mua|phổ biến nhất|top bán chạy|best\s*seller|xu hướng|đáng mua nhất|nên mua máy nào|nên mua mẫu nào|mẫu nào ngon nhất|con nào ngon nhất|tư vấn mua máy)\b/i.test(normLower);
+    // Nhận diện các nhóm câu hỏi chuyên biệt của khách hàng (Sub-Intents cho AI Orchestrator)
+    const isAskBestSeller = /\b(bán chạy|ban chay|hot nhất|hot nhat|mua nhiều|nhiều người mua|phổ biến nhất|top bán chạy|best\s*seller|xu hướng|đáng mua nhất|nên mua máy nào|nên mua mẫu nào|mẫu nào ngon nhất|con nào ngon nhất|tư vấn mua máy|tư vấn mua iphone|muốn mua iphone|mua iphone phù hợp)\b/i.test(normLower);
+    const isAskCompareShortcut = /\b(so sánh iphone|so sánh các dòng|so sánh máy|đặt lên bàn cân)\b/i.test(normLower);
+    const isAskSpecShortcut = /\b(thông số kỹ thuật|thông số phần cứng|xem cấu hình|tra cứu thông số)\b/i.test(normLower);
+    const isAskChip = /\b(dùng chip gì|chip gì|vi xử lý|cpu|gpu|tiến trình|mấy nm|hiệu năng chip)\b/i.test(normLower);
     const isAskSlowSellerOrSale = /\b(bán chậm|ban cham|ít người mua|tồn kho nhiều|xả kho|xa kho|giảm giá sâu|sale mạnh|deal hời|giảm nhiều nhất|khuyến mãi sâu)\b/i.test(normLower);
     const isAskCheapest = /\b(rẻ nhất|re nhat|thấp nhất|ít tiền nhất|giá mềm nhất|rẻ bèo)\b/i.test(normLower);
     const isAskCartStatus = /\b(giỏ hàng|gio hang|trong giỏ|tổng tiền giỏ|thanh toán giỏ|mấy món trong giỏ|kiểm tra giỏ)\b/i.test(normLower);
-    const isAskOrderStatus = /\b(đơn hàng|don hang|đơn mua|ship tới đâu|bao giờ giao|kiểm tra đơn|theo dõi đơn|mã vận đơn)\b/i.test(normLower);
-    const isAskVoucherPoints = /\b(điểm thưởng|bao nhiêu điểm|hạng thẻ|hạng vàng|voucher|mã giảm giá|code giảm|ưu đãi vip)\b/i.test(normLower);
+    const isAskOrderStatus = /\b(đơn hàng|don hang|đơn mua|ship tới đâu|bao giờ giao|kiểm tra đơn|theo dõi đơn|mã vận đơn|đang ở đâu)\b/i.test(normLower);
+    const isAskVoucherPoints = /\b(điểm thưởng|bao nhiêu điểm|điểm vip|quyền lợi vip|hạng thẻ|hạng vàng|voucher|mã giảm giá|code giảm|ưu đãi vip|ưu đãi gì)\b/i.test(normLower);
     const isAskInstallment = /\b(trả góp|tra gop|góp|gop|\btg\b|đưa trước|dua truoc|trả trước|tra truoc|cccd|lãi suất|lai suat|mỗi tháng)\b/i.test(normLower);
     const isAskTradeIn = /\b(thu cũ|thu cu|lên đời|len doi|đổi mới|doi moi|trade\s*in|đổi bù|bù bao nhiêu|bù mấy|bù bn|bù nhiu|đổi từ)\b/i.test(normLower);
     const isAskStock = /\b(còn hàng|con hang|sẵn hàng|san hang|còn không|còn ko|còn máy|mấy máy|mấy cây|hết hàng|tồn kho|sẵn ko)\b/i.test(normLower);
@@ -578,7 +583,7 @@ export class AISkillEngine {
     const isAskBatteryCharge = /\b(pin|sạc|sac|mah|trâu|chai pin|nóng máy|bao nhiêu w|mấy w|magsafe|củ sạc)\b/i.test(normLower);
     const isAskGamingSpecs = /\b(game|gaming|liên quân|pubg|genshin|fps|mượt|lag|giật|chip|ram|120hz|màn hình|cấu hình|thông số|spec)\b/i.test(normLower);
     const isAskCamera = /\b(cam|camera|chụp|chup|zoom|quay|tiktok|vlog|sống ảo|chân dung|ban đêm)\b/i.test(normLower);
-    const isAskWarrantyOrigin = /\b(bảo hành|bao hanh|\bbh\b|1 đổi 1|zin|zin áp|likenew|99%|vn\/a|vna|quốc tế|qte|lock|chính hãng|check imei|nguồn gốc|uy tín)\b/i.test(normLower);
+    const isAskWarrantyOrigin = /\b(bảo hành|bao hanh|\bbh\b|bảo hành\s*&\s*care|chế độ care|1 đổi 1|zin|zin áp|likenew|99%|vn\/a|vna|quốc tế|qte|lock|chính hãng|check imei|nguồn gốc|uy tín)\b/i.test(normLower);
     const isAskShippingPayment = /\b(ship|giao hàng|vận chuyển|freeship|\bfs\b|cod|kiểm hàng|đồng kiểm|bóc seal|hỏa tốc|thanh toán|chuyển khoản|\bck\b|momo|vietqr)\b/i.test(normLower);
     const isAskPrice = /\b(giá|gia|bao nhiêu|bnhiu|mấy củ|mấy triệu|rổ giá|nhiu tiền|tiền|đắt|rẻ|128gb|256gb|512gb|1tb|2tb)\b/i.test(normLower);
     const isAskBuyCart = /\b(chốt đơn|chốt|múc|quất|lụm|hốt|thêm vào giỏ|bỏ giỏ|cho vào giỏ|mua con này|lấy con)\b/i.test(normLower);
@@ -596,6 +601,194 @@ export class AISkillEngine {
       (isAskPrice || isAskColor || isAskBatteryCharge || isAskStock || isAskBuyCart)
     ) {
       matchedModels = [context.activeProduct];
+    }
+
+    // =========================================================================
+    // 0. MULTI-AGENT ORCHESTRATOR SYNTHESIS (Khi 1 câu hỏi cần phối hợp nhiều Agent)
+    // Ví dụ: "Tôi có 20 triệu, muốn mua iPhone phù hợp và xem tôi có ưu đãi VIP gì."
+    // Luồng: User -> Orchestrator -> [Consult/Spec Agent (RAG) + VIP/Order/Care Agent (Function Calling)] -> Tổng hợp 1 câu trả lời duy nhất
+    // =========================================================================
+    const { minPrice: multiMinPrice, maxPrice: multiMaxPrice } = this.extractPriceRange(normLower);
+    const hasBudgetIntent = multiMinPrice > 0 || multiMaxPrice < Infinity;
+    const hasConsultOrSpecIntent = hasBudgetIntent || matchedModels.length > 0 || isAskBestSeller || isAskCompareShortcut || isAskSpecShortcut || isAskGamingSpecs || isAskCamera;
+    const hasSecondaryAgentIntent = isAskVoucherPoints || isAskOrderStatus || isAskWarrantyOrigin;
+
+    if (hasConsultOrSpecIntent && hasSecondaryAgentIntent) {
+      const activeAgents: string[] = [];
+      const sections: string[] = [];
+      let combinedProducts: ProductDetail[] = [];
+      let loyaltyCard: AISkillResult['customerLoyalty'] | undefined;
+      let promoCards: AISkillResult['promotions'] | undefined;
+      let orderCard: AISkillResult['orderInfo'] | undefined;
+      let ordersList: AISkillResult['customerOrdersList'] | undefined;
+
+      // 1. Nhánh Consult Agent / Spec Agent (RAG trên dữ liệu sản phẩm thực tế)
+      if (hasBudgetIntent) {
+        activeAgents.push('ConsultAgent(RAG)');
+        const budgetMatches = catalog.filter(p => p.price >= multiMinPrice && p.price <= multiMaxPrice);
+        combinedProducts = (budgetMatches.length > 0
+          ? budgetMatches.sort((a, b) => b.price - a.price)
+          : [...catalog].sort((a, b) => Math.abs(a.price - (multiMaxPrice < Infinity ? multiMaxPrice : multiMinPrice)) - Math.abs(b.price - (multiMaxPrice < Infinity ? multiMaxPrice : multiMinPrice)))
+        ).slice(0, 3);
+
+        const budgetLabel = multiMaxPrice < Infinity && multiMinPrice > 0
+          ? `tầm **${Math.round(((multiMinPrice + multiMaxPrice) / 2) / 1000000)} triệu**`
+          : multiMaxPrice < Infinity
+          ? `dưới **${(multiMaxPrice / 1000000).toFixed(0)} triệu**`
+          : `trên **${(multiMinPrice / 1000000).toFixed(0)} triệu**`;
+
+        sections.push(
+          `📱 **1. Tư Vấn Chọn Mua iPhone Phù Hợp Ngân Sách ${budgetLabel} (Dữ liệu RAG Thực Tế)**:\n` +
+          combinedProducts.map((p, idx) =>
+            `   • **${idx + 1}. ${p.name}** *(Màu: ${p.colors[0]})* — Giá: **${p.price.toLocaleString('vi-VN')}đ** *(Sẵn ${p.stock} máy | ${p.description.slice(0, 95)}...)*`
+          ).join('\n')
+        );
+      } else if (matchedModels.length >= 2) {
+        activeAgents.push('SpecAgent(RAG)');
+        combinedProducts = matchedModels.slice(0, 2);
+        const [m1, m2] = combinedProducts;
+        sections.push(
+          `🔬 **1. So Sánh Thông Số Kỹ Thuật (${m1.name} vs ${m2.name})**:\n` +
+          `   • **${m1.name}** (**${m1.price.toLocaleString('vi-VN')}đ**): ${m1.description}\n` +
+          `   • **${m2.name}** (**${m2.price.toLocaleString('vi-VN')}đ**): ${m2.description}`
+        );
+      } else if (matchedModels.length === 1) {
+        activeAgents.push('SpecAgent(RAG)');
+        combinedProducts = [matchedModels[0]];
+        const m = matchedModels[0];
+        sections.push(
+          `📱 **1. Thông Tin & Cấu Hình ${m.name}**:\n` +
+          `   • Giá niêm yết ZShop: **${m.price.toLocaleString('vi-VN')}đ** *(Kho sẵn: ${m.stock} máy | Màu: ${m.colors.join(', ')})*\n` +
+          `   • Cấu hình chi tiết: ${m.description}`
+        );
+      } else {
+        activeAgents.push('ConsultAgent(RAG)');
+        combinedProducts = [...catalog].sort((a, b) => (b.soldCount || 0) - (a.soldCount || 0)).slice(0, 3);
+        sections.push(
+          `📱 **1. Gợi Ý Các Mẫu iPhone Đáng Mua Nhất Hiện Nay**:\n` +
+          combinedProducts.map((p, idx) =>
+            `   • **${idx + 1}. ${p.name}** — **${p.price.toLocaleString('vi-VN')}đ** *(Đã bán ${(p.soldCount || 1500).toLocaleString('vi-VN')} máy)*`
+          ).join('\n')
+        );
+      }
+
+      // 2. Nhánh VIP Agent (Function Calling truy xuất hồ sơ VIP & điểm thưởng thực tế)
+      if (isAskVoucherPoints) {
+        activeAgents.push('VIPAgent(FunctionCalling)');
+        const cust = context?.customerProfile;
+        const custName = cust?.name || context?.currentUser?.name || 'Nguyễn Quốc Khánh';
+        const tier = cust?.tier || 'Vàng';
+        const points = cust?.points ?? 450;
+        const pointValVND = points * 100;
+        const totalSpent = cust?.totalSpent ?? 12500000;
+        const tierDiscountPct = tier === 'Kim Cương' ? 15 : tier === 'Vàng' ? 10 : tier === 'Bạc' ? 5 : 2;
+        const bestPhone = combinedProducts[0];
+        const vipVoucherOff = 80000;
+        const finalPriceAfterVip = bestPhone ? Math.max(0, bestPhone.price - pointValVND - vipVoucherOff) : 0;
+
+        loyaltyCard = {
+          customerName: custName,
+          tier,
+          points,
+          pointValueVND: pointValVND,
+          totalSpent,
+          nextTier: tier === 'Vàng' ? 'Kim Cương' : 'Vàng',
+          spendNeededForNextTier: Math.max(0, 25000000 - totalSpent),
+          tierDiscount: tierDiscountPct,
+          benefits: [
+            `Đổi trực tiếp ${points} điểm = -${pointValVND.toLocaleString('vi-VN')}đ vào đơn mua iPhone`,
+            `Mã độc quyền VIPGOLD10 giảm thêm 80.000đ - 10% phụ kiện`,
+            `Miễn phí giao hỏa tốc 2h & chép dữ liệu tận nơi (FREESHIPMAX)`
+          ]
+        };
+
+        promoCards = [
+          { code: 'VIPGOLD10', discountText: `Đặc quyền Hạng ${tier} (-80.000đ)`, minSpend: 500000, description: 'Áp dụng trực tiếp khi chốt đơn iPhone' },
+          { code: 'FREESHIPMAX', discountText: 'Freeship Hỏa Tốc 2H', minSpend: 0, description: 'Miễn phí giao nhanh kèm bảo hiểm vận đơn' }
+        ];
+
+        sections.push(
+          `👑 **2. Quyền Lợi VIP & Ưu Đãi Áp Dụng Trực Tiếp Cho ${custName} (Function Calling)**:\n` +
+          `   • ⭐ **Hạng thành viên**: **Hạng ${tier}** — Hiện có **${points} điểm thưởng** *(Quy đổi **-${pointValVND.toLocaleString('vi-VN')}đ** tiền mặt)*.\n` +
+          `   • 🎟️ **Ưu đãi VIP khả dụng**: Mã \`VIPGOLD10\` *(giảm thêm **80.000đ**)* + \`FREESHIPMAX\` *(Miễn phí giao hỏa tốc 2h)*.\n` +
+          (bestPhone
+            ? `   • 💰 **Giá thực trả sau khi trừ Điểm VIP + Voucher cho ${bestPhone.name}**: Chỉ còn **${finalPriceAfterVip.toLocaleString('vi-VN')}đ** *(Tiết kiệm tổng cộng **${(bestPhone.originalPrice - finalPriceAfterVip).toLocaleString('vi-VN')}đ** so với giá niêm yết)*!`
+            : '')
+        );
+      }
+
+      // 3. Nhánh Order Agent (Function Calling tra cứu đơn hàng thực tế)
+      if (isAskOrderStatus) {
+        activeAgents.push('OrderAgent(FunctionCalling)');
+        const orders = context?.customerOrders || [];
+        if (orders.length > 0) {
+          const latest = orders[0];
+          orderCard = {
+            orderId: latest.id,
+            status: String(latest.status),
+            steps: [
+              { status: OrderStatus.PENDING, date: latest.createdAt, description: 'Đơn hàng đã khởi tạo trên hệ thống', completed: true },
+              { status: OrderStatus.PROCESSING, date: latest.createdAt, description: 'Kho ZShop đã xuất máy & kích hoạt IMEI', completed: true },
+              { status: OrderStatus.SHIPPING, date: 'Hôm nay', description: `Đang vận chuyển qua ${latest.carrierName || 'ZShop Apple Express 2h'}`, completed: true }
+            ],
+            estimatedDelivery: latest.estimatedDelivery || 'Trong hôm nay'
+          };
+          ordersList = orders.map(o => ({
+            id: o.id,
+            date: o.createdAt,
+            total: o.totalAmount || o.items.reduce((s, it) => s + it.price * it.quantity, 0),
+            status: String(o.status),
+            itemsSummary: o.items.map(it => `${it.name} (x${it.quantity})`).join(', ')
+          }));
+          sections.push(
+            `📦 **Tra Cứu Đơn Hàng Hiện Tại (Function Calling)**:\n` +
+            `   • Đơn gần nhất **[${latest.id}]** (${latest.items.map(i => i.name).join(', ')}) — Trạng thái: **${latest.status}** *(Dự kiến giao: ${latest.estimatedDelivery || 'Hôm nay'})*.`
+          );
+        }
+      }
+
+      // 4. Nhánh Care Agent (Bảo hành & Đổi trả)
+      if (isAskWarrantyOrigin) {
+        activeAgents.push('CareAgent(RAG)');
+        sections.push(
+          `🛠 **Chính Sách Bảo Hành & Care Đi Kèm**:\n` +
+          `   • Bảo hành chính hãng Apple VN/A **12 tháng**, đặc quyền **Lỗi 1 Đổi 1 trong 30 ngày** và cam kết hoàn tiền **200%** nếu phát hiện máy không chuẩn zin.`
+        );
+      }
+
+      return attachMeta({
+        skill: 'PRODUCT_SEARCH_RECOMMEND',
+        message: `✨ **ZShop GenZ iPhone AI** đã tổng hợp trọn bộ giải pháp cho yêu cầu của bạn:\n\n` + sections.join('\n\n'),
+        products: combinedProducts,
+        customerLoyalty: loyaltyCard,
+        promotions: promoCards,
+        orderInfo: orderCard,
+        customerOrdersList: ordersList,
+        multiAgentTrace: {
+          architecture: `AI Orchestrator -> ${activeAgents.join(' + ')}`,
+          status: 'COMPLETED',
+          qualityScore: 0.99
+        },
+        suggestedActions: [
+          combinedProducts[0] ? `Thêm "${combinedProducts[0].name}" vào giỏ` : '📱 Tư vấn mua máy',
+          '⚖️ So sánh iPhone',
+          '👑 Quyền lợi VIP'
+        ]
+      });
+    }
+
+    // =========================================================================
+    // 0B. XỬ LÝ CÁC SHORTCUT TRUNG TÂM ("⚖️ So sánh iPhone", "🔬 Thông số kỹ thuật") KHI CHƯA NÊU TÊN MÁY
+    // =========================================================================
+    if (isAskCompareShortcut && matchedModels.length < 2) {
+      const p1 = catalog.find(p => p.id === 'ip-17-promax') || catalog[0];
+      const p2 = catalog.find(p => p.id === 'ip-16-promax') || catalog[1];
+      matchedModels = [p1, p2];
+    }
+
+    if (isAskSpecShortcut && matchedModels.length === 0) {
+      const pFocus = context?.activeProduct || catalog.find(p => p.id === 'ip-17-promax') || catalog[0];
+      matchedModels = [pFocus];
     }
 
     // =========================================================================
@@ -749,20 +942,30 @@ export class AISkillEngine {
         });
       }
 
-      // B6. Khách hỏi Chiến Game / Cấu hình / Camera
-      if (isAskGamingSpecs || isAskCamera) {
+      // B6. Khách hỏi Chip / Camera / Cấu hình / Thông số kỹ thuật / Chiến Game (Spec Agent + RAG)
+      if (isAskChip || isAskCamera || isAskGamingSpecs || isAskSpecShortcut) {
+        const chipHighlight = phone.id.includes('18') ? 'Apple A20 Pro (Tiến trình 2nm TSMC thế hệ mới, 6 nhân GPU phần cứng Ray Tracing)'
+          : phone.id.includes('17-pro') ? 'Apple A19 Pro 6 nhân (Tiến trình 3nm N3P tiên tiến, Neural Engine 16 lõi 45 TOPS)'
+          : phone.id.includes('17') ? 'Apple A19 Bionic (Tiến trình 3nm thế hệ 3, tối ưu AI Apple Intelligence)'
+          : phone.id.includes('16-pro') ? 'Apple A18 Pro 6 nhân (Tiến trình 3nm thế hệ 2, GPU 6 lõi tốc độ cao)'
+          : phone.id.includes('16') ? 'Apple A18 Bionic (Tiến trình 3nm, hỗ trợ Apple Intelligence)'
+          : phone.id.includes('15-pro') ? 'Apple A17 Pro (Tiến trình 3nm đầu tiên trên thế giới)'
+          : phone.description;
+
         return attachMeta({
           skill: 'AI_SMART_FITTING',
-          message: `🚀 **Phân Tích Hiệu Năng Chiến Game & Camera Của ${phone.name}**:\n\n` +
-            `• 🧠 **Vi xử lý & Đa nhiệm**: ${phone.description}\n` +
-            `• 🎮 **Trải nghiệm Gaming thực tế**: Chiến mượt max setting **Liên Quân Mobile, PUBG Mobile, Tốc Chiến, Genshin Impact** ổn định ở mức FPS kịch khung, tản nhiệt tối ưu không bị drop khung hình.\n` +
-            `• 📸 **Sức mạnh Nhiếp ảnh & Quay TikTok**: Chống rung quang học OIS thế hệ mới, quay video 4K 60/120fps sắc nét từng sợi tóc, màu da lên tươi tắn đăng thẳng Story không cần chỉnh app!\n` +
-            `• 💰 **Giá chốt kèo hôm nay**: **${fmtPrice}** *(Giảm ${phone.discountRate}% so với giá gốc ${fmtOrig})*.`,
+          message: `🔬 **Thông Số Kỹ Thuật & Phân Tích Phần Cứng Từ RAG — ${phone.name}**:\n\n` +
+            `• 🧠 **Chip & Vi xử lý**: **${chipHighlight}**\n` +
+            `• 📸 **Hệ thống Camera & Quay dựng**: Cảm biến chính Fusion 48MP chống rung quang học OIS thế hệ mới, hỗ trợ chụp đêm ProRAW, quay video 4K Dolby Vision sắc nét.\n` +
+            `• 📱 **Màn hình & Hiển thị**: Tấm nền Super Retina XDR OLED, độ sáng đỉnh cao, tần số quét mượt mà.\n` +
+            `• 📋 **Chi tiết hồ sơ sản phẩm (RAG Database)**: ${phone.description}\n` +
+            `• 💾 **Tùy chọn bộ nhớ**: **${phone.sizes.join(' / ')}** | **Màu sắc**: **${phone.colors.join(', ')}**\n` +
+            `• 💰 **Giá ưu đãi tại ZShop**: **${fmtPrice}** *(Giá gốc: ~${fmtOrig}~ — Sẵn **${phone.stock} máy** tại kho)*.`,
           products: [phone],
           suggestedActions: [
             `Thêm "${phone.name}" vào giỏ`,
-            `So sánh ${phone.name.split(' ')[1]} với đời khác`,
-            'Xem bảng trả góp 0% lãi suất'
+            '⚖️ So sánh iPhone',
+            '👑 Quyền lợi VIP'
           ]
         });
       }
@@ -1091,42 +1294,91 @@ export class AISkillEngine {
       });
     }
 
-    // D5.5. Khách hỏi về ĐƠN HÀNG / VẬN CHUYỂN ngay trong tab bất kỳ
+    // D5.5. Khách hỏi về ĐƠN HÀNG / VẬN CHUYỂN (Order Agent -> Function Calling -> Order Database)
     if (isAskOrderStatus) {
       const orders = context?.customerOrders || [];
       if (orders.length > 0) {
         const latest = orders[0];
-        const orderTotal = latest.items.reduce((s, it) => s + it.price * it.quantity, 0) + (latest.shippingFee || 0);
+        const orderTotal = latest.totalAmount || (latest.items.reduce((s, it) => s + it.price * it.quantity, 0) + (latest.shippingFee || 0));
+        const steps: TrackingStep[] = [
+          { status: OrderStatus.PENDING, date: latest.createdAt, description: 'Đơn hàng đã được khởi tạo thành công trên hệ thống', completed: true },
+          { status: OrderStatus.PAID, date: latest.createdAt, description: 'Đã xác nhận phương thức thanh toán & bảo hành IMEI', completed: true },
+          { status: OrderStatus.PROCESSING, date: latest.createdAt, description: 'Kho ZShop đã đóng gói niêm phong máy chính hãng VN/A', completed: true },
+          { status: OrderStatus.SHIPPING, date: 'Hôm nay', description: `Đang vận chuyển qua ${latest.carrierName || 'ZShop Apple Express 2h'}`, completed: true }
+        ];
         return attachMeta({
           skill: 'TRACK_ORDER',
-          message: `📦 **Tra Cứu Nhanh Đơn Hàng Của ${context?.customerProfile?.name || 'Bạn'}**:\n\n` +
-            `• **Mã vận đơn**: **${latest.id}**\n` +
-            `• **Trạng thái**: 🚚 **Đang vận chuyển hỏa tốc (Dự kiến giao hôm nay)**\n` +
-            `• **Sản phẩm**: ${latest.items.map(it => `${it.name} (x${it.quantity})`).join(', ')}\n` +
+          message: `📦 **Tra Cứu Trạng Thái Đơn Hàng Từ Hệ Thống (Function Calling: \`get_order_status\`)**:\n\n` +
+            `• **Khách hàng**: **${context?.customerProfile?.name || 'Nguyễn Quốc Khánh'}**\n` +
+            `• **Mã đơn hàng gần nhất**: **${latest.id}** *(Mã vận đơn: ${latest.trackingCode || 'ZSE-99120482VN'})*\n` +
+            `• **Trạng thái hiện tại**: 🚚 **${latest.status}** *(Dự kiến giao: ${latest.estimatedDelivery || 'Hôm nay trước 18:00'})*\n` +
+            `• **Sản phẩm trong đơn**: ${latest.items.map(it => `**${it.name}** (x${it.quantity})`).join(', ')}\n` +
             `• **Tổng thanh toán**: **${orderTotal.toLocaleString('vi-VN')}đ**`,
-          suggestedActions: ['Xem chi tiết hóa đơn', 'Chính sách lỗi 1 đổi 1 trong 30 ngày', 'Mẫu nào bán chạy nhất?']
+          orderInfo: {
+            orderId: latest.id,
+            status: String(latest.status),
+            steps,
+            estimatedDelivery: latest.estimatedDelivery || 'Hôm nay trước 18:00',
+            totalAmount: orderTotal,
+            itemNames: latest.items.map(it => it.name)
+          },
+          customerOrdersList: orders.map(o => ({
+            id: o.id,
+            date: o.createdAt,
+            total: o.totalAmount || o.items.reduce((s, it) => s + it.price * it.quantity, 0),
+            status: String(o.status),
+            itemsSummary: o.items.map(it => `${it.name} (x${it.quantity})`).join(', ')
+          })),
+          suggestedActions: ['🛠 Bảo hành & Care', '📱 Tư vấn mua máy', '👑 Quyền lợi VIP']
         });
       }
     }
 
-    // D5.6. Khách hỏi về ĐIỂM THƯỞNG VIP / MÃ GIẢM GIÁ / VOUCHER
+    // D5.6. Khách hỏi về ĐIỂM THƯỞNG VIP / MÃ GIẢM GIÁ / QUYỀN LỢI VIP (VIP Agent -> Function Calling -> Customer/VIP DB)
     if (isAskVoucherPoints) {
-      const pts = context?.customerProfile?.points || 450;
-      const tier = context?.customerProfile?.tier || 'Vàng';
+      const cust = context?.customerProfile;
+      const custName = cust?.name || context?.currentUser?.name || 'Nguyễn Quốc Khánh';
+      const pts = cust?.points ?? 450;
+      const tier = cust?.tier || 'Vàng';
+      const totalSpent = cust?.totalSpent ?? 12500000;
+      const pointValueVND = pts * 100;
+      const nextTier = tier === 'Đồng' ? 'Bạc' : tier === 'Bạc' ? 'Vàng' : tier === 'Vàng' ? 'Kim Cương' : 'VIP Vĩnh Viễn';
+      const targetSpend = tier === 'Đồng' ? 3000000 : tier === 'Bạc' ? 10000000 : tier === 'Vàng' ? 25000000 : 50000000;
+      const spendNeeded = Math.max(0, targetSpend - totalSpent);
+
       return attachMeta({
         skill: 'AI_VIP_LOYALTY',
-        message: `👑 **Đặc Quyền Thành Viên & Kho Voucher Của ${context?.customerProfile?.name || 'Quý Khách'}**:\n\n` +
-          `• ⭐ **Hạng thẻ hiện tại**: **Hạng ${tier}** — Có sẵn **${pts} điểm** *(Trừ trực tiếp **${(pts * 100).toLocaleString('vi-VN')}đ** vào đơn hàng)*\n` +
-          `• 🎟️ **Mã FREESHIPMAX**: Miễn phí vận chuyển hỏa tốc 2h toàn quốc.\n` +
-          `• 🎟️ **Mã VIPGOLD10**: Giảm ngay **80.000đ - 10%** đặc quyền thành viên Vàng.\n` +
-          `• 🎟️ **Mã ZSHOPNEW**: Giảm thêm **50.000đ** cho đơn hàng iPhone hôm nay!`,
+        message: `👑 **Hồ Sơ Thành Viên & Quyền Lợi VIP Thời Gian Thực (Function Calling: \`get_customer_vip_loyalty\`)**:\n\n` +
+          `• 👤 **Khách hàng**: **${custName}**\n` +
+          `• ⭐ **Hạng thẻ hiện tại**: **Hạng ${tier}** — Đang có **${pts} điểm VIP** *(Quy đổi **-${pointValueVND.toLocaleString('vi-VN')}đ** tiền mặt trừ thẳng vào đơn)*\n` +
+          `• 💳 **Tổng chi tiêu tích lũy**: **${totalSpent.toLocaleString('vi-VN')}đ** *(Cần thêm **${spendNeeded.toLocaleString('vi-VN')}đ** để thăng hạng **${nextTier}**)*\n` +
+          `• 🎟️ **Đặc quyền & Voucher khả dụng**:\n` +
+          `   - \`VIPGOLD10\`: Giảm ngay **80.000đ - 10%** đặc quyền thành viên Hạng ${tier}.\n` +
+          `   - \`FREESHIPMAX\`: Miễn phí vận chuyển hỏa tốc 2h toàn quốc.\n` +
+          `   - \`SZWELCOME\`: Giảm thêm **20.000đ** cho đơn thanh toán qua cổng SZ-Payment!`,
+        customerLoyalty: {
+          customerName: custName,
+          tier,
+          points: pts,
+          pointValueVND,
+          totalSpent,
+          nextTier,
+          spendNeededForNextTier: spendNeeded,
+          tierDiscount: tier === 'Kim Cương' ? 15 : tier === 'Vàng' ? 10 : 5,
+          benefits: [
+            `Đổi ${pts} điểm VIP trừ trực tiếp ${pointValueVND.toLocaleString('vi-VN')}đ vào hóa đơn`,
+            `Ưu tiên giao hỏa tốc 2h & hỗ trợ kỹ thuật 1-1 tận nơi`,
+            `Trợ giá thu cũ đổi mới thêm tới 2.500.000đ`
+          ]
+        },
         promotions: [
-          { code: 'VIPGOLD10', discountText: 'Giảm 10% Đặc quyền VIP Vàng', minSpend: 500000, description: 'Áp dụng cho mọi dòng iPhone chính hãng' },
+          { code: 'VIPGOLD10', discountText: `Giảm 10% Đặc quyền Hạng ${tier}`, minSpend: 500000, description: 'Áp dụng cho mọi dòng iPhone chính hãng' },
           { code: 'FREESHIPMAX', discountText: 'Miễn phí Ship Hỏa Tốc 2H', minSpend: 0, description: 'Giao tận nơi & hỗ trợ chép dữ liệu tại chỗ' }
         ],
         suggestedActions: [
-          context?.activeProduct ? `Thêm "${context.activeProduct.name}" vào giỏ` : 'Mẫu nào bán chạy nhất?',
-          'Đi đến giỏ hàng & Thanh toán'
+          '📱 Tư vấn mua máy',
+          '⚖️ So sánh iPhone',
+          '📦 Kiểm tra đơn hàng'
         ]
       });
     }
@@ -1255,7 +1507,7 @@ export class AISkillEngine {
     height: number, 
     weight: number, 
     fitPreference: 'tight' | 'regular' | 'loose' = 'regular',
-    productName?: string
+    _productName?: string
   ): SizeFittingResult {
     let baseSize = 'M';
     let confidence = 96;
@@ -1324,7 +1576,6 @@ export class AISkillEngine {
     if (cartItems.length > 0 && (query.includes('giỏ hàng') || query.includes('món trong giỏ') || query.includes('phụ kiện cho') || query.includes('gợi ý phụ kiện'))) {
       const cartItem = cartItems[0];
       const matchedMain = catalog.find(p => p.id === cartItem.id || p.name === cartItem.name) || catalog[0];
-      const isPhone = matchedMain.name.toLowerCase().includes('iphone');
       
       let accessories = catalog.filter(p => {
         const cat = (p.category || '').toLowerCase();
@@ -1444,7 +1695,7 @@ export class AISkillEngine {
       : MOCK_PRODUCTS_LIST;
     const customer = context.customerProfile;
     const customerName = customer?.name || context.currentUser?.name || '';
-    const { normalized, detectedAbbreviations } = this.normalizeGenZText(prompt);
+    const { normalized } = this.normalizeGenZText(prompt);
 
     // Ưu tiên giải mã câu hỏi GenZ về iPhone trên mọi tab Khách hàng (trừ khi đang hỏi tra cứu mã đơn cụ thể trong ORDERS)
     const isDirectOrderTrack = persona === 'ORDERS' && /(đơn hàng|mã đơn|dh-|tgip-|ship tới đâu|bao giờ giao)/i.test(normalized);

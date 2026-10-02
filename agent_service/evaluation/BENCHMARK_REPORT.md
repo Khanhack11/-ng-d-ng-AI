@@ -1,5 +1,5 @@
 # BÁO CÁO ĐÁNH GIÁ ĐỊNH LƯỢNG: SINGLE-AGENT VS MULTI-AGENT
-**Thời điểm thực hiện**: 2026-09-19 10:49:03
+**Thời điểm thực hiện**: 2026-09-29 02:44:23
 **Số kịch bản kiểm thử**: 5
 
 ## 1. BẢNG SO SÁNH CHỈ SỐ ĐỊNH LƯỢNG
@@ -8,7 +8,7 @@
 | **Chống ảo giác (Anti-Hallucination)** | 40.0% | **100.0%** | Multi-Agent (+60% độ chính xác) |
 | **Tuân thủ ngân sách (Constraint Adherence)** | 80.0% | **100.0%** | Multi-Agent (100% tuân thủ ngân sách) |
 | **Khả năng tự sửa lỗi (Self-Correction)** | 0% (Không có Reflection Loop) | **100% (Critic Gate + Reflection Loop 2 vòng)** | Multi-Agent |
-| **Thời gian phản hồi trung bình (Latency)** | 40.6 ms | 2398.0 ms | Multi-Agent có bước suy luận & kiểm định |
+| **Thời gian phản hồi trung bình (Latency)** | 40.4 ms | 480.6 ms | Multi-Agent có bước suy luận & kiểm định |
 
 ## 2. KẾT LUẬN THỰC NGHIỆM
 - **Single-Agent Model** gặp hạn chế nghiêm trọng về **ảo giác giá** (gợi ý sản phẩm vượt hàng chục lần ngân sách người dùng) và bịa đặt thông tin chính sách bảo hành.

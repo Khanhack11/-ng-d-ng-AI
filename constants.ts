@@ -1286,6 +1286,8 @@ export const MOCK_CART_ITEMS: CartItem[] = [
     price: 38990000,
     quantity: 1,
     image: 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-18-pro-01.jpg',
+    size: '256GB',
+    color: 'Đỏ Rượu Vang Burgundy Titan (Mới)',
     selectedColor: 'Đỏ Rượu Vang Burgundy Titan (Mới)',
     selectedSize: '256GB',
     availableColors: [

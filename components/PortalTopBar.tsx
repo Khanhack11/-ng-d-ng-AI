@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   ShieldCheck, Store, Headset, ShoppingBag, 
-  BarChart3, Sparkles, Package, Boxes, RotateCcw, 
-  Settings, Users, Truck, ChevronDown, LogOut, 
-  ExternalLink, RefreshCw, Smartphone, CreditCard
+  BarChart3, Sparkles, Boxes, 
+  Users, Truck, ChevronDown, LogOut, 
+  RefreshCw, Smartphone, CreditCard
 } from 'lucide-react';
 import { UserRole } from '../types';
+import { AuthService } from '../services';
 
 export type PortalWorkspace = 'BUYER' | 'ADMIN' | 'CSKH' | 'WAREHOUSE';
 
@@ -39,6 +40,9 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const session = AuthService.getSession();
+  const isAdmin = currentUser?.role === 'ADMIN' || session?.role === 'ADMIN';
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -49,12 +53,12 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Ẩn thanh điều hành nội bộ khi là Khách hàng hoặc Khách vãng lai
-  if (userRole === 'CUSTOMER' || userRole === 'GUEST') {
+  // Ẩn thanh điều hành nội bộ khi là Khách hàng hoặc Khách vãng lai (Trừ khi Admin đang xem Showroom)
+  if ((userRole === 'CUSTOMER' || userRole === 'GUEST') && !isAdmin) {
     return null;
   }
 
-  // Dropdown chuyển nhanh 4 tác nhân chuẩn của Shop nhỏ Thế Giới iPhone
+  // Dropdown chuyển nhanh 4 tác nhân chuẩn của Shop nhỏ Thế Giới iPhone (Chỉ dành cho Admin)
   const renderRoleSwitcherDropdown = () => (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -71,7 +75,7 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
         <div className="absolute right-0 mt-1.5 w-72 bg-[#1e1d1a] border border-[#c5a880]/40 rounded-2xl shadow-2xl p-2.5 z-50 text-xs animate-fade-in space-y-1">
           <div className="px-2.5 py-1.5 text-[10px] font-black text-[#d4b996] uppercase tracking-wider border-b border-white/10 flex items-center justify-between">
             <span>4 Tác Nhân Thế Giới iPhone</span>
-            <span className="bg-[#d4b996]/20 text-[#e5c9a3] px-1.5 py-0.5 rounded">Boutique UML</span>
+            <span className="bg-[#d4b996]/20 text-[#e5c9a3] px-1.5 py-0.5 rounded">Quyền Admin</span>
           </div>
 
           <button
@@ -168,6 +172,34 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
   );
 
   // =========================================================
+  // 0. CHẾ ĐỘ ADMIN ĐANG XEM SHOWROOM KHÁCH HÀNG
+  // =========================================================
+  if (isAdmin && (userRole === 'CUSTOMER' || userRole === 'GUEST')) {
+    return (
+      <div className="bg-[#171614] text-stone-100 border-b border-[#c5a880]/40 sticky top-0 z-[60] shadow-xl text-xs select-none">
+        <div className="max-w-[1500px] mx-auto px-4 py-1.5 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-1 bg-amber-500/20 text-[#e5c9a3] border border-amber-400/40 rounded-lg font-bold text-xs flex items-center gap-1.5 shadow-sm">
+              <ShieldCheck size={14} className="text-amber-400" />
+              <span>CHẾ ĐỘ ADMIN: Xem Showroom Khách Hàng</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => onSwitchRole?.(UserRole.ADMIN)}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-[#b89768] to-[#8c6f46] hover:brightness-110 text-[#171614] rounded-lg font-black text-xs cursor-pointer transition-all shadow-sm"
+            >
+              👑 Quay Lại Bàn Làm Việc Admin
+            </button>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {renderRoleSwitcherDropdown()}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================
   // 1. THANH ĐIỀU HÀNH CHỦ CỬA HÀNG (ADMIN)
   // =========================================================
   if (userRole === 'ADMIN') {
@@ -175,17 +207,22 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
       <div className="bg-[#171614] text-stone-100 border-b border-[#c5a880]/40 sticky top-0 z-[60] shadow-xl text-xs select-none">
         <div className="max-w-[1500px] mx-auto px-3 py-1.5 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-[#b89768] to-[#8c6f46] rounded-lg text-[#171614] font-black text-xs tracking-wide shadow-sm">
+            <button
+              type="button"
+              onClick={() => onNavigateAdminTab?.('DASHBOARD')}
+              title="Về Bàn Làm Việc Tổng Quan Chủ Cửa Hàng"
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-[#b89768] to-[#8c6f46] hover:brightness-110 rounded-lg text-[#171614] font-black text-xs tracking-wide shadow-sm cursor-pointer transition-all"
+            >
               <ShieldCheck size={14} />
               <span>CHỦ CỬA HÀNG • THẾ GIỚI IPHONE</span>
-            </div>
+            </button>
           </div>
 
           <div className="flex items-center gap-1 flex-wrap overflow-x-auto py-0.5">
             <button
               type="button"
               onClick={() => onNavigateAdminTab?.('DASHBOARD')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] active:scale-95 text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
             >
               <BarChart3 size={13} className="text-emerald-400" />
               <span>Doanh Thu Shop</span>
@@ -194,16 +231,16 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
             <button
               type="button"
               onClick={() => onNavigateAdminTab?.('AI_BI')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#332c22] hover:bg-[#42392b] text-[#e5c9a3] border border-[#c5a880]/40 transition-all font-bold cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#332c22] hover:bg-[#42392b] active:scale-95 text-[#e5c9a3] border border-[#c5a880]/40 transition-all font-bold cursor-pointer"
             >
               <Sparkles size={13} className="text-amber-400" />
-              <span>AI Điều Hành (UC09)</span>
+              <span>AI Điều Hành</span>
             </button>
 
             <button
               type="button"
               onClick={() => onNavigateAdminTab?.('PRODUCTS')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] active:scale-95 text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
             >
               <Smartphone size={13} className="text-sky-400" />
               <span>25 Mã iPhone</span>
@@ -212,7 +249,7 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
             <button
               type="button"
               onClick={() => onNavigateAdminTab?.('ORDERS')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] active:scale-95 text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
             >
               <Truck size={13} className="text-indigo-400" />
               <span>Đơn Đặt Máy</span>
@@ -221,7 +258,7 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
             <button
               type="button"
               onClick={() => onNavigateAdminTab?.('SELLERS')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] active:scale-95 text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
             >
               <Users size={13} className="text-amber-400" />
               <span>Nhân Sự Shop</span>
@@ -230,7 +267,7 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
             <button
               type="button"
               onClick={() => onNavigateWarehouse?.()}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] active:scale-95 text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
             >
               <Boxes size={13} className="text-amber-400" />
               <span>Kho iPhone</span>
@@ -239,7 +276,7 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
             <button
               type="button"
               onClick={() => onNavigateCSKH?.('POS')}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] active:scale-95 text-stone-200 hover:text-[#e5c9a3] border border-white/10 transition-all font-semibold cursor-pointer"
             >
               <Headset size={13} className="text-rose-400" />
               <span>Quầy POS & CSKH</span>
@@ -255,12 +292,24 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
             <button
               type="button"
               onClick={() => onNavigateHome?.()}
-              className="flex items-center gap-1 px-2.5 py-1 bg-[#262420] hover:bg-[#36322b] text-stone-200 rounded-lg font-semibold border border-white/10 transition-all cursor-pointer"
+              className="flex items-center gap-1 px-2.5 py-1 bg-[#262420] hover:bg-[#36322b] active:scale-95 text-stone-200 hover:text-[#e5c9a3] rounded-lg font-semibold border border-white/10 transition-all cursor-pointer"
             >
               <Store size={12} className="text-[#d4b996]" />
               <span className="hidden md:inline">Xem Showroom</span>
             </button>
-            {renderRoleSwitcherDropdown()}
+            {isAdmin ? (
+              renderRoleSwitcherDropdown()
+            ) : (
+              <button
+                type="button"
+                onClick={() => onLogout?.()}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 transition-all cursor-pointer font-bold text-[11px]"
+                title="Đăng xuất tài khoản"
+              >
+                <LogOut size={12} />
+                <span>Đăng xuất</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -291,21 +340,21 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
               className="px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-[#e5c9a3] border border-[#c5a880]/30 font-bold cursor-pointer flex items-center gap-1"
             >
               <CreditCard size={12} />
-              <span>Thu Ngân POS (UC04)</span>
+              <span>Thu Ngân POS</span>
             </button>
             <button
               type="button"
               onClick={() => onNavigateCSKH?.('CUSTOMERS')}
               className="px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 font-medium cursor-pointer"
             >
-              Khách VIP CRM (UC03)
+              Khách VIP CRM
             </button>
             <button
               type="button"
               onClick={() => onNavigateCSKH?.('RETURNS')}
               className="px-2.5 py-1 rounded-md bg-[#262420] hover:bg-[#36322b] text-stone-200 hover:text-[#e5c9a3] border border-white/10 font-medium cursor-pointer relative"
             >
-              <span>Đổi Trả 1-1 (UC10)</span>
+              <span>Đổi Trả 1-1</span>
               {pendingReturnsCount > 0 && (
                 <span className="bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full ml-1">
                   {pendingReturnsCount}
@@ -320,7 +369,19 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
               <Store size={12} className="text-[#d4b996]" />
               <span className="hidden md:inline">Xem Showroom</span>
             </button>
-            {renderRoleSwitcherDropdown()}
+            {isAdmin ? (
+              renderRoleSwitcherDropdown()
+            ) : (
+              <button
+                type="button"
+                onClick={() => onLogout?.()}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 transition-all cursor-pointer font-bold text-[11px]"
+                title="Đăng xuất tài khoản"
+              >
+                <LogOut size={12} />
+                <span>Đăng xuất</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -351,7 +412,7 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
               className="px-3 py-1 bg-[#2e2a24] hover:bg-[#3d372e] text-[#e5c9a3] border border-[#c5a880]/40 rounded-lg font-bold shadow-sm transition-all cursor-pointer flex items-center gap-1"
             >
               <Boxes size={12} />
-              <span>Quản Lý Kho 25 Mã iPhone (UC05)</span>
+              <span>Quản Lý Kho 25 Mã iPhone</span>
             </button>
             <button
               type="button"
@@ -361,7 +422,19 @@ export const PortalTopBar: React.FC<PortalTopBarProps> = ({
               <Store size={12} className="text-[#d4b996]" />
               <span className="hidden md:inline">Xem Showroom</span>
             </button>
-            {renderRoleSwitcherDropdown()}
+            {isAdmin ? (
+              renderRoleSwitcherDropdown()
+            ) : (
+              <button
+                type="button"
+                onClick={() => onLogout?.()}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-800/40 transition-all cursor-pointer font-bold text-[11px]"
+                title="Đăng xuất tài khoản"
+              >
+                <LogOut size={12} />
+                <span>Đăng xuất</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
