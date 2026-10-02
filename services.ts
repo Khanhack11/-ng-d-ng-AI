@@ -37,6 +37,23 @@ export class DatHangService {
         const shippingFee = 30000; 
         const discount = 0; 
         const finalTotal = subtotal + shippingFee - discount;
+
+        // TC14: Anti-Overselling Guard (Kiểm tra tồn kho trước khi gửi đơn)
+        const allDbProducts = HeThongBanHangDB.getAllSanPham();
+        for (const item of items) {
+            const matched = allDbProducts.find(p => 
+                p.id === item.productId || 
+                p.id === item.id || 
+                p.name.trim().toLowerCase() === item.name.trim().toLowerCase()
+            );
+            const availStock = matched ? matched.stock : (item.stock ?? 30);
+            if (availStock <= 0) {
+                throw new Error(`Số lượng tồn kho không đủ (Sản phẩm "${item.name}" hiện đã hết hàng).`);
+            }
+            if (item.quantity > availStock) {
+                throw new Error(`Số lượng tồn kho không đủ (Chỉ còn ${availStock} sản phẩm).`);
+            }
+        }
         
         const newOrder: Order = {
             id: `DH-${Date.now().toString().slice(-6)}`, 
@@ -57,13 +74,20 @@ export class DatHangService {
                 })
             });
             const data = await response.json();
-            if (data.success) {
+            if (response.ok && data.success) {
                 newOrder.id = data.orderId;
                 this.currentOrderId = data.orderId;
+            } else {
+                // Backend trả về HTTP 400 hoặc lỗi tồn kho (TC14)
+                throw new Error(data.error || 'Số lượng tồn kho không đủ (Chỉ còn ít hơn số lượng đặt).');
             }
-        } catch (e) {
+        } catch (e: any) {
+            // Nếu là lỗi kiểm tra tồn kho (TC14), ném lỗi ra ngoài ngay lập tức để chặn giao dịch!
+            if (e.message && (e.message.includes('tồn kho') || e.message.includes('hết hàng') || e.message.includes('không đủ'))) {
+                throw e;
+            }
             console.error("Lỗi khi kết nối DB:", e);
-            HeThongBanHangDB.saveDonHang(newOrder); // Fallback mock
+            HeThongBanHangDB.saveDonHang(newOrder); // Fallback mock chỉ khi mất mạng offline
         }
         return newOrder;
     }

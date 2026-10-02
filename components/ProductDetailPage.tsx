@@ -36,6 +36,7 @@ interface ProductDetailPageProps {
   currentUser?: { name?: string; email?: string; role?: string } | null;
   pendingReturnsCount?: number;
   pendingSellersCount?: number;
+  products?: ProductDetail[];
   onNavigateAdminTab?: (tab: 'DASHBOARD' | 'ORDERS' | 'PRODUCTS' | 'SELLERS' | 'CONFIG' | 'AI_BI') => void;
   onNavigateCSKH?: (tab?: 'RETURNS' | 'CUSTOMERS' | 'POS' | 'TRACKING') => void;
   onNavigateSeller?: (tab?: 'overview' | 'products' | 'orders' | 'profile') => void;
@@ -45,6 +46,7 @@ interface ProductDetailPageProps {
 
 const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ 
     productId,
+    products,
     onBuyNow, 
     onAddToCart, 
     onOpenCart, 
@@ -107,9 +109,24 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     }
   };
 
-  // Fetch real data when productId changes
+  // Fetch real data when productId or products prop changes
   useEffect(() => {
       const loadProduct = async () => {
+          // 1. Kiểm tra state sản phẩm tập trung (products) trước để đồng bộ tức thì tồn kho
+          if (products && products.length > 0) {
+              const liveProd = products.find(p => p.id === productId || String(p.id) === String(productId));
+              if (liveProd) {
+                  const enriched = enrichProduct(liveProd);
+                  setProduct(enriched);
+                  setSelectedColor(enriched.colors[0] || 'Chính hãng');
+                  setSelectedSize(enriched.sizes[0] || '128GB');
+                  setActiveImage(enriched.images[0]);
+                  setQuantity(enriched.stock > 0 ? 1 : 0);
+                  window.scrollTo(0, 0);
+                  return;
+              }
+          }
+
           try {
               const allProducts = await SanPhamAdminService.layTatCaSanPham();
               // API trả về mảng, tìm theo id
@@ -117,6 +134,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               
               if (dbProduct) {
                   const enriched = enrichProduct(dbProduct);
+                  const validStock = typeof dbProduct.stock === 'number' ? dbProduct.stock : (typeof enriched.stock === 'number' ? enriched.stock : 30);
                   const mappedProduct: ProductDetail = {
                       id: enriched.id.toString(),
                       name: enriched.name,
@@ -131,7 +149,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       soldCount: enriched.soldCount || 340,
                       colors: enriched.colors,
                       sizes: enriched.sizes,
-                      stock: enriched.stock || 100,
+                      stock: validStock,
                       category: enriched.category || 'Điện thoại iPhone',
                       shippingFee: enriched.shippingFee || 0,
                       shippingEstimate: enriched.shippingEstimate || 'Hỏa tốc 2h - 48h',
@@ -142,6 +160,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   setSelectedColor(mappedProduct.colors[0] || 'Chính hãng');
                   setSelectedSize(mappedProduct.sizes[0] || '128GB');
                   setActiveImage(mappedProduct.images[0]);
+                  setQuantity(validStock > 0 ? 1 : 0);
               } else {
                   // Fallback to MOCK
                   const rawFallback = SanPhamService.layChiTietSanPham(productId);
@@ -151,6 +170,7 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       setSelectedColor(fallback.colors[0] || 'Chính hãng');
                       setSelectedSize(fallback.sizes[0] || '128GB');
                       setActiveImage(fallback.images[0]);
+                      setQuantity(fallback.stock > 0 ? 1 : 0);
                   }
               }
           } catch (e) {
@@ -162,17 +182,25 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   setSelectedColor(fallback.colors[0] || 'Chính hãng');
                   setSelectedSize(fallback.sizes[0] || '128GB');
                   setActiveImage(fallback.images[0]);
+                  setQuantity(fallback.stock > 0 ? 1 : 0);
               }
           }
           window.scrollTo(0, 0);
-          setQuantity(1);
       };
       
       loadProduct();
-  }, [productId]);
+  }, [productId, products]);
 
   const handleQuantityChange = (delta: number) => {
     if (product) {
+       if (product.stock <= 0) {
+         setQuantity(0);
+         return;
+       }
+       if (delta > 0 && quantity >= product.stock) {
+         alert(`⚠️ CHẶN BÁN VƯỢT TỒN KHO (TC14):\nSản phẩm "${product.name}" hiện chỉ còn tối đa ${product.stock} máy trong kho!`);
+         return;
+       }
        setQuantity(prev => Math.max(1, Math.min(product.stock, prev + delta)));
     }
   };
@@ -282,6 +310,14 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   const handleAddToCart = () => {
     if (isAdding || isAdded) return;
+    if (!product || product.stock <= 0) {
+      alert(`⚠️ Sản phẩm "${product?.name || ''}" hiện đã hết hàng trong kho!`);
+      return;
+    }
+    if (quantity > product.stock) {
+      alert(`⚠️ CHẶN ĐẶT HÀNG (TC14 - Anti-Overselling):\nSản phẩm "${product.name}" chỉ còn ${product.stock} máy trong kho (bạn đang chọn ${quantity} máy).`);
+      return;
+    }
 
     setIsAdding(true);
 
@@ -303,7 +339,8 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 selected: true,
                 imgFilter: cStyle.imgFilter,
                 studioBg: cStyle.studioBg,
-                swatchHex: cStyle.swatchHex
+                swatchHex: cStyle.swatchHex,
+                stock: product.stock
             };
             onAddToCart(newItem);
         }
@@ -315,6 +352,14 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   const handleBuyNowClick = () => {
       if (isBuying || isAdding) return;
+      if (!product || product.stock <= 0) {
+        alert(`⚠️ Sản phẩm "${product?.name || ''}" hiện đã hết hàng trong kho!`);
+        return;
+      }
+      if (quantity > product.stock) {
+        alert(`⚠️ CHẶN ĐẶT HÀNG (TC14 - Anti-Overselling):\nSản phẩm "${product.name}" chỉ còn ${product.stock} máy trong kho (bạn đang chọn ${quantity} máy).`);
+        return;
+      }
       setIsBuying(true);
       
       // Add to cart before navigating
@@ -671,7 +716,9 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   <div className="flex items-center border border-gray-300 rounded">
                       <button 
                         onClick={() => handleQuantityChange(-1)}
-                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-r border-gray-300"
+                        disabled={quantity <= 1 || product.stock <= 0}
+                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-r border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                        title="Giảm số lượng"
                       >
                           <Minus size={14} />
                       </button>
@@ -683,37 +730,57 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       />
                       <button 
                         onClick={() => handleQuantityChange(1)}
-                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-l border-gray-300"
+                        disabled={quantity >= product.stock || product.stock <= 0}
+                        className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 border-l border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                        title={quantity >= product.stock ? `Đã đạt tối đa tồn kho (${product.stock} máy)` : "Tăng số lượng"}
                       >
                           <Plus size={14} />
                       </button>
                   </div>
                   <span className="text-sm text-gray-500 ml-2">
-                    Còn <span className="text-green-600 font-medium">{product.stock}</span> sản phẩm
+                    {product.stock <= 0 ? (
+                      <span className="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200">⚠️ Hết hàng</span>
+                    ) : (
+                      <span>Còn <span className="text-green-600 font-medium">{product.stock}</span> sản phẩm</span>
+                    )}
                   </span>
                </div>
 
                {/* 🟢 BÁO CÁO KHO THỜI GIAN THỰC (UC07) */}
-               <div className="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 shadow-2xs">
-                 <span className="flex items-center gap-1.5 font-bold">
-                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                   Tình trạng: Còn <strong className="text-emerald-700 font-extrabold">{product.stock} sản phẩm</strong> sẵn sàng giao ngay tại Kho Tổng (Kệ A1-08)
-                 </span>
-                 <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
-                   Sẵn Sàng Giao
-                 </span>
-               </div>
+               {product.stock > 0 ? (
+                 <div className="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-xl flex items-center justify-between text-xs text-emerald-900 shadow-2xs">
+                   <span className="flex items-center gap-1.5 font-bold">
+                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                     Tình trạng: Còn <strong className="text-emerald-700 font-extrabold">{product.stock} sản phẩm</strong> sẵn sàng giao ngay tại Kho Tổng (Kệ A1-08)
+                   </span>
+                   <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                     Sẵn Sàng Giao
+                   </span>
+                 </div>
+               ) : (
+                 <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xl flex items-center justify-between text-xs text-rose-900 shadow-2xs">
+                   <span className="flex items-center gap-1.5 font-bold">
+                     <span className="w-2 h-2 rounded-full bg-rose-500" />
+                     Tình trạng: <strong className="text-rose-700 font-extrabold">Tạm hết hàng</strong> tại Kho Tổng (Vui lòng liên hệ Hotline hoặc CSKH)
+                   </span>
+                   <span className="text-[11px] font-extrabold text-rose-700 bg-rose-100 px-2 py-0.5 rounded">
+                     Hết Hàng
+                   </span>
+                 </div>
+               )}
             </div>
 
             {/* Buttons */}
             <div className="flex gap-4 mb-8">
                 <button 
                     onClick={handleAddToCart}
-                    disabled={isAdding || isAdded || isBuying}
+                    disabled={isAdding || isAdded || isBuying || product.stock <= 0}
                     className={`flex-1 max-w-[200px] h-12 border rounded font-bold flex items-center justify-center gap-2 transition-all duration-300 active:scale-95
-                        ${isAdded 
-                            ? 'border-green-500 text-green-600 bg-green-50' 
-                            : 'border-brand-600 text-brand-600 bg-brand-50 hover:bg-brand-100'
+                        ${product.stock <= 0 
+                            ? 'border-slate-300 text-slate-400 bg-slate-100 cursor-not-allowed' 
+                            : isAdded 
+                              ? 'border-green-500 text-green-600 bg-green-50' 
+                              : 'border-brand-600 text-brand-600 bg-brand-50 hover:bg-brand-100'
                         }
                         ${isAdding ? 'opacity-70 cursor-wait' : ''}
                     `}
@@ -728,6 +795,8 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                             <CheckCircle size={20} className="animate-bounce" />
                             <span>Đã thêm!</span>
                         </>
+                    ) : product.stock <= 0 ? (
+                        <span>Hết Hàng</span>
                     ) : (
                         <>
                             <ShoppingCart size={20} />
@@ -737,11 +806,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 </button>
                 <button 
                     onClick={handleBuyNowClick}
-                    disabled={isAdding || isAdded || isBuying}
+                    disabled={isAdding || isAdded || isBuying || product.stock <= 0}
                     className={`flex-1 max-w-[200px] h-12 rounded font-bold flex items-center justify-center gap-2 transition-all duration-500 ease-out shadow-lg
-                        ${isBuying 
-                            ? 'bg-green-600 text-white scale-105 shadow-green-300 ring-2 ring-green-400 ring-offset-2' 
-                            : 'bg-brand-700 text-white hover:bg-brand-800 hover:shadow-xl active:scale-95'
+                        ${product.stock <= 0
+                            ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                            : isBuying 
+                              ? 'bg-green-600 text-white scale-105 shadow-green-300 ring-2 ring-green-400 ring-offset-2' 
+                              : 'bg-brand-700 text-white hover:bg-brand-800 hover:shadow-xl active:scale-95'
                         }
                     `}
                 >
@@ -750,6 +821,8 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                             <CheckCircle size={20} className="animate-bounce" />
                             <span>Đang chuyển...</span>
                         </>
+                    ) : product.stock <= 0 ? (
+                        "Tạm Hết Hàng"
                     ) : (
                         "Đặt hàng ngay"
                     )}
@@ -957,19 +1030,19 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={handleAddToCart}
-              disabled={isAdding || isAdded || isBuying}
-              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5"
+              disabled={isAdding || isAdded || isBuying || product.stock <= 0}
+              className={`px-4 py-2 ${product.stock <= 0 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'} font-bold text-xs rounded-xl transition-all flex items-center gap-1.5`}
             >
               <ShoppingCart size={15} />
-              <span className="hidden sm:inline">Thêm vào giỏ</span>
+              <span className="hidden sm:inline">{product.stock <= 0 ? 'Hết hàng' : 'Thêm vào giỏ'}</span>
             </button>
             <button
               onClick={handleBuyNowClick}
-              disabled={isAdding || isAdded || isBuying}
-              className="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-rose-500/20 active:scale-98 flex items-center gap-1.5 uppercase tracking-wide"
+              disabled={isAdding || isAdded || isBuying || product.stock <= 0}
+              className={`px-6 py-2.5 ${product.stock <= 0 ? 'bg-slate-300 text-slate-500 cursor-not-allowed' : 'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-500/20 active:scale-98'} font-black text-xs sm:text-sm rounded-xl transition-all flex items-center gap-1.5 uppercase tracking-wide`}
             >
               <Zap size={15} />
-              <span>Mua Ngay</span>
+              <span>{product.stock <= 0 ? 'Tạm Hết' : 'Mua Ngay'}</span>
             </button>
           </div>
         </div>

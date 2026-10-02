@@ -8,7 +8,8 @@ class OrderController {
             res.json({ success: true, orderId: orderIdStr });
         } catch (error) {
             console.error('Lỗi API orders:', error);
-            res.status(500).json({ error: error.message });
+            // TC14: HTTP 400 khi số lượng tồn kho không đủ
+            res.status(400).json({ success: false, error: error.message });
         }
     }
 

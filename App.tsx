@@ -22,7 +22,7 @@ import {
 } from './types';
 import { ShieldCheck } from 'lucide-react';
 import { MOCK_PRODUCTS_LIST } from './constants';
-import { GioHangService, AuthService, AuthUserData, getProductVisualSync } from './services';
+import { GioHangService, AuthService, AuthUserData, getProductVisualSync, SanPhamAdminService } from './services';
 
 type ViewState = 'home' | 'product' | 'confirmation' | 'checkout' | 'result' | 'order-detail' | 'login' | 'tracking' | 'orders' | 'admin' | 'register' | 'forgot-password' | 'warehouse' | 'customers' | 'returns' | 'pos' | 'cskh';
 
@@ -365,15 +365,58 @@ const App: React.FC = () => {
     };
   };
 
+  // Helper lấy số lượng tồn kho thực tế cho CartItem (TC14 - Anti-Overselling)
+  const getProductStockForCartItem = (item: { id?: string; productId?: string; name?: string }): number => {
+    const matched = products.find(p => 
+      p.id === item.productId || 
+      p.id === item.id || 
+      p.name?.trim().toLowerCase() === item.name?.trim().toLowerCase()
+    ) || MOCK_PRODUCTS_LIST.find(p => 
+      p.id === item.productId || 
+      p.id === item.id || 
+      p.name?.trim().toLowerCase() === item.name?.trim().toLowerCase()
+    );
+    return matched ? matched.stock : 30;
+  };
+
   const handleAddToCart = async (rawItem: CartItem) => {
     const item = enrichCartItemWithStudioSync(rawItem);
+    const availableStock = getProductStockForCartItem(item);
+
+    // TC14: Kiểm tra sản phẩm đã hết hàng
+    if (availableStock <= 0) {
+      alert(`⚠️ SẢN PHẨM HẾT HÀNG (TC14):\nSản phẩm "${item.name}" hiện không còn trong kho!`);
+      return;
+    }
+
+    // TC14: Kiểm tra vượt tồn kho khi thêm vào giỏ
+    const existing = cartItems.find(i => i.name === item.name && i.size === item.size);
+    const currentQtyInCart = existing ? existing.quantity : 0;
+    const requestedTotal = currentQtyInCart + item.quantity;
+
+    if (requestedTotal > availableStock) {
+      const allowedToAdd = Math.max(0, availableStock - currentQtyInCart);
+      alert(`⚠️ CHẶN BÁN VƯỢT TỒN KHO (TC14):\nSản phẩm "${item.name}" trong kho chỉ còn ${availableStock} máy.\nTrong giỏ bạn đã có ${currentQtyInCart} máy. ${allowedToAdd > 0 ? `Bạn chỉ có thể thêm tối đa ${allowedToAdd} máy nữa.` : 'Bạn đã chọn đủ số lượng tối đa trong kho!'}`);
+      if (allowedToAdd <= 0) return;
+      item.quantity = allowedToAdd;
+    }
+
     // 1. Optimistic UI update
     setCartItems(prev => {
-      const existing = prev.find(i => i.name === item.name && i.size === item.size);
-      if (existing) {
-        return prev.map(i => i.id === existing.id ? { ...i, quantity: i.quantity + item.quantity, selected: true, image: item.image, imgFilter: item.imgFilter, studioBg: item.studioBg, swatchHex: item.swatchHex } : i);
+      const existingItem = prev.find(i => i.name === item.name && i.size === item.size);
+      if (existingItem) {
+        return prev.map(i => i.id === existingItem.id ? { 
+          ...i, 
+          quantity: Math.min(availableStock, i.quantity + item.quantity), 
+          selected: true, 
+          image: item.image, 
+          imgFilter: item.imgFilter, 
+          studioBg: item.studioBg, 
+          swatchHex: item.swatchHex,
+          stock: availableStock 
+        } : i);
       }
-      return [...prev.map(i => enrichCartItemWithStudioSync(i)), item];
+      return [...prev.map(i => enrichCartItemWithStudioSync(i)), { ...item, stock: availableStock }];
     });
     setIsMiniCartOpen(true);
 
@@ -429,6 +472,17 @@ const App: React.FC = () => {
       handleRemoveFromCart(id);
       return;
     }
+
+    // TC14: Anti-Overselling Guard khi chỉnh số lượng trong giỏ
+    const targetItem = cartItems.find(i => i.id === id);
+    if (targetItem && newQuantity > targetItem.quantity) {
+      const availableStock = getProductStockForCartItem(targetItem);
+      if (newQuantity > availableStock) {
+        alert(`⚠️ CHẶN BÁN VƯỢT TỒN KHO (TC14):\nSản phẩm "${targetItem.name}" chỉ còn tối đa ${availableStock} máy trong kho!`);
+        return;
+      }
+    }
+
     // Optimistic UI update
     setCartItems(prev => prev.map(item => item.id === id ? { ...item, quantity: newQuantity } : item));
   };
@@ -612,6 +666,30 @@ const App: React.FC = () => {
         estimatedDelivery: 'Dự kiến giao ngày mai trước 18:00'
       };
       setLastCompletedOrder(createdOrder);
+    }
+
+    // TC14: DEDUCT STOCK (Tự động trừ số lượng tồn kho sản phẩm khi đặt hàng thành công)
+    if (purchasedItems && purchasedItems.length > 0) {
+      setProducts(prevProducts => {
+        return prevProducts.map(prod => {
+          const matchedItem = purchasedItems.find(it => 
+            it.id === prod.id || 
+            it.productId === prod.id || 
+            it.name.trim().toLowerCase() === prod.name.trim().toLowerCase()
+          );
+          if (matchedItem) {
+            const newStock = Math.max(0, prod.stock - matchedItem.quantity);
+            // Sync to backend DB if possible
+            SanPhamAdminService.capNhatSanPham(prod.id, { stock: newStock }).catch(() => {});
+            return {
+              ...prod,
+              stock: newStock,
+              soldCount: (prod.soldCount || 0) + matchedItem.quantity
+            };
+          }
+          return prod;
+        });
+      });
     }
 
     // Chỉ xóa những sản phẩm đã chọn mua khỏi giỏ hàng, GIỮ LẠI các sản phẩm chưa chọn mua trong giỏ!
@@ -829,6 +907,7 @@ const App: React.FC = () => {
           isOpen={isMiniCartOpen}
           onClose={() => setIsMiniCartOpen(false)}
           cartItems={cartItems}
+          products={products}
           onRemoveItem={handleRemoveFromCart}
           onUpdateQuantity={handleUpdateQuantity}
           onCheckout={navigateToConfirmation}
@@ -889,6 +968,7 @@ const App: React.FC = () => {
       {currentView === 'product' && (
         <ProductDetailPage
           productId={selectedProductId}
+          products={products}
           onBuyNow={navigateToConfirmation}
           onAddToCart={handleAddToCart}
           onOpenCart={() => setIsMiniCartOpen(true)}
@@ -989,6 +1069,7 @@ const App: React.FC = () => {
         <CheckoutPage
           cartItems={selectedCheckoutItems}
           allCartItems={cartItems}
+          products={products}
           onToggleSelectItem={handleToggleSelectCartItem}
           onBack={navigateToHome}
           onPaymentSuccess={navigateToResult}

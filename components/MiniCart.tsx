@@ -12,6 +12,7 @@ interface MiniCartProps {
   isOpen: boolean;
   onClose: () => void;
   cartItems: CartItem[];
+  products?: any[];
   onRemoveItem: (id: string) => void;
   onUpdateQuantity?: (id: string, newQuantity: number) => void;
   onCheckout: () => void;
@@ -36,6 +37,7 @@ export const MiniCart: React.FC<MiniCartProps> = ({
   isOpen, 
   onClose, 
   cartItems, 
+  products,
   onRemoveItem, 
   onUpdateQuantity, 
   onCheckout, 
@@ -54,6 +56,20 @@ export const MiniCart: React.FC<MiniCartProps> = ({
   });
   const [voucherMsg, setVoucherMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [activeCartCategoryTab, setActiveCartCategoryTab] = useState<'ALL' | 'FLAGSHIP_18_17' | 'PRO_16_15_14' | 'CLASSIC_OTHER'>('ALL');
+
+  // Helper xác định tồn kho thực tế cho sản phẩm trong giỏ (TC14)
+  const getItemStock = (item: CartItem): number => {
+    const matched = (products || []).find((p: any) => 
+      p.id === item.productId || 
+      p.id === item.id || 
+      p.name?.trim().toLowerCase() === item.name?.trim().toLowerCase()
+    ) || MOCK_PRODUCTS_LIST.find(p => 
+      p.id === item.productId || 
+      p.id === item.id || 
+      p.name?.trim().toLowerCase() === item.name?.trim().toLowerCase()
+    );
+    return matched ? matched.stock : (item.stock ?? 30);
+  };
 
   // Phân loại các món trong giỏ theo nhóm mục sản phẩm
   const enrichedCart = cartItems.map(item => ({
@@ -76,6 +92,28 @@ export const MiniCart: React.FC<MiniCartProps> = ({
   const selectedItems = cartItems.filter(item => item.selected !== false);
   const unselectedCount = cartItems.length - selectedItems.length;
   const isAllSelected = cartItems.length > 0 && selectedItems.length === cartItems.length;
+
+  // TC14: Anti-Overselling check on selected checkout items
+  const overstockSelectedItem = selectedItems.find(item => {
+    const avail = getItemStock(item);
+    return item.quantity > avail || avail <= 0;
+  });
+
+  const handleCheckoutClick = () => {
+    if (selectedItems.length === 0) return;
+    for (const item of selectedItems) {
+      const avail = getItemStock(item);
+      if (avail <= 0) {
+        alert(`⚠️ SẢN PHẨM HẾT HÀNG (TC14):\nSản phẩm "${item.name}" hiện đã hết hàng trong kho.\nVui lòng bỏ chọn hoặc xóa khỏi giỏ.`);
+        return;
+      }
+      if (item.quantity > avail) {
+        alert(`⚠️ CHẶN ĐẶT HÀNG (TC14 - Anti-Overselling):\nSản phẩm "${item.name}" trong kho chỉ còn ${avail} máy (bạn đang chọn ${item.quantity} máy).\nVui lòng điều chỉnh số lượng trước khi tiếp tục!`);
+        return;
+      }
+    }
+    onCheckout();
+  };
 
   const selectedItemQuantity = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
   const subtotal = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -345,25 +383,43 @@ export const MiniCart: React.FC<MiniCartProps> = ({
                     {/* Quantity Stepper, Buy Single Item & Price */}
                     <div className="flex items-center justify-between pt-2 border-t border-slate-100 mt-2 gap-1">
                       <div className="flex items-center gap-1.5">
-                        {onUpdateQuantity ? (
-                          <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
-                            <button 
-                              onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                              className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
-                            >
-                              <Minus size={11} />
-                            </button>
-                            <span className="font-mono font-bold text-xs px-2 text-slate-900 select-none">
-                              {item.quantity}
-                            </span>
-                            <button 
-                              onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                              className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
-                            >
-                              <Plus size={11} />
-                            </button>
-                          </div>
-                        ) : (
+                        {onUpdateQuantity ? (() => {
+                          const itemStock = getItemStock(item);
+                          const isAtMax = item.quantity >= itemStock;
+                          return (
+                            <div className="flex items-center gap-1.5">
+                              <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
+                                <button 
+                                  onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+                                  className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer"
+                                  title="Giảm số lượng"
+                                >
+                                  <Minus size={11} />
+                                </button>
+                                <span className={`font-mono font-bold text-xs px-2 select-none ${item.quantity > itemStock ? 'text-rose-600 bg-rose-50' : 'text-slate-900'}`}>
+                                  {item.quantity}
+                                </span>
+                                <button 
+                                  onClick={() => {
+                                    if (isAtMax) {
+                                      alert(`⚠️ CHẶN BÁN VƯỢT TỒN KHO (TC14):\nSản phẩm "${item.name}" trong kho chỉ còn tối đa ${itemStock} máy.`);
+                                      return;
+                                    }
+                                    onUpdateQuantity(item.id, item.quantity + 1);
+                                  }}
+                                  disabled={isAtMax}
+                                  className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                                  title={isAtMax ? `Đã đạt tồn kho tối đa (${itemStock} máy)` : "Tăng số lượng"}
+                                >
+                                  <Plus size={11} />
+                                </button>
+                              </div>
+                              <span className={`text-[10px] ${item.quantity > itemStock ? 'text-rose-600 font-bold' : 'text-slate-400'}`}>
+                                {item.quantity > itemStock ? `Vượt tồn (${itemStock})` : `Kho: ${itemStock}`}
+                              </span>
+                            </div>
+                          );
+                        })() : (
                           <span className="text-xs text-slate-500 font-medium">SL: {item.quantity}</span>
                         )}
 
@@ -563,16 +619,32 @@ export const MiniCart: React.FC<MiniCartProps> = ({
               </div>
             </div>
 
+            {/* TC14: Cảnh báo tồn kho không đủ (Anti-Overselling Alert) */}
+            {overstockSelectedItem && (
+              <div className="p-3 bg-rose-50 border border-rose-300 rounded-xl text-rose-800 text-xs flex items-center gap-2 shadow-2xs">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span className="text-[11px] leading-snug">
+                  <strong>CHẶN ĐẶT HÀNG (TC14):</strong> Sản phẩm "{overstockSelectedItem.name}" chỉ còn <strong>{getItemStock(overstockSelectedItem)} máy</strong> trong kho (bạn đang chọn {overstockSelectedItem.quantity} máy).
+                </span>
+              </div>
+            )}
+
             {/* Checkout Button */}
             <button 
-              onClick={onCheckout}
-              disabled={selectedItems.length === 0}
-              className="w-full py-3.5 bg-gradient-to-r from-[#1c1b18] via-[#2c251d] to-[#8c6f46] hover:from-[#2c251d] hover:to-[#a38254] disabled:opacity-40 text-[#e5c9a3] font-black text-sm rounded-xl shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 tracking-wide cursor-pointer uppercase border border-[#d4b996]/40"
+              onClick={handleCheckoutClick}
+              disabled={selectedItems.length === 0 || !!overstockSelectedItem}
+              className={`w-full py-3.5 ${
+                overstockSelectedItem
+                  ? 'bg-amber-800/90 text-amber-200 cursor-not-allowed border border-amber-600/40'
+                  : 'bg-gradient-to-r from-[#1c1b18] via-[#2c251d] to-[#8c6f46] hover:from-[#2c251d] hover:to-[#a38254] text-[#e5c9a3] border border-[#d4b996]/40 cursor-pointer'
+              } disabled:opacity-40 font-black text-sm rounded-xl shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 tracking-wide uppercase`}
             >
               <span>
                 {selectedItems.length === 0
                   ? 'Hãy Tích Chọn Ít Nhất 1 Món Để Mua'
-                  : `Mua Ngay ${selectedItems.length}/${cartItems.length} Món Đã Chọn`}
+                  : overstockSelectedItem
+                    ? `⚠️ Vượt Tồn Kho (${getItemStock(overstockSelectedItem)} Máy Còn Lại)`
+                    : `Mua Ngay ${selectedItems.length}/${cartItems.length} Món Đã Chọn`}
               </span>
               <ArrowRight size={16} />
             </button>

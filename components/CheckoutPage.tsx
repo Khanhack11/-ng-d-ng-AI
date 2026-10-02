@@ -13,6 +13,7 @@ import Header from './ZShop/Header';
 interface CheckoutPageProps {
   cartItems: CartItem[];
   allCartItems?: CartItem[];
+  products?: any[];
   onToggleSelectItem?: (id: string) => void;
   onBack: () => void;
   onPaymentSuccess: (orderInfo?: any) => void;
@@ -42,6 +43,7 @@ const AVAILABLE_VOUCHERS = [
 export default function CheckoutPage({
   cartItems,
   allCartItems,
+  products,
   onToggleSelectItem,
   onBack,
   onPaymentSuccess,
@@ -81,6 +83,26 @@ export default function CheckoutPage({
     discount: 30000
   });
   const [voucherError, setVoucherError] = useState<string | null>(null);
+  const [stockError, setStockError] = useState<string | null>(null);
+
+  // Helper tính số lượng tồn kho khả dụng cho mỗi sản phẩm (TC14)
+  const getItemStock = (item: CartItem): number => {
+    const matched = (products || []).find((p: any) => 
+      p.id === item.productId || 
+      p.id === item.id || 
+      p.name?.trim().toLowerCase() === item.name?.trim().toLowerCase()
+    ) || MOCK_PRODUCTS_LIST.find(p => 
+      p.id === item.productId || 
+      p.id === item.id || 
+      p.name?.trim().toLowerCase() === item.name?.trim().toLowerCase()
+    );
+    return matched ? matched.stock : (item.stock ?? 30);
+  };
+
+  const overstockItem = cartItems.find(item => {
+    const avail = getItemStock(item);
+    return item.quantity > avail || avail <= 0;
+  });
 
   // 5. Điểm thưởng VIP Loyalty (UC03)
   const userPoints = customerProfile?.points || 450;
@@ -131,6 +153,21 @@ export default function CheckoutPage({
 
   // Thực hiện Đặt hàng
   const handlePlaceOrder = async () => {
+    setStockError(null);
+
+    // TC14: Anti-Overselling Guard (Chặn đặt hàng vượt tồn kho khả dụng)
+    for (const item of cartItems) {
+      const avail = getItemStock(item);
+      if (avail <= 0) {
+        setStockError(`⚠️ SẢN PHẨM ĐÃ HẾT HÀNG: "${item.name}" hiện không còn trong kho. Vui lòng bỏ chọn hoặc xóa khỏi giỏ.`);
+        return;
+      }
+      if (item.quantity > avail) {
+        setStockError(`⚠️ CHẶN ĐẶT HÀNG (TC14 - Anti-Overselling): Sản phẩm "${item.name}" trong kho chỉ còn ${avail} máy (bạn đang đặt ${item.quantity} máy). Vui lòng điều chỉnh số lượng!`);
+        return;
+      }
+    }
+
     setIsProcessing(true);
     try {
       const orderFormData = {
@@ -142,7 +179,7 @@ export default function CheckoutPage({
         note: orderNote
       };
 
-      // Tạo đơn hàng qua Service
+      // Tạo đơn hàng qua Service (kiểm tra tồn kho DB / Backend)
       await DatHangService.taoDonHangNhap(cartItems, orderFormData);
 
       // Trừ điểm thưởng nếu có dùng
@@ -165,17 +202,12 @@ export default function CheckoutPage({
           shippingMethod
         });
       }, 900);
-    } catch (error) {
+    } catch (error: any) {
       setIsProcessing(false);
-      onPaymentSuccess({
-        orderId,
-        totalAmount: finalTotal,
-        recipientName,
-        recipientPhone,
-        recipientAddress,
-        paymentMethod: selectedMethod,
-        shippingMethod
-      });
+      // TC14: Giao dịch bị hủy do không đủ tồn kho - Tuyệt đối không chuyển sang trang thành công
+      const errorMsg = error?.message || 'Có lỗi xảy ra khi kiểm tra tồn kho đơn hàng. Giao dịch đã bị từ chối.';
+      setStockError(errorMsg);
+      return;
     }
   };
 
@@ -427,25 +459,48 @@ export default function CheckoutPage({
                         </div>
                       </div>
 
-                      {/* Bộ điều khiển số lượng */}
+                      {/* Bộ điều khiển số lượng (TC14 - Khóa nút khi đạt tồn kho) */}
                       <div className="flex items-center gap-2 shrink-0">
-                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
-                          <button
-                            onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, item.quantity - 1)}
-                            className="p-1 hover:bg-slate-200 text-slate-600 transition-colors"
-                            title="Giảm số lượng"
-                          >
-                            <Minus size={12} />
-                          </button>
-                          <span className="px-2.5 text-xs font-bold text-slate-800">{item.quantity}</span>
-                          <button
-                            onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, item.quantity + 1)}
-                            className="p-1 hover:bg-slate-200 text-slate-600 transition-colors"
-                            title="Tăng số lượng"
-                          >
-                            <Plus size={12} />
-                          </button>
-                        </div>
+                        {(() => {
+                          const itemStock = getItemStock(item);
+                          const isAtMax = item.quantity >= itemStock;
+                          return (
+                            <div className="flex flex-col items-end gap-0.5">
+                              <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                                <button
+                                  onClick={() => onUpdateQuantity && onUpdateQuantity(item.id, item.quantity - 1)}
+                                  className="p-1 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+                                  title="Giảm số lượng"
+                                >
+                                  <Minus size={12} />
+                                </button>
+                                <span className={`px-2 text-xs font-bold ${item.quantity > itemStock ? 'text-rose-600 bg-rose-50' : 'text-slate-800'}`}>
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => {
+                                    if (isAtMax) {
+                                      setStockError(`⚠️ Sản phẩm "${item.name}" đã đạt số lượng tồn kho tối đa (${itemStock} máy).`);
+                                      return;
+                                    }
+                                    setStockError(null);
+                                    onUpdateQuantity && onUpdateQuantity(item.id, item.quantity + 1);
+                                  }}
+                                  disabled={isAtMax}
+                                  className="p-1 hover:bg-slate-200 text-slate-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                                  title={isAtMax ? `Đã đạt tồn kho tối đa (${itemStock} máy)` : "Tăng số lượng"}
+                                >
+                                  <Plus size={12} />
+                                </button>
+                              </div>
+                              <span className={`text-[10px] font-medium ${itemStock <= 3 || item.quantity > itemStock ? 'text-rose-600 font-bold' : 'text-slate-500'}`}>
+                                {item.quantity > itemStock 
+                                  ? `⚠️ Vượt tồn (${itemStock})` 
+                                  : `Kho: ${itemStock}`}
+                              </span>
+                            </div>
+                          );
+                        })()}
 
                         {onRemoveFromCart && (
                           <button
@@ -911,12 +966,35 @@ export default function CheckoutPage({
                 </div>
               </div>
 
+              {/* TC14: Cảnh báo tồn kho không đủ (Anti-Overselling Alert) */}
+              {(stockError || overstockItem) && (
+                <div className="p-3.5 bg-rose-50 border-2 border-rose-300 rounded-xl text-rose-800 text-xs flex items-start gap-2.5 shadow-sm animate-fade-in">
+                  <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <strong className="block text-rose-900 font-extrabold mb-0.5">
+                      ⚠️ CHẶN ĐẶT HÀNG (TC14 - Chống Bán Vượt Tồn Kho):
+                    </strong>
+                    <span className="leading-relaxed">
+                      {stockError || `Sản phẩm "${overstockItem?.name}" hiện chỉ còn ${getItemStock(overstockItem!)} máy trong kho (bạn đang đặt ${overstockItem?.quantity} máy). Vui lòng giảm số lượng để tiếp tục!`}
+                    </span>
+                  </div>
+                  {stockError && (
+                    <button 
+                      onClick={() => setStockError(null)} 
+                      className="text-rose-500 hover:text-rose-800 p-0.5"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* NÚT HÀNH ĐỘNG ĐẶT HÀNG CHÍNH (PRIMARY CTA) */}
               <button
                 onClick={handlePlaceOrder}
-                disabled={isProcessing || cartItems.length === 0}
+                disabled={isProcessing || cartItems.length === 0 || !!overstockItem}
                 className={`w-full py-4 px-6 rounded-xl font-black text-sm sm:text-base text-white shadow-lg transition-all flex items-center justify-center gap-2 uppercase tracking-wide ${
-                  isProcessing
+                  isProcessing || !!overstockItem
                     ? 'bg-slate-400 cursor-not-allowed'
                     : 'bg-rose-600 hover:bg-rose-700 hover:shadow-rose-500/25 active:scale-98'
                 }`}
@@ -926,6 +1004,8 @@ export default function CheckoutPage({
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Đang khởi tạo đơn hàng...
                   </>
+                ) : overstockItem ? (
+                  `⚠️ VƯỢT TỒN KHO (${getItemStock(overstockItem)} CÒN LẠI)`
                 ) : (
                   `🚀 ĐẶT HÀNG NGAY (${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(finalTotal)})`
                 )}
