@@ -95,9 +95,9 @@ class AnalystAgent:
         return None
 
     def _extract_sort_by(self, text: str) -> Optional[str]:
-        if re.search(r'(rẻ nhất|re nhat|thấp nhất|thap nhat|tiết kiệm nhất|tiet kiem nhat|giá rẻ|gia re|giá thấp|gia thap|bình dân|binh dan)', text):
+        if re.search(r'(rẻ nhất|re nhat|mềm nhất|mem nhat|thấp nhất|thap nhat|tiết kiệm nhất|tiet kiem nhat|giá rẻ|gia re|giá thấp|gia thap|bình dân|binh dan|hạt dẻ nhất|hat de nhat|bèo nhất)', text):
             return "price_asc"
-        if re.search(r'(đắt nhất|dat nhat|cao nhất|cao nhat|sang nhất|sang nhat|sang trọng nhất|sang trong nhat|cao cấp nhất|cao cap nhat|flagship|giá cao|gia cao)', text):
+        if re.search(r'(đắt nhất|dat nhat|mắc nhất|mac nhat|cao nhất|cao nhat|nhiều tiền nhất|nhieu tien nhat|sang nhất|sang nhat|sang trọng nhất|sang trong nhat|cao cấp nhất|cao cap nhat|flagship|giá cao|gia cao|chát nhất|chat nhat|khủng nhất|khung nhat|đắt đỏ nhất)', text):
             return "price_desc"
         if re.search(r'(bán chạy nhất|ban chay nhat|hot nhất|hot nhat|ưa chuộng nhất|ua chuong nhat|mua nhiều nhất|mua nhieu nhat)', text):
             return "popularity_desc"
@@ -106,21 +106,22 @@ class AnalystAgent:
         return None
 
     def _extract_limit(self, text: str) -> int:
-        match_num = re.search(r'(\d+)\s*(?:sản phẩm|san pham|món|mon|cái|cai|bộ|bo|mẫu|mau|chiếc|chiec)', text)
+        match_num = re.search(r'(\d+)\s*(?:sản phẩm|san pham|món|mon|cái|cai|bộ|bo|mẫu|mau|chiếc|chiec|con|cây|cay|em|máy|may|sp)', text)
         if match_num:
             try:
                 return max(1, min(10, int(match_num.group(1))))
             except Exception:
                 pass
-        if re.search(r'\b(?:1|một|mot)\s*(?:sản phẩm|san pham|món|mon|cái|cai|mẫu|mau|chiếc|chiec)\b', text) or re.search(r'\b(?:chỉ|chi|duy nhất|duy nhat|top)\s*1\b', text):
+        if re.search(r'\b(?:1|một|mot)\s*(?:sản phẩm|san pham|món|mon|cái|cai|mẫu|mau|chiếc|chiec|con|cây|cay|em|máy|may|sp)\b', text) or re.search(r'\b(?:chỉ|chi|duy nhất|duy nhat|top)\s*1\b', text):
             return 1
-        if re.search(r'\b(?:rẻ nhất|re nhat|đắt nhất|dat nhat|cao nhất|cao nhat|thấp nhất|thap nhat|tốt nhất|tot nhat)\b', text):
+        if re.search(r'\b(?:rẻ nhất|re nhat|mềm nhất|mem nhat|đắt nhất|dat nhat|mắc nhất|mac nhat|cao nhất|cao nhat|thấp nhất|thap nhat|tốt nhất|tot nhat|chát nhất)\b', text):
             return 1
         return 6
 
     def _extract_keywords(self, text: str) -> List[str]:
         known_kw = [
             # iPhone Models (iPhone 18 down to iPhone 6)
+            "iphone 18 ultra", "18 ultra", "18ultra", "ultra",
             "iphone 18 pro max", "iphone 18 pro", "iphone 18", "18 pro max", "18prm", "18 pro", "ip18",
             "iphone 17 pro max", "iphone 17 pro", "iphone 17", "17 pro max", "17prm", "17 pro", "ip17",
             "iphone 16 pro max", "iphone 16 pro", "iphone 16 plus", "iphone 16", "16 pro max", "16prm", "16 pro", "ip16",

@@ -627,6 +627,50 @@ class AiService {
             };
         }
 
+        // 2B. Nếu hỏi mẫu đắt nhất / mắc nhất / giá cao nhất
+        const isAskMostExpensive = /(?<=^|[^\p{L}\p{N}])(đắt nhất|dat nhat|mắc nhất|mac nhat|cao nhất|cao nhat|nhiều tiền nhất|nhieu tien nhat|giá cao nhất|gia cao nhat|đắt đỏ nhất|chát nhất|chat nhat|khủng nhất|vip nhất)(?=[^\p{L}\p{N}]|$)/iu.test(lower);
+        if (isAskMostExpensive) {
+            const sortedByPriceDesc = [...allProducts]
+                .filter(p => (p.name || '').toLowerCase().includes('iphone'))
+                .sort((a, b) => (b.price || 0) - (a.price || 0));
+            const isSingle = /\b(?:1|một|mot)\s*(?:mẫu|mau|con|cây|cay|chiếc|chiec|em|sản phẩm|sp|máy|may)\b/i.test(lower) || (!lower.includes('các') && !lower.includes('top') && !lower.includes('danh sách'));
+            const resProds = isSingle ? [sortedByPriceDesc[0]] : sortedByPriceDesc.slice(0, 3);
+            const topP = sortedByPriceDesc[0];
+            return {
+                skill: 'PRODUCT_SEARCH_RECOMMEND',
+                message: isSingle
+                    ? `👑 **Mẫu iPhone Đắt Nhất & Đỉnh Cao Nhất Tại Hệ Thống ZShop**:\n\n` +
+                      `💎 **${topP.name}**\n` +
+                      `• 💰 **Giá niêm yết chính hãng**: **${topP.price.toLocaleString('vi-VN')}đ** *(Tiết kiệm ${((topP.originalPrice || topP.price) - topP.price).toLocaleString('vi-VN')}đ)*\n` +
+                      `• 🚀 **Vị thế Trùm Cuối Flagship**: Đây là mẫu iPhone có mức giá cao nhất toàn hệ thống với cấu hình kịch trần (Bộ nhớ 1TB, Titanium & Gốm Ceramic, Chip thế hệ mới nhất).\n` +
+                      `• 📦 **Tồn kho sẵn sàng**: Còn **${topP.stock} máy** mới 100% nguyên seal Apple VN/A tại Showroom.\n` +
+                      `• 💳 **Hỗ trợ trả góp 0%**: Chỉ cần trả trước 10% nhận máy ngay!`
+                    : `👑 **Top ${resProds.length} Mẫu iPhone Đắt Nhất & Đẳng Cấp Nhất Tại Hệ Thống ZShop**:`,
+                products: resProds
+            };
+        }
+
+        // 2C. Nếu hỏi mẫu rẻ nhất / giá mềm nhất
+        const isAskCheapest = /\b(rẻ nhất|re nhat|mềm nhất|mem nhat|thấp nhất|thap nhat|ít tiền nhất|it tien nhat|giá mềm nhất|gia mem nhat|giá thấp nhất|hạt dẻ nhất|bèo nhất)\b/i.test(lower);
+        if (isAskCheapest) {
+            const sortedByPriceAsc = [...allProducts]
+                .filter(p => (p.name || '').toLowerCase().includes('iphone'))
+                .sort((a, b) => (a.price || 0) - (b.price || 0));
+            const isSingle = /\b(?:1|một|mot)\s*(?:mẫu|mau|con|cây|cay|chiếc|chiec|em|sản phẩm|sp|máy|may)\b/i.test(lower) || (!lower.includes('các') && !lower.includes('top') && !lower.includes('danh sách'));
+            const resProds = isSingle ? [sortedByPriceAsc[0]] : sortedByPriceAsc.slice(0, 4);
+            const cheapP = sortedByPriceAsc[0];
+            return {
+                skill: 'PRODUCT_SEARCH_RECOMMEND',
+                message: isSingle
+                    ? `💸 **Mẫu iPhone Giá Rẻ Nhất Tại Hệ Thống ZShop**:\n\n` +
+                      `📱 **${cheapP.name}**\n` +
+                      `• 💵 **Giá bán hấp dẫn nhất**: Chỉ **${cheapP.price.toLocaleString('vi-VN')}đ** *(Sẵn ${cheapP.stock} máy)*\n` +
+                      `• 🎯 **Đặc điểm**: Mẫu máy tiết kiệm chi phí nhất, bảo hành 1 đổi 1 trong 30 ngày và Freeship toàn quốc!`
+                    : `💸 **Top ${resProds.length} Mẫu iPhone Giá Rẻ Nhất Tại Thế Giới iPhone**:`,
+                products: resProds
+            };
+        }
+
         // 3. Lọc theo ngân sách GenZ (củ, tr, triệu, cành)
         let minPrice = 0;
         let maxPrice = Infinity;

@@ -1,9 +1,9 @@
-import { 
+ import { 
   ProductDetail, CartItem, OrderStatus, TrackingStep, 
   AIPersonaType, CustomerContext, 
   OutfitCombo, SizeFittingResult 
-} from './types';
-import { MOCK_PRODUCTS_LIST } from './constants';
+} from './types.ts';
+import { MOCK_PRODUCTS_LIST } from './constants.ts';
 
 /**
  * Kiểu dữ liệu phân loại kỹ năng AI
@@ -329,7 +329,45 @@ export const GENZ_ABBREVIATION_RULES: Array<{
   { pattern: /\b(?:ip\s*)?11\s*(?:prm|pm|promax)\b/gi, replacement: 'iPhone 11 Pro Max', label: '11prm', meaning: 'iPhone 11 Pro Max' },
   { pattern: /\b(?:ip\s*)?xsm\b/gi, replacement: 'iPhone XS Max', label: 'xsm', meaning: 'iPhone XS Max' },
   { pattern: /\b(?:ip\s*)?8p\b/gi, replacement: 'iPhone 8 Plus', label: '8p', meaning: 'iPhone 8 Plus' },
+  { pattern: /\b(?:ip\s*)?18\s*ultra\b/gi, replacement: 'iPhone 18 Ultra', label: '18 ultra', meaning: 'iPhone 18 Ultra Titanium Đỉnh Cao' },
+  { pattern: /\b(?:ip\s*)?13\s*(?:pro|p)\b(?!\s*max)/gi, replacement: 'iPhone 13 Pro', label: '13pro', meaning: 'iPhone 13 Pro' },
+  { pattern: /\b(?:ip\s*)?12\s*(?:pro|p)\b(?!\s*max)/gi, replacement: 'iPhone 12 Pro', label: '12pro', meaning: 'iPhone 12 Pro' },
+  { pattern: /\b(?:ip\s*)?11\s*(?:pro|p)\b(?!\s*max)/gi, replacement: 'iPhone 11 Pro', label: '11pro', meaning: 'iPhone 11 Pro' },
+  { pattern: /\b(?:ip\s*)?13\s*mini\b/gi, replacement: 'iPhone 13 mini', label: '13 mini', meaning: 'iPhone 13 mini' },
+  { pattern: /\b(?:ip\s*)?12\s*mini\b/gi, replacement: 'iPhone 12 mini', label: '12 mini', meaning: 'iPhone 12 mini' },
+  { pattern: /\b(?:ip\s*)?7p\b/gi, replacement: 'iPhone 7 Plus', label: '7p', meaning: 'iPhone 7 Plus' },
+  { pattern: /\b(?:ip\s*)?6sp\b/gi, replacement: 'iPhone 6s Plus', label: '6sp', meaning: 'iPhone 6s Plus' },
+  { pattern: /\b(?:ip\s*)?6s\b/gi, replacement: 'iPhone 6s', label: '6s', meaning: 'iPhone 6s' },
+  { pattern: /\b(?:ip\s*)?4s\b/gi, replacement: 'iPhone 4s', label: '4s', meaning: 'iPhone 4s Sưu Tầm Steve Jobs' },
+  { pattern: /\b(?:ip\s*)?xr\b/gi, replacement: 'iPhone XR', label: 'xr', meaning: 'iPhone XR' },
+  { pattern: /\b(?:ip\s*)?xs\b(?!\s*max)/gi, replacement: 'iPhone XS', label: 'xs', meaning: 'iPhone XS' },
   // Từ lóng & viết tắt giao tiếp GenZ
+  { pattern: /\b(?:mắc nhất|mac nhat)\b/gi, replacement: 'đắt nhất', label: 'mắc nhất', meaning: 'đắt nhất (giá cao nhất)' },
+  { pattern: /\b(?:mắc|mac)\b(?!\s*(?:cài|áo|quần|kẹt|bệnh|mùng|màn))/gi, replacement: 'đắt', label: 'mắc', meaning: 'đắt (giá cao)' },
+  { pattern: /\b(?:chát nhất|chat nhat)\b/gi, replacement: 'đắt nhất', label: 'chát nhất', meaning: 'đắt nhất' },
+  { pattern: /\b(?:chát|chat)\b(?!\s*(?:với|qua|mess|zalo|bot|gpt))/gi, replacement: 'đắt', label: 'chát', meaning: 'đắt (giá cao)' },
+  { pattern: /\b(?:cx)\b/gi, replacement: 'cũng', label: 'cx', meaning: 'cũng' },
+  { pattern: /\b(?:vs)\b/gi, replacement: 'với', label: 'vs', meaning: 'với' },
+  { pattern: /\b(?:mn)\b/gi, replacement: 'mọi người', label: 'mn', meaning: 'mọi người' },
+  { pattern: /\b(?:ng)\b/gi, replacement: 'người', label: 'ng', meaning: 'người' },
+  { pattern: /\b(?:mik|mk)\b/gi, replacement: 'mình', label: 'mik/mk', meaning: 'mình' },
+  { pattern: /\b(?:ib|inbox)\b/gi, replacement: 'nhắn tin tư vấn', label: 'ib', meaning: 'nhắn tin / inbox' },
+  { pattern: /\b(?:sp)\b/gi, replacement: 'sản phẩm', label: 'sp', meaning: 'sản phẩm' },
+  { pattern: /\b(?:tl)\b/gi, replacement: 'trả lời', label: 'tl', meaning: 'trả lời' },
+  { pattern: /\b(?:rep|rẹp)\b/gi, replacement: 'phản hồi', label: 'rep', meaning: 'phản hồi / reply' },
+  { pattern: /\b(?:pk)\b/gi, replacement: 'phụ kiện', label: 'pk', meaning: 'phụ kiện' },
+  { pattern: /\b(?:cam)\b/gi, replacement: 'camera', label: 'cam', meaning: 'camera' },
+  { pattern: /\b(?:cl)\b/gi, replacement: 'kính cường lực', label: 'cl', meaning: 'kính cường lực' },
+  { pattern: /\b(?:op)\b/gi, replacement: 'ốp lưng', label: 'op', meaning: 'ốp lưng' },
+  { pattern: /\b(?:sc|sac)\b/gi, replacement: 'sạc', label: 'sc/sac', meaning: 'sạc pin' },
+  { pattern: /\b(?:zin|zin áp|zin all)\b/gi, replacement: 'máy nguyên bản zin', label: 'zin', meaning: 'máy zin nguyên bản Apple' },
+  { pattern: /\b(?:pin trâu)\b/gi, replacement: 'thời lượng pin bền bỉ', label: 'pin trâu', meaning: 'thời lượng pin trâu' },
+  { pattern: /\b(?:chai pin)\b/gi, replacement: 'độ hao hụt pin', label: 'chai pin', meaning: 'độ hao hụt chai pin' },
+  { pattern: /\b(?:máy trần)\b/gi, replacement: 'máy không kèm hộp phụ kiện', label: 'máy trần', meaning: 'máy không phụ kiện' },
+  { pattern: /\b(?:fullbox|đập hộp|nguyên seal)\b/gi, replacement: 'nguyên seal đủ hộp phụ kiện', label: 'fullbox', meaning: 'nguyên hộp đầy đủ' },
+  { pattern: /\b(?:múc|quất|hốt|lụm)\b/gi, replacement: 'chốt đơn mua', label: 'múc/quất', meaning: 'chốt mua ngay' },
+  { pattern: /\b(?:kèo thơm|deal hời)\b/gi, replacement: 'giá ưu đãi cực tốt', label: 'kèo thơm', meaning: 'kèo thơm / deal hời' },
+  { pattern: /\b(?:p\/p|p trên p|pp)\b/gi, replacement: 'hiệu năng trên giá thành (Price/Performance)', label: 'p/p', meaning: 'hiệu năng / giá thành tốt' },
   { pattern: /\b(?:sốp|sop|ad|fen|bro)\b/gi, replacement: 'shop', label: 'sốp/fen', meaning: 'Shop / Tư vấn viên' },
   { pattern: /\b(?:bn|bnh|bnhiu|baonhiu|bnhieu|nhiu)\b/gi, replacement: 'bao nhiêu', label: 'bn/bnhiu', meaning: 'bao nhiêu (hỏi giá/số lượng)' },
   { pattern: /\b(?:rổ giá)\b/gi, replacement: 'giá bán', label: 'rổ giá', meaning: 'giá bán' },
@@ -571,8 +609,9 @@ export class AISkillEngine {
     const isAskCompareShortcut = /\b(so sánh iphone|so sánh các dòng|so sánh máy|đặt lên bàn cân)\b/i.test(normLower);
     const isAskSpecShortcut = /\b(thông số kỹ thuật|thông số phần cứng|xem cấu hình|tra cứu thông số)\b/i.test(normLower);
     const isAskChip = /\b(dùng chip gì|chip gì|vi xử lý|cpu|gpu|tiến trình|mấy nm|hiệu năng chip)\b/i.test(normLower);
-    const isAskSlowSellerOrSale = /\b(bán chậm|ban cham|ít người mua|tồn kho nhiều|xả kho|xa kho|giảm giá sâu|sale mạnh|deal hời|giảm nhiều nhất|khuyến mãi sâu)\b/i.test(normLower);
-    const isAskCheapest = /\b(rẻ nhất|re nhat|thấp nhất|ít tiền nhất|giá mềm nhất|rẻ bèo)\b/i.test(normLower);
+    const isAskSlowSellerOrSale = /(?<=^|[^\p{L}\p{N}])(bán chậm|ban cham|ít người mua|tồn kho nhiều|xả kho|xa kho|giảm giá sâu|sale mạnh|deal hời|giảm nhiều nhất|khuyến mãi sâu)(?=[^\p{L}\p{N}]|$)/iu.test(normLower);
+    const isAskMostExpensive = /(?<=^|[^\p{L}\p{N}])(đắt nhất|dat nhat|mắc nhất|mac nhat|cao nhất|cao nhat|nhiều tiền nhất|nhieu tien nhat|giá cao nhất|gia cao nhat|đắt đỏ nhất|chát nhất|chat nhat|khủng nhất|khung nhat|vip nhất|vip nhat|trùm cuối|trum cuoi|flagship đỉnh nhất)(?=[^\p{L}\p{N}]|$)/iu.test(normLower);
+    const isAskCheapest = /(?<=^|[^\p{L}\p{N}])(rẻ nhất|re nhat|mềm nhất|mem nhat|thấp nhất|thap nhat|ít tiền nhất|it tien nhat|giá mềm nhất|gia mem nhat|giá thấp nhất|gia thap nhat|hạt dẻ nhất|hat de nhat|rẻ bèo|bèo nhất|kinh tế nhất)(?=[^\p{L}\p{N}]|$)/iu.test(normLower);
     const isAskCartStatus = /\b(giỏ hàng|gio hang|trong giỏ|tổng tiền giỏ|thanh toán giỏ|mấy món trong giỏ|kiểm tra giỏ)\b/i.test(normLower);
     const isAskOrderStatus = /\b(đơn hàng|don hang|đơn mua|ship tới đâu|bao giờ giao|kiểm tra đơn|theo dõi đơn|mã vận đơn|đang ở đâu)\b/i.test(normLower);
     const isAskVoucherPoints = /\b(điểm thưởng|bao nhiêu điểm|điểm vip|quyền lợi vip|hạng thẻ|hạng vàng|voucher|mã giảm giá|code giảm|ưu đãi vip|ưu đãi gì)\b/i.test(normLower);
@@ -588,6 +627,14 @@ export class AISkillEngine {
     const isAskPrice = /\b(giá|gia|bao nhiêu|bnhiu|mấy củ|mấy triệu|rổ giá|nhiu tiền|tiền|đắt|rẻ|128gb|256gb|512gb|1tb|2tb)\b/i.test(normLower);
     const isAskBuyCart = /\b(chốt đơn|chốt|múc|quất|lụm|hốt|thêm vào giỏ|bỏ giỏ|cho vào giỏ|mua con này|lấy con)\b/i.test(normLower);
 
+    // Trích xuất số lượng sản phẩm mong muốn (vd: "cho tôi 1 mẫu", "1 con", "top 3", "2 máy")
+    const limitNumMatch = normLower.match(/\b(?:top\s*|chỉ\s*|duy nhất\s*)?(\d+)\s*(?:mẫu|mau|con|cây|cay|chiếc|chiec|em|sản phẩm|sp|máy|may)\b/i);
+    const requestedLimit: number | undefined = limitNumMatch
+      ? parseInt(limitNumMatch[1], 10)
+      : (/\b(?:1|một|mot)\s*(?:mẫu|mau|con|cây|cay|chiếc|chiec|em|bé|sản phẩm|sp|máy|may)\b/i.test(normLower)
+        ? 1
+        : undefined);
+
     // Nếu khách hỏi trực tiếp về Giá / Màu / Pin / Trả góp / Tồn kho / Chốt đơn mà không gõ tên máy nhưng đang mở 1 trang sản phẩm -> tự động liên kết với sản phẩm đang xem!
     if (
       matchedModels.length === 0 &&
@@ -595,6 +642,7 @@ export class AISkillEngine {
       !isAskBestSeller &&
       !isAskSlowSellerOrSale &&
       !isAskCheapest &&
+      !isAskMostExpensive &&
       !isAskCartStatus &&
       !isAskOrderStatus &&
       !isAskVoucherPoints &&
@@ -1231,25 +1279,106 @@ export class AISkillEngine {
       });
     }
 
+    // D5.2B. Khách hỏi MẪU NÀO ĐẮT NHẤT / MẮC NHẤT / CAO CẤP NHẤT / FLAGSHIP ĐỈNH CAO
+    if (isAskMostExpensive) {
+      const sortedByPriceDesc = [...catalog]
+        .filter(p => p.name.toLowerCase().includes('iphone'))
+        .sort((a, b) => b.price - a.price);
+
+      const isSingleRequested = requestedLimit === 1 ||
+        /\b(?:1|một|mot)\s*(?:mẫu|mau|con|cây|cay|chiếc|chiec|em|sản phẩm|sp|máy|may)\b/i.test(normLower) ||
+        (!normLower.includes('các') && !normLower.includes('top') && !normLower.includes('danh sách') && !normLower.includes('những'));
+
+      if (isSingleRequested) {
+        const topPhone = sortedByPriceDesc[0];
+        const secondPhone = sortedByPriceDesc[1];
+        const down10 = Math.round((topPhone.price * 0.1) / 10000) * 10000;
+        const perMonth12 = Math.round((topPhone.price * 0.9) / 12);
+        const savedMoney = (topPhone.originalPrice - topPhone.price).toLocaleString('vi-VN') + 'đ';
+
+        return attachMeta({
+          skill: 'PRODUCT_SEARCH_RECOMMEND',
+          message: `👑 **Mẫu iPhone Đắt Nhất & Đẳng Cấp Nhất Tại Thế Giới iPhone (ZShop)**:\n\n` +
+            `💎 **${topPhone.name}**\n` +
+            `• 💰 **Giá niêm yết ưu đãi**: **${topPhone.price.toLocaleString('vi-VN')}đ** *(Giá gốc: ~${topPhone.originalPrice.toLocaleString('vi-VN')}đ~ — Tiết kiệm ngay **${savedMoney}** / -${topPhone.discountRate}%)\n` +
+            `• 🚀 **Vị thế Trùm Cuối Flagship**: Đây là mẫu iPhone có mức giá đắt nhất tại hệ thống, sở hữu cấu hình "kịch trần" với khung viền **Titanium Hàng Không Vũ Trụ kết hợp Gốm Ceramic**, bộ nhớ trong cực đại **1TB**, vi xử lý **Apple A20 Pro (Tiến trình 2nm)** thế hệ mới nhất và cụm camera tiềm vọng 10x.\n` +
+            `• 📦 **Tình trạng kho thực tế**: Sẵn sàng **${topPhone.stock} máy** mới 100% nguyên seal hộp chính hãng Apple VN/A tại Showroom.\n` +
+            `• 💳 **Ưu đãi Trả góp 0%**: Chỉ cần đưa trước **10% (~${down10.toLocaleString('vi-VN')}đ)** nhận máy ngay (Duyệt CCCD 5 phút), góp mỗi tháng khoảng **~${perMonth12.toLocaleString('vi-VN')}đ/tháng** qua thẻ tín dụng hoặc công ty tài chính.\n` +
+            `• 🛡️ **Bảo hành VIP**: 12 tháng Apple ủy quyền toàn quốc, đặc quyền **1 Đổi 1 trong 30 ngày**, tặng gói dán cường lực và bảo hiểm màn hình ZShop Care+!` +
+            (secondPhone ? `\n\n📌 *Lựa chọn cận kề để bạn tham khảo*: **${secondPhone.name}** (**${secondPhone.price.toLocaleString('vi-VN')}đ**).` : ''),
+          products: [topPhone],
+          suggestedActions: [
+            `Thêm "${topPhone.name}" vào giỏ`,
+            `Tính trả góp 0% cho ${topPhone.name.split(' ').slice(0, 3).join(' ')}`,
+            secondPhone ? `So sánh với ${secondPhone.name.split(' ').slice(0, 3).join(' ')}` : '🏆 Mẫu nào bán chạy nhất?'
+          ]
+        });
+      }
+
+      const listCount = requestedLimit || 3;
+      const topExpensiveList = sortedByPriceDesc.slice(0, listCount);
+
+      return attachMeta({
+        skill: 'PRODUCT_SEARCH_RECOMMEND',
+        message: `👑 **Top ${topExpensiveList.length} Mẫu iPhone Đắt Nhất & Cao Cấp Nhất Tại Thế Giới iPhone**:\n\n` +
+          topExpensiveList.map((p, idx) => {
+            const crown = idx === 0 ? '🥇 **TRÙM CUỐI #1**' : idx === 1 ? '🥈 **Á QUÂN #2**' : '🥉 **TOP #3**';
+            return `${crown}: **${p.name}**\n   • 💰 Giá niêm yết: **${p.price.toLocaleString('vi-VN')}đ** *(Tiết kiệm ${(p.originalPrice - p.price).toLocaleString('vi-VN')}đ | Sẵn ${p.stock} máy)*\n   • ⚙️ Cấu hình: ${p.description.slice(0, 110)}...`;
+          }).join('\n\n') +
+          `\n\n💡 Tất cả đều là phiên bản dung lượng cực đại (512GB - 1TB) và chất liệu cao cấp nhất, hỗ trợ trả góp 0% chỉ từ 10% trả trước!`,
+        products: topExpensiveList,
+        suggestedActions: [
+          `Thêm "${topExpensiveList[0].name}" vào giỏ`,
+          `Tính trả góp 0% cho ${topExpensiveList[0].name.split(' ').slice(0, 3).join(' ')}`,
+          '🏆 Mẫu nào bán chạy nhất?'
+        ]
+      });
+    }
+
     // D5.3. Khách hỏi MẪU NÀO RẺ NHẤT
     if (isAskCheapest) {
       const cheapestList = [...catalog]
         .filter(p => p.name.toLowerCase().includes('iphone'))
-        .sort((a, b) => a.price - b.price)
-        .slice(0, 4);
+        .sort((a, b) => a.price - b.price);
+
+      const isSingleRequested = requestedLimit === 1 ||
+        /\b(?:1|một|mot)\s*(?:mẫu|mau|con|cây|cay|chiếc|chiec|em|sản phẩm|sp|máy|may)\b/i.test(normLower) ||
+        (!normLower.includes('các') && !normLower.includes('top') && !normLower.includes('danh sách') && !normLower.includes('những'));
+
+      if (isSingleRequested) {
+        const topCheap = cheapestList[0];
+        const secondCheap = cheapestList[1];
+        return attachMeta({
+          skill: 'PRODUCT_SEARCH_RECOMMEND',
+          message: `💸 **Mẫu iPhone Giá Rẻ Nhất & Tiết Kiệm Nhất Tại Hệ Thống ZShop**:\n\n` +
+            `📱 **${topCheap.name}**\n` +
+            `• 💵 **Giá bán hấp dẫn nhất**: Chỉ **${topCheap.price.toLocaleString('vi-VN')}đ** *(Sẵn ${topCheap.stock} máy tại kho)*\n` +
+            `• 🎯 **Điểm nổi bật**: Mẫu iPhone có mức giá mềm nhất tại cửa hàng, cực kỳ phù hợp làm máy phụ, nghe gọi hoặc sưu tầm kiệt tác với chi phí tối ưu nhất.\n` +
+            `• ✅ **Cam kết chất lượng**: Máy nguyên zin 100%, bảo hành 1 đổi 1 trong 30 ngày và Freeship toàn quốc!` +
+            (secondCheap ? `\n\n📌 *Mẫu giá rẻ kế tiếp để bạn tham khảo*: **${secondCheap.name}** (**${secondCheap.price.toLocaleString('vi-VN')}đ**).` : ''),
+          products: [topCheap],
+          suggestedActions: [
+            `Thêm "${topCheap.name}" vào giỏ`,
+            secondCheap ? `Xem máy ${secondCheap.name.split(' ').slice(0, 3).join(' ')}` : 'Tư vấn iPhone dưới 10 củ',
+            '🏆 Mẫu nào bán chạy nhất?'
+          ]
+        });
+      }
+
+      const topCheapestSlice = cheapestList.slice(0, requestedLimit || 4);
 
       return attachMeta({
         skill: 'PRODUCT_SEARCH_RECOMMEND',
-        message: `💸 **Top 4 Mẫu iPhone Chính Hãng & Sưu Tầm Giá Rẻ Nhất Tại Thế Giới iPhone**:\n\n` +
-          cheapestList.map((p, idx) =>
+        message: `💸 **Top ${topCheapestSlice.length} Mẫu iPhone Chính Hãng & Sưu Tầm Giá Rẻ Nhất Tại Thế Giới iPhone**:\n\n` +
+          topCheapestSlice.map((p, idx) =>
             `${idx + 1}. **${p.name}** — Giá chỉ **${p.price.toLocaleString('vi-VN')}đ** *(Sẵn ${p.stock} máy | Đánh giá ${p.rating}⭐)*`
           ).join('\n') +
           `\n\n✨ Tất cả đều cam kết **Nguyên Zin 100%**, bảo hành **1 đổi 1 trong 30 ngày** và miễn phí giao hàng toàn quốc!`,
-        products: cheapestList,
+        products: topCheapestSlice,
         suggestedActions: [
-          `Thêm "${cheapestList[0].name}" vào giỏ`,
+          `Thêm "${topCheapestSlice[0].name}" vào giỏ`,
           'Tư vấn iPhone dưới 10 củ',
-          'Mẫu nào bán chạy nhất?'
+          '🏆 Mẫu nào bán chạy nhất?'
         ]
       });
     }

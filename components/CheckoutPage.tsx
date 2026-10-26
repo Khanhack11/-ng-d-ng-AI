@@ -204,8 +204,10 @@ export default function CheckoutPage({
       }, 900);
     } catch (error: any) {
       setIsProcessing(false);
-      // TC14: Giao dịch bị hủy do không đủ tồn kho - Tuyệt đối không chuyển sang trang thành công
-      const errorMsg = error?.message || 'Có lỗi xảy ra khi kiểm tra tồn kho đơn hàng. Giao dịch đã bị từ chối.';
+      let errorMsg = error?.message || 'Có lỗi xảy ra khi xử lý đơn hàng. Giao dịch đã bị từ chối.';
+      if (errorMsg.includes('Failed to fetch') || errorMsg.includes('NetworkError')) {
+        errorMsg = 'Lỗi kết nối máy chủ dịch vụ. Vui lòng kiểm tra lại mạng hoặc thử lại!';
+      }
       setStockError(errorMsg);
       return;
     }
@@ -972,7 +974,9 @@ export default function CheckoutPage({
                   <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <strong className="block text-rose-900 font-extrabold mb-0.5">
-                      ⚠️ CHẶN ĐẶT HÀNG (TC14 - Chống Bán Vượt Tồn Kho):
+                      {stockError && !stockError.includes('tồn kho') && !stockError.includes('hết hàng') && !stockError.includes('TC14') 
+                        ? '⚠️ THÔNG BÁO ĐƠN HÀNG:' 
+                        : '⚠️ CHẶN ĐẶT HÀNG (TC14 - Chống Bán Vượt Tồn Kho):'}
                     </strong>
                     <span className="leading-relaxed">
                       {stockError || `Sản phẩm "${overstockItem?.name}" hiện chỉ còn ${getItemStock(overstockItem!)} máy trong kho (bạn đang đặt ${overstockItem?.quantity} máy). Vui lòng giảm số lượng để tiếp tục!`}
